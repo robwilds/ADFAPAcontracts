@@ -1,5 +1,8 @@
 # ADF/APS Application with Angular CLI
 
+this is created specificall for contral lifecycle management
+
+
 Minimal ready-to-use Angular CLI project template pre-configured with ADF components.
 
 ## Quick start
