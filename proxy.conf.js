@@ -1,6 +1,6 @@
 module.exports = {
     "/auth/admin/realms/myrealm": {
-        "target": "http://localhost:8080",
+        "target": "https://sse.dev.alfrescocloud.com",
         "secure": false,
         "pathRewrite": {
             "^/auth/admin/realms/myrealm": ""
@@ -9,7 +9,7 @@ module.exports = {
         "logLevel": "debug"
     },
     "/auth/realms/myrealm": {
-        "target": "http://localhost:8080",
+        "target": "https://sse.dev.alfrescocloud.com",
         "secure": false,
         "pathRewrite": {
             "^/auth/realms/myrealm": ""
@@ -18,13 +18,13 @@ module.exports = {
         "logLevel": "debug"
     },
     "/": {
-        "target": "http://localhost:8080",
+        "target": "https://sse.dev.alfrescocloud.com",
         "secure": false,
         "changeOrigin": true,
         "logLevel": "debug"
     },
     "/alfresco": {
-        "target": "http://localhost:8080",
+        "target": "https://sse.dev.alfrescocloud.com",
         "secure": false,
         "changeOrigin": true
       }
