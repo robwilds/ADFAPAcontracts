@@ -1,3 +1,20 @@
+<!-- <input type="text" [searchAutocomplete]="search">
+
+<adf-search #search="searchAutocomplete">
+    <ng-template let-result>
+        <span *ngFor="let item of result?.list?.entries">
+            {{ item?.entry.name }}
+        </span>
+    </ng-template>
+</adf-search>  -->
+<div class="wrapper">
+<adf-search-control 
+    [expandable]="true"
+    [highlight]="true"
+    (optionClicked)="onSearchItemClicked($event)"
+    (submit)="onSearchSubmit($event)">
+</adf-search-control>
+
 <adf-toolbar>
   <adf-toolbar-title>
     <adf-breadcrumb
@@ -21,9 +38,28 @@
 <!-- contracts folder 5be4a4cc-f413-4f28-8329-dce29671b224 -->
 <adf-document-list
   #documentList
-  currentFolderId="'5be4a4cc-f413-4f28-8329-dce29671b224'"
+  currentFolderId="5be4a4cc-f413-4f28-8329-dce29671b224"
   (preview)="showPreview($event)"
+  (nodeClick)="nodeClicked($event)"
+  [headerFilters]="true"
+  [thumbnails]="'thumbnails'"
 >
+<data-columns>
+  <data-column key="$thumbnail" type="image"></data-column>
+  <data-column title="Name" key="name" class="full-width ellipsis-cell"></data-column>
+  <data-column
+      title="Created By" 
+      key="createdByUser.displayName">
+  </data-column>
+  <data-column
+            title="Created On" 
+            key="createdAt" 
+            type="date" 
+            format="medium"
+            sortable="true"
+            class="desktop-only">
+        </data-column>
+</data-columns>
 </adf-document-list>
 <adf-pagination
   [target]="documentList"
@@ -32,4 +68,22 @@
 >
 </adf-pagination>
 
+<!--viewer here-->
+<!-- <adf-node-comments
+    [nodeId]="nodeId"
+    [readOnly]="false">
+</adf-node-comments> -->
+<adf-like [nodeId]="nodeId"></adf-like>
+<adf-content-metadata-card
+    [displayEmpty]="true"
+    [multi] = "true"
+    [preset]="'*'"
+    [node]="nodeId">
+</adf-content-metadata-card>
+<adf-alfresco-viewer 
+    [showViewer]="showViewer" 
+    [overlayMode]="false" 
+    [nodeId]="nodeId">
+</adf-alfresco-viewer>
+</div>
 <adf-file-uploading-dialog></adf-file-uploading-dialog>
