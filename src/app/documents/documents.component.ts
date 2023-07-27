@@ -52,10 +52,13 @@ export class DocumentsComponent {
   }
   
   onSearchItemClicked(event: MinimalNodeEntity) {
+
+    console.log("option clicked object: ", event)
     if (event.entry.isFile) {
-        console.log("clicked node id:",event.entry.id);
+        console.log("clicked searched node id:",event.entry.id);
+        this.nodeId = event.entry.id;
         this.preview.showResource(event.entry.id);
-    } else if (event.entry.isFolder) {
+    } else {
        //this.router.navigate(['/files', event.entry.id]);
        //change folder view to show contents of current folder
 
