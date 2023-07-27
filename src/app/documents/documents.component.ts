@@ -1,9 +1,9 @@
 import { Component, ViewChild, Input } from '@angular/core';
 import { NotificationService } from '@alfresco/adf-core';
-import { DocumentListComponent } from '@alfresco/adf-content-services';
+import { DocumentListComponent, NodeEntityEvent } from '@alfresco/adf-content-services';
 import { PreviewService } from '../services/preview.service';
 import { Router } from '@angular/router';
-import { MinimalNodeEntity } from '@alfresco/js-api';
+import { MinimalNodeEntity, NodeEntry } from '@alfresco/js-api';
 
 
 @Component({
@@ -12,6 +12,9 @@ import { MinimalNodeEntity } from '@alfresco/js-api';
   styleUrls: ['./documents.component.scss']
 })
 export class DocumentsComponent {
+
+  @ViewChild('documentList', { static: true })
+  documentList: DocumentListComponent;
 
   @Input()
   showViewer: boolean = false;
@@ -22,10 +25,7 @@ export class DocumentsComponent {
 
   displayDefaultProperties: boolean = true;
   
-  currentFolderId: string;
-
-  @ViewChild('documentList', { static: true })
-  documentList: DocumentListComponent;
+  currentFolderId: string = "5be4a4cc-f413-4f28-8329-dce29671b224";
 
   constructor(public router: Router, private notificationService: NotificationService, private preview: PreviewService) {
   }
@@ -53,6 +53,7 @@ export class DocumentsComponent {
   
   onSearchItemClicked(event: MinimalNodeEntity) {
     if (event.entry.isFile) {
+        console.log("clicked node id:",event.entry.id);
         this.preview.showResource(event.entry.id);
     } else if (event.entry.isFolder) {
        //this.router.navigate(['/files', event.entry.id]);
@@ -63,10 +64,11 @@ export class DocumentsComponent {
     }
 }
 
-nodeClicked(event: MinimalNodeEntity){
+nodeClicked(event: NodeEntityEvent){
+  console.log("clicked node id:", event.value.entry.id);
+  this.nodeId = (event.value.entry.id);
   this.showViewer = true;
-  this.nodeId = (event.entry.id);
-  //this.showViewer = true;
+
 }
 
 }
