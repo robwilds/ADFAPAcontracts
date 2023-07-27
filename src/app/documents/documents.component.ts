@@ -67,7 +67,9 @@ export class DocumentsComponent {
 nodeClicked(event: NodeEntityEvent){
   console.log("clicked node id:", event.value.entry.id);
   this.nodeId = (event.value.entry.id);
+  this.showViewer = false;
   this.showViewer = true;
+  
 
 }
 
