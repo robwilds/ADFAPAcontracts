@@ -6,15 +6,16 @@
             {{ item?.entry.name }}
         </span>
     </ng-template>
-</adf-search>  -->
-<div class="wrapper">
-<adf-search-control 
+</adf-search>  --><adf-search-control 
     [expandable]="true"
     [highlight]="true"
     (optionClicked)="onSearchItemClicked($event)"
     (submit)="onSearchSubmit($event)">
 </adf-search-control>
 
+
+
+<div class="wrapper">
 <adf-toolbar>
   <adf-toolbar-title>
     <adf-breadcrumb
@@ -36,6 +37,7 @@
   </adf-upload-button>
 </adf-toolbar>
 <!-- contracts folder 5be4a4cc-f413-4f28-8329-dce29671b224 -->
+<div class="adf-document-list-div-wrapper">
 <adf-document-list
   #documentList
   [currentFolderId]="currentFolderId"
@@ -61,12 +63,25 @@
         </data-column>
 </data-columns>
 </adf-document-list>
+
+
 <adf-pagination
   [target]="documentList"
   [supportedPageSizes]="[5, 10, 15, 20]"
   [pagination]="10"
 >
 </adf-pagination>
+</div>
+
+<div class="adf-content-metadata-card-div-wrapper">
+  <adf-content-metadata-card
+    [displayEmpty]="false"
+    [multi] = "true"
+    [preset]="'*'"
+    [node]="nodeId">
+</adf-content-metadata-card></div>
+</div>
+
 
 <!--viewer here-->
 <!-- <adf-node-comments
@@ -74,16 +89,12 @@
     [readOnly]="false">
 </adf-node-comments> -->
 <!-- <adf-like [nodeId]="nodeId"></adf-like> -->
-<adf-content-metadata-card
-    [displayEmpty]="true"
-    [multi] = "true"
-    [preset]="'*'"
-    [node]="nodeId">
-</adf-content-metadata-card>
+
+
 <adf-alfresco-viewer 
     [showViewer]="showViewer" 
     [overlayMode]="false" 
     [nodeId]="nodeId">
 </adf-alfresco-viewer>
-</div>
+
 <adf-file-uploading-dialog></adf-file-uploading-dialog>
