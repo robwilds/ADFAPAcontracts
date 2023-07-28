@@ -6,7 +6,8 @@
             {{ item?.entry.name }}
         </span>
     </ng-template>
-</adf-search>  --><adf-search-control 
+</adf-search>  -->
+<adf-search-control 
     [expandable]="true"
     [highlight]="true"
     (optionClicked)="onSearchItemClicked($event)"
@@ -81,7 +82,7 @@
 <adf-pagination
   [target]="documentList"
   [supportedPageSizes]="[5, 10, 15, 20]"
-  [pagination]="10"
+  [pagination]="5"
 >
 </adf-pagination>
 </div> <!-- div for doc list and pagination -->
@@ -97,23 +98,15 @@
     [readOnly]="false">
 </adf-node-comments> -->
 </adf-content-metadata-card>
-<adf-alfresco-viewer
-[showViewer]="showViewer" 
-[overlayMode]="false" 
-[nodeId]="nodeId">
-</adf-alfresco-viewer>
 </div>
-
-</div> <!-- div for wrapper -->
-
-
-<!-- <div class="adf-alfresco-viewer-div-wrapper">
+<div style="z-index:1000;position:absolute;left:300px;top:500px;height:500px;width:500px;">
   <adf-alfresco-viewer
       [showViewer]="showViewer" 
       [overlayMode]="false" 
       [nodeId]="nodeId">
   </adf-alfresco-viewer>
-  </div> -->
+  </div>
+</div> <!-- div for wrapper -->
 
 <!--viewer here-->
 <!-- <adf-node-comments

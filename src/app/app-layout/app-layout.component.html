@@ -1,4 +1,4 @@
-<adf-sidenav-layout [sidenavMin]="70" [sidenavMax]="200" [stepOver]="780" [hideSidenav]="false" [expandedSidenav]="false">
+<adf-sidenav-layout [sidenavMin]="70" [sidenavMax]="100" [stepOver]="780" [hideSidenav]="false" [expandedSidenav]="false">
 
   <adf-sidenav-layout-header>
     <ng-template let-toggleMenu="toggleMenu">
@@ -16,11 +16,11 @@
                 </a>
                 <a mat-list-item class="adf-sidenav-link" routerLink="/apps">
                     <mat-icon matListIcon class="sidenav-menu-icon">cloud</mat-icon>
-                    <div class="sidenav-menu-label" *ngIf="!isMenuMinimized()">Apps</div>
+                    <div class="sidenav-menu-label" *ngIf="!isMenuMinimized()">Cloud Apps</div>
                 </a>
                 <a mat-list-item class="adf-sidenav-link" routerLink="/documents">
                     <mat-icon matListIcon class="sidenav-menu-icon">folder_open</mat-icon>
-                    <div class="sidenav-menu-label" *ngIf="!isMenuMinimized()">Documents</div>
+                    <div class="sidenav-menu-label" *ngIf="!isMenuMinimized()">Contracts</div>
                 </a>
                 <a mat-list-item adf-logout class="adf-sidenav-link">
                     <mat-icon matListIcon class="sidenav-menu-icon">exit_to_app</mat-icon>
