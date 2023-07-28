@@ -1,6 +1,6 @@
-.wrapper{
+.doclist-div-wrapper{
     width:max;
-
+    flex-wrap: wrap;
 }
 
 .adf-content-metadata-card-div-wrapper{
@@ -10,9 +10,18 @@
 
 .adf-document-list-div-wrapper{
 width: 70% !important;
+height: 900px;
 float:left;
+
 }
 
-.allWrapper {
-    width:100%
+.adf-alfresco-viewer-div-wrapper{
+width:100px;
+height:100px;
+float:left;
+margin-top: 10px;
+}
+
+.adf-viewer-content {
+    width:300px !important;
 }

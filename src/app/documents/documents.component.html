@@ -13,9 +13,7 @@
     (submit)="onSearchSubmit($event)">
 </adf-search-control>
 
-
-
-<div class="wrapper">
+<div class="doclist-div-wrapper">
 <adf-toolbar>
   <adf-toolbar-title>
     <adf-breadcrumb
@@ -40,6 +38,7 @@
 <div class="adf-document-list-div-wrapper">
 <adf-document-list
   #documentList
+  [contextMenuActions]="true"
   [currentFolderId]="currentFolderId"
   (preview)="showPreview($event)"
   (nodeClick)="nodeClicked($event)"
@@ -62,6 +61,20 @@
             class="desktop-only">
         </data-column>
 </data-columns>
+<content-actions>
+  <content-action
+      title="Copy"
+      permission="update"
+      [disableWithNoPermission]="true"
+      handler="copy">
+  </content-action>
+  <content-action
+      title="Delete"
+      permission="delete"
+      disableWithNoPermission="true"
+      handler="delete">
+  </content-action>
+</content-actions>
 </adf-document-list>
 
 
@@ -71,17 +84,24 @@
   [pagination]="10"
 >
 </adf-pagination>
-</div>
+</div> <!-- div for doc list and pagination -->
 
 <div class="adf-content-metadata-card-div-wrapper">
   <adf-content-metadata-card
     [displayEmpty]="false"
     [multi] = "true"
     [preset]="'*'"
-    [node]="nodeId">
+    [node]="node">
 </adf-content-metadata-card></div>
-</div>
 
+</div> <!-- div for wrapper -->
+<div class="adf-alfresco-viewer-div-wrapper">
+  <adf-alfresco-viewer
+      [showViewer]="showViewer" 
+      [overlayMode]="false" 
+      [nodeId]="nodeId">
+  </adf-alfresco-viewer>
+  </div>
 
 <!--viewer here-->
 <!-- <adf-node-comments
@@ -90,11 +110,5 @@
 </adf-node-comments> -->
 <!-- <adf-like [nodeId]="nodeId"></adf-like> -->
 
-
-<adf-alfresco-viewer 
-    [showViewer]="showViewer" 
-    [overlayMode]="false" 
-    [nodeId]="nodeId">
-</adf-alfresco-viewer>
 
 <adf-file-uploading-dialog></adf-file-uploading-dialog>

@@ -1,9 +1,10 @@
 import { Component, ViewChild, Input } from '@angular/core';
 import { NotificationService } from '@alfresco/adf-core';
-import { DocumentListComponent, NodeEntityEvent } from '@alfresco/adf-content-services';
+import { DocumentListComponent, NodeEntityEvent, NodeEntryEvent } from '@alfresco/adf-content-services';
 import { PreviewService } from '../services/preview.service';
 import { Router } from '@angular/router';
-import { MinimalNodeEntity, NodeEntry } from '@alfresco/js-api';
+import { MinimalNode, MinimalNodeEntity} from '@alfresco/js-api';
+import { NodesApiService } from '@alfresco/adf-content-services';
 
 
 @Component({
@@ -22,12 +23,15 @@ export class DocumentsComponent {
   thumbnails: boolean = true;
 
   nodeId: string = null;
+  node: MinimalNode;
 
   displayDefaultProperties: boolean = true;
   
   currentFolderId: string = "5be4a4cc-f413-4f28-8329-dce29671b224";
 
-  constructor(public router: Router, private notificationService: NotificationService, private preview: PreviewService) {
+  nodeEntry: any;
+
+  constructor(public router: Router, private notificationService: NotificationService, private preview: PreviewService, private nodeService: NodesApiService) {
   }
 
   uploadSuccess(event: any) {
@@ -53,25 +57,45 @@ export class DocumentsComponent {
   
   onSearchItemClicked(event: MinimalNodeEntity) {
 
-    console.log("option clicked object: ", event)
-    if (event.entry.isFile) {
-        console.log("clicked searched node id:",event.entry.id);
-        this.nodeId = event.entry.id;
+    console.log("option clicked object: ", this.documentList.selection[0])
+    if (this.documentList.selection[0].entry.isFile === true) {
+        //this.contentEntry = event;
+        console.log("clicked searched node id:",this.documentList.selection[0].entry);
+
+
         this.preview.showResource(event.entry.id);
     } else {
        //this.router.navigate(['/files', event.entry.id]);
        //change folder view to show contents of current folder
 
-       this.documentList.currentFolderId = event.entry.id.toString();
-       console.log("doc list folder id: ", this.documentList.currentFolderId)
+       //this.documentList.currentFolderId = event.entry.id.toString();
+       //console.log("doc list folder id: ", this.documentList.currentFolderId)
     }
 }
 
 nodeClicked(event: NodeEntityEvent){
-  console.log("clicked node id:", event.value.entry.id);
-  this.nodeId = (event.value.entry.id);
+
+  if (this.documentList.selection[0].entry.isFile === true) {
+
+  this.nodeId = this.documentList.selection[0].entry.id;
+  this.node = this.documentList.selection[0].entry;
+
+  console.log("clicked node id:", this.nodeId);
+  console.log("document list object for clicked node is: ",this.node);
+
   this.showViewer = false;
   this.showViewer = true;
+  }
+  else{
+    
+    this.nodeId = this.documentList.selection[0].entry.id;
+  this.node = this.documentList.selection[0].entry;
+
+  console.log("clicked foldernode id:", this.nodeId);
+  console.log("document list object for clicked foldernode is: ",this.node);
+    this.showViewer = false;
+  
+  }
   
 
 }
