@@ -2,7 +2,7 @@ import { Component, ViewChild, Input } from '@angular/core';
 import { NotificationService } from '@alfresco/adf-core';
 import { DocumentListComponent, NodeEntityEvent, NodeEntryEvent } from '@alfresco/adf-content-services';
 import { PreviewService } from '../services/preview.service';
-import { Router } from '@angular/router';
+import { Router,PRIMARY_OUTLET } from '@angular/router';
 import { MinimalNode, MinimalNodeEntity} from '@alfresco/js-api';
 import { NodesApiService } from '@alfresco/adf-content-services';
 
@@ -32,6 +32,13 @@ export class DocumentsComponent {
   nodeEntry: any;
 
   constructor(public router: Router, private notificationService: NotificationService, private preview: PreviewService, private nodeService: NodesApiService) {
+  }
+
+  onViewerVisibilityChanged() {
+    const primaryUrl = this.router
+      .parseUrl(this.router.url)
+      .root.children[PRIMARY_OUTLET].toString();
+    this.router.navigateByUrl(primaryUrl);
   }
 
   uploadSuccess(event: any) {

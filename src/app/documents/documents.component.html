@@ -37,6 +37,7 @@
 </adf-toolbar>
 <!-- contracts folder 5be4a4cc-f413-4f28-8329-dce29671b224 -->
 <div class="adf-document-list-div-wrapper">
+
 <adf-document-list
   #documentList
   [contextMenuActions]="true"
@@ -85,6 +86,13 @@
   [pagination]="5"
 >
 </adf-pagination>
+<div style="width:100%; position:relative; height:500px;min-height:500px">
+<adf-alfresco-viewer
+[showViewer]="showViewer" 
+[overlayMode]="false" 
+[nodeId]="nodeId">
+</adf-alfresco-viewer>
+</div>
 </div> <!-- div for doc list and pagination -->
 
 <div class="adf-content-metadata-card-div-wrapper">
@@ -100,11 +108,7 @@
 </adf-content-metadata-card>
 </div>
 <div style="z-index:1000;position:absolute;left:300px;top:500px;height:500px;width:500px;">
-  <adf-alfresco-viewer
-      [showViewer]="showViewer" 
-      [overlayMode]="false" 
-      [nodeId]="nodeId">
-  </adf-alfresco-viewer>
+  
   </div>
 </div> <!-- div for wrapper -->
 
