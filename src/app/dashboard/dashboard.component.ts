@@ -9,7 +9,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { AlfrescoApiService} from '@alfresco/adf-core';
 import { AlfrescoApiHttpClient } from '@alfresco/adf-core/api';
 import { map } from 'rxjs/operators';
-import { forkJoin } from 'rxjs';
+import { forkJoin,concat } from 'rxjs';
 
 @Component({
   selector: 'dashboard',
@@ -47,13 +47,18 @@ export class DashboardComponent implements OnInit {
 
   data:any;
 
+  openQuery = `{
+    "query": { \
+      "query": "cm:description:open*" \
+    } \
+  }`;
   constructor(private http: HttpClient,private alfrescoJsApi: AlfrescoApiHttpClient, private nodeApiService: NodesApiService, private preview: PreviewService, private nodeService: NodesApiService, private apiService: AlfrescoApiService) {
 
   }
 
   ngOnInit() {
 
-    forkJoin(
+/*     forkJoin(
 
       {
         OC: this.getOpenCount( `{
@@ -64,7 +69,13 @@ export class DashboardComponent implements OnInit {
         procChart: this.processChart(),
         //ichart: this.instantiateChart()
       }
-    )
+    ) */
+
+    this.getOpenCount(`{
+      "query": { \
+        "query": "cm:description:open*" \
+      } \
+    }`)
 }
 
   getOpenCount(postBody){
@@ -80,12 +91,15 @@ export class DashboardComponent implements OnInit {
       val => {
           console.log("PUT call successful value returned in body", val);
                       this.openCount = Number(val['list']['pagination']['count']);
+                      this.processChart();
                       console.log("pagination count: ", this.openCount )
                       
       },
+
       response => {
           console.log("PUT call in error", response);
       },
+
       () => {
           console.log("The PUT observable is now completed.");
       }
@@ -114,10 +128,8 @@ export class DashboardComponent implements OnInit {
         ],
       }]
     };
-    return "process chart  done";
-  }
+    
 
-  instantiateChart(){
     console.log("data set is: ",this.data)
     console.log("now instantiating chart object");
     
@@ -125,6 +137,12 @@ export class DashboardComponent implements OnInit {
       type: 'pie',
       data: this.data,
     });
+
+    
+  }
+
+  instantiateChart(){
+
   }
 
   onSearchSubmit($event:any){
