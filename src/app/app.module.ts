@@ -15,7 +15,6 @@ import { StencilsModule } from './stencils.module';
 
 // App components
 import { AppComponent } from './app.component';
-import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
 import { AppsComponent } from './apps/apps.component';
 import { TasksComponent } from './tasks/tasks.component';
@@ -24,14 +23,17 @@ import { StartProcessComponent } from './start-process/start-process.component';
 import { FileViewComponent } from './file-view/file-view.component';
 import { BlobViewComponent } from './file-view/blob-view.component';
 import { PreviewService } from './services/preview.service';
-
+import { HttpClientModule } from '@angular/common/http';
 import { appRoutes } from './app.routes';
 import { AppLayoutComponent } from './app-layout/app-layout.component';
 import { DocumentsComponent } from './documents/documents.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+
 
 @NgModule({
     imports: [
         BrowserModule,
+        HttpClientModule,
         BrowserAnimationsModule,
         RouterModule.forRoot(appRoutes // ,
 // { enableTracing: true } // <-- debugging purposes only
@@ -50,7 +52,6 @@ import { DocumentsComponent } from './documents/documents.component';
     declarations: [
         AppComponent,
         AppsComponent,
-        HomeComponent,
         LoginComponent,
         TasksComponent,
         TaskDetailsComponent,
@@ -58,7 +59,8 @@ import { DocumentsComponent } from './documents/documents.component';
         AppLayoutComponent,
         BlobViewComponent,
         FileViewComponent,
-        DocumentsComponent
+        DocumentsComponent,
+        DashboardComponent
     ],
     providers: [
         PreviewService,
