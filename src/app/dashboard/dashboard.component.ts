@@ -3,7 +3,7 @@ import { MinimalNode, MinimalNodeEntity, AlfrescoApi} from '@alfresco/js-api';
 import { NodesApiService } from '@alfresco/adf-content-services';
 import { DocumentListComponent, NodeEntityEvent, NodeEntryEvent } from '@alfresco/adf-content-services';
 import { PreviewService } from '../services/preview.service';
-import { Component, ViewChild, Input, OnInit, AfterViewInit } from '@angular/core';
+import { Component, ViewChild, Input, OnInit, ElementRef, AfterViewInit } from '@angular/core';
 import { Chart } from 'chart.js';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { AlfrescoApiService} from '@alfresco/adf-core';
@@ -12,6 +12,7 @@ import { map } from 'rxjs/operators';
 import { forkJoin,concat } from 'rxjs';
 import { TaskListCloudModule } from '@alfresco/adf-process-services-cloud';
 import { ActivatedRoute, Router } from '@angular/router';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'dashboard',
@@ -24,13 +25,17 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
  /*  title = 'ng-chart'; */
   chart: any;
+  chartclickval: string = "CHART CLICKED";
 
   appName: any = "clm-mvp-v1-alpha-1";
   taskId: any = "28dad087-29a7-11ee-9f58-1a4996e78242";
 
+  showFiller = false;
 
   @ViewChild('documentList', { static: true })
   documentList: DocumentListComponent;
+
+  @ViewChild('cval', { static: true }) pval: ElementRef;
 
   @Input()
   showViewer: boolean = false;
@@ -58,6 +63,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       "query": "cm:description:open*" \
     } \
   }`;
+
+
   constructor(private router: Router,
     private route: ActivatedRoute,private http: HttpClient,private alfrescoJsApi: AlfrescoApiHttpClient, private nodeApiService: NodesApiService, private preview: PreviewService, private nodeService: NodesApiService, private apiService: AlfrescoApiService) {
 
@@ -66,23 +73,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     //Copy in all the js code from the script.js. Typescript will complain but it works just fine
 
-    
  }
 
+
   ngOnInit() {
-
-/*     forkJoin(
-
-      {
-        OC: this.getOpenCount( `{
-          "query": { \
-            "query": "cm:description:open*" \
-          } \
-        }`),
-        procChart: this.processChart(),
-        //ichart: this.instantiateChart()
-      }
-    ) */
 
     this.getOpenCount(`{
       "query": { \
@@ -150,17 +144,19 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         onClick : function (evt, item) {
             console.log ('legend onClick', evt);
             console.log('legd item', item);
+            this.chartclickval = item[0]['_index'].toString();
+            console.log('clicked value',this.chartclickval);
         }
     }
     });
-
-
   }
 
-  instantiateChart(){
+  updatechartclickVal(c:Chart)
+  {
 
+    //this.chartclickval = c.canvas.;
+    this.pval.nativeElement.value = this.chartclickval;
   }
-
   onSearchSubmit($event:any){
     console.log("on search submit: ", event)
   }
