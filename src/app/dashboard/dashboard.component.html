@@ -1,8 +1,27 @@
-<h1>Contracts Dashboard</h1>
-<div id="divChart">
-  <div>
+<h1>Contracts Status</h1>
+<div id="container">
+<div id="chart">
+
   <canvas id='canvas'>{{chart}}</canvas>
 </div>
-<div style="width:400px;height:400px;"> some other info</div>
+<h1>My Open Tasks</h1>
+<div id="tasks">
+
+  <adf-cloud-task-list #taskCloud
+    [appName]="appName"
+    (rowClick)="onRowClick($event)" >
+    <data-columns>
+      <data-column key="name" title="NAME" class="full-width name-column"></data-column>
+      <data-column key="priority" title="priority" class="full-width name-column"></data-column>
+
+      <data-column key="created" title="Created" class="full-width name-column"></data-column>
+  </data-columns>
+   <!--  <adf-custom-empty-content>
+      Your Content
+  </adf-custom-empty-content> -->
+</adf-cloud-task-list>
+<div class="pagination">
+<adf-pagination [target]="taskCloud">
+</adf-pagination></div>
 </div>
-  
+</div>

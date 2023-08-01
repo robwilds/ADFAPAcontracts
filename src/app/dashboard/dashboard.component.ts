@@ -3,13 +3,15 @@ import { MinimalNode, MinimalNodeEntity, AlfrescoApi} from '@alfresco/js-api';
 import { NodesApiService } from '@alfresco/adf-content-services';
 import { DocumentListComponent, NodeEntityEvent, NodeEntryEvent } from '@alfresco/adf-content-services';
 import { PreviewService } from '../services/preview.service';
-import { Component, ViewChild, Input, OnInit } from '@angular/core';
+import { Component, ViewChild, Input, OnInit, AfterViewInit } from '@angular/core';
 import { Chart } from 'chart.js';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { AlfrescoApiService} from '@alfresco/adf-core';
 import { AlfrescoApiHttpClient } from '@alfresco/adf-core/api';
 import { map } from 'rxjs/operators';
 import { forkJoin,concat } from 'rxjs';
+import { TaskListCloudModule } from '@alfresco/adf-process-services-cloud';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'dashboard',
@@ -18,10 +20,14 @@ import { forkJoin,concat } from 'rxjs';
 })
 
 
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, AfterViewInit {
 
  /*  title = 'ng-chart'; */
   chart: any;
+
+  appName: any = "clm-mvp-v1-alpha-1";
+  taskId: any = "28dad087-29a7-11ee-9f58-1a4996e78242";
+
 
   @ViewChild('documentList', { static: true })
   documentList: DocumentListComponent;
@@ -52,9 +58,16 @@ export class DashboardComponent implements OnInit {
       "query": "cm:description:open*" \
     } \
   }`;
-  constructor(private http: HttpClient,private alfrescoJsApi: AlfrescoApiHttpClient, private nodeApiService: NodesApiService, private preview: PreviewService, private nodeService: NodesApiService, private apiService: AlfrescoApiService) {
+  constructor(private router: Router,
+    private route: ActivatedRoute,private http: HttpClient,private alfrescoJsApi: AlfrescoApiHttpClient, private nodeApiService: NodesApiService, private preview: PreviewService, private nodeService: NodesApiService, private apiService: AlfrescoApiService) {
 
   }
+
+  ngAfterViewInit() {
+    //Copy in all the js code from the script.js. Typescript will complain but it works just fine
+
+    
+ }
 
   ngOnInit() {
 
@@ -105,8 +118,6 @@ export class DashboardComponent implements OnInit {
       }
   );
 
-  return "getopen count done";
-
   }
 
   processChart(){
@@ -121,11 +132,10 @@ export class DashboardComponent implements OnInit {
       datasets: [{
         label: 'Contract Status',
         data: [this.openCount, 1, 1],
-        backgroundColor: [
-          'yellow',
-          'green',
-          'red',
-        ],
+        backgroundColor: ['yellow','green','red',],
+        hoverBorderColor: ['grey', 'grey', 'grey'],
+        hoverBorderWidth: 10,
+        borderWidth: 0
       }]
     };
     
@@ -136,9 +146,15 @@ export class DashboardComponent implements OnInit {
     this.chart = new Chart('canvas', {
       type: 'pie',
       data: this.data,
+      options: {
+        onClick : function (evt, item) {
+            console.log ('legend onClick', evt);
+            console.log('legd item', item);
+        }
+    }
     });
 
-    
+
   }
 
   instantiateChart(){
@@ -195,4 +211,12 @@ nodeClicked(event: NodeEntityEvent){
   
 
 }
+
+onRowClick(taskId: string) {
+  if (taskId) {
+    this.router.navigate(['/apps', this.appName || 0, 'tasks', taskId]);
+  }
+}
+
+
 }
