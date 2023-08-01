@@ -1,27 +1,66 @@
-<h1>Contracts Status</h1>
 <div id="container">
-<div id="chart">
+  <div id="chart" (click) = "chartdrawer.toggle(); updatechartclickVal(this.chart)">
+<!--     <mat-card>
+      <mat-card-content>
+        <h1>Contracts Status</h1>
+        <canvas id='canvas' style="max-width: 100%;">{{chart}}</canvas>
+      </mat-card-content>
+    </mat-card> -->
 
-  <canvas id='canvas'>{{chart}}</canvas>
-</div>
-<h1>My Open Tasks</h1>
-<div id="tasks">
+    <mat-drawer-container class="example-container" autosize>
+      <mat-drawer #chartdrawer class="example-sidenav" mode="side">
+        <p #cval >{{ chartclickval }}</p>
+      </mat-drawer>
+    
+      <div class="example-sidenav-content">
+       <!--  <button type="button" mat-button (click)="chartdrawer.toggle()" >
+        </button> -->
+        <h1>Contracts Status</h1>
+        <canvas id='canvas' style="max-width: 50%;"><h1>Contracts Status</h1><p></p>{{chart}}</canvas>
+        
+      </div>
+    
+    </mat-drawer-container>
 
-  <adf-cloud-task-list #taskCloud
-    [appName]="appName"
-    (rowClick)="onRowClick($event)" >
-    <data-columns>
-      <data-column key="name" title="NAME" class="full-width name-column"></data-column>
-      <data-column key="priority" title="priority" class="full-width name-column"></data-column>
+  </div>
 
-      <data-column key="created" title="Created" class="full-width name-column"></data-column>
-  </data-columns>
-   <!--  <adf-custom-empty-content>
+  <div id="tasks">
+    <mat-card>
+      <mat-card-content>
+        <h1>My Open Tasks</h1>
+        <adf-cloud-task-list #taskCloud [appName]="appName" (rowClick)="onRowClick($event)">
+          <data-columns>
+            <data-column key="name" title="Name" class="full-width name-column"></data-column>
+            <data-column key="status" title="Status" class="full-width name-column"></data-column>
+            <data-column key="priority" title="Priority" class="full-width name-column"></data-column>
+            <data-column key="createddate" title="Created" class="full-width name-column"></data-column>
+          </data-columns>
+          <!--  <adf-custom-empty-content>
       Your Content
   </adf-custom-empty-content> -->
-</adf-cloud-task-list>
-<div class="pagination">
-<adf-pagination [target]="taskCloud">
-</adf-pagination></div>
-</div>
-</div>
+        </adf-cloud-task-list>
+        <adf-pagination [target]="taskCloud" [supportedPageSizes]="[5]" [pagination]="5">
+        </adf-pagination>
+      </mat-card-content>
+    </mat-card>
+  </div> <!-- div for tasks -->
+  <div id="recents">
+    <mat-card>
+      <mat-card-content>
+        <h1>My Recent Items</h1>
+        <adf-document-list [currentFolderId]="'-recent-'" [headerFilters]="true" #recentList>
+          >
+          <data-columns>
+            <data-column key="$thumbnail" type="image"></data-column>
+            <data-column title="Name" key="name" class="full-width ellipsis-cell"></data-column>
+            <data-column title="Created By" key="createdByUser.displayName">
+            </data-column>
+            <data-column key="createdOn" title="Created"></data-column>
+          </data-columns>
+        </adf-document-list>
+        <adf-pagination [target]="recentList" [supportedPageSizes]="[5]" [pagination]="5">
+        </adf-pagination>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div> <!-- div for container -->

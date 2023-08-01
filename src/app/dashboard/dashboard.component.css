@@ -3,20 +3,48 @@
     flex-wrap: wrap;
     flex-direction: column;
     max-width: 800px;
+    margin:10px;
 
 }
 
 #chart{
     width: 100%;
-    filter: drop-shadow(17px 15px 15px #000);
+    
+    margin:10px;
 }
 
 #tasks{
     width:100%;
-    filter: drop-shadow(17px 15px 15px #000);
+    
+    margin:10px;
+}
+
+#recents{
+    width:100%;
+    
+    margin:10px;
+
 }
 
 .pagination{
     display:block;
     background-color: white;
 }
+
+.example-container {
+    width: 800px;
+    height: auto;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+  
+  .example-sidenav-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    align-items: center;
+    justify-content: right;
+  }
+  
+  .example-sidenav {
+    padding: 20px;
+  }
