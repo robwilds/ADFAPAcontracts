@@ -1,4 +1,5 @@
 <div id="container">
+  fill up white space.  have details about each slice below pie (list of contracts) and show recent on the right
   <div id="chart" (click) = "chartdrawer.toggle(); updatechartclickVal(this.chart)">
 <!--     <mat-card>
       <mat-card-content>
@@ -21,7 +22,7 @@
       </div>
     
     </mat-drawer-container>
-
+show items thare are close to expiring in red and banner on top
   </div>
 
   <div id="tasks">
@@ -50,6 +51,7 @@
         <h1>My Recent Items</h1>
         <adf-document-list [currentFolderId]="'-recent-'" [headerFilters]="true" #recentList>
           >
+          see if expiration date can be fetched and turn row red
           <data-columns>
             <data-column key="$thumbnail" type="image"></data-column>
             <data-column title="Name" key="name" class="full-width ellipsis-cell"></data-column>

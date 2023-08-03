@@ -7,6 +7,7 @@
         </span>
     </ng-template>
 </adf-search>  -->
+<div id="startWF">SHERRY SAID SO!  PUT BUTTON ON FLOAT RIGHT<p>show only folders here...single click show props, double click show viewer 50/50 and turn off proprs</p></div>
 <adf-search-control 
     [expandable]="true"
     [highlight]="true"
@@ -64,6 +65,12 @@
         </data-column>
 </data-columns>
 <content-actions>
+  <content-action
+      title="sherry said add properties....add action to change status (change property of status)"
+      permission="update"
+      [disableWithNoPermission]="true"
+      handler="copy">
+  </content-action>
   <content-action
       title="Copy"
       permission="update"
