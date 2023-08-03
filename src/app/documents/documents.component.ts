@@ -70,7 +70,7 @@ export class DocumentsComponent {
         console.log("clicked searched node id:",this.documentList.selection[0].entry);
 
 
-        this.preview.showResource(event.entry.id);
+        this.preview.showResource(this.documentList.selection[0].entry);
     } else {
        //this.router.navigate(['/files', event.entry.id]);
        //change folder view to show contents of current folder

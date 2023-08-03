@@ -8,8 +8,6 @@ import { Chart } from 'chart.js';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { AlfrescoApiService} from '@alfresco/adf-core';
 import { AlfrescoApiHttpClient } from '@alfresco/adf-core/api';
-import { map } from 'rxjs/operators';
-import { forkJoin,concat } from 'rxjs';
 import { TaskListCloudModule } from '@alfresco/adf-process-services-cloud';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DOCUMENT } from '@angular/common';
