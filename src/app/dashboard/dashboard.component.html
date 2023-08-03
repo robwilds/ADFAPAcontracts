@@ -49,7 +49,11 @@ show items thare are close to expiring in red and banner on top
     <mat-card>
       <mat-card-content>
         <h1>My Recent Items</h1>
-        <adf-document-list [currentFolderId]="'-recent-'" [headerFilters]="true" #recentList>
+        <adf-document-list
+        [currentFolderId]="'-recent-'"
+        [headerFilters]="true"
+        (preview) = "showBoxPreview($event)"
+        #recentList>
           >
           see if expiration date can be fetched and turn row red
           <data-columns>
@@ -67,7 +71,7 @@ show items thare are close to expiring in red and banner on top
   </div>
 
   <adf-alfresco-viewer class="adf-alfresco-viewer"
-[showViewer]="showViewer" 
+[(showViewer)]="showViewer" 
 [overlayMode]="false" 
 [nodeId]="nodeId">
 </adf-alfresco-viewer>

@@ -1,5 +1,5 @@
 
-import { MinimalNode, MinimalNodeEntity, AlfrescoApi} from '@alfresco/js-api';
+import { MinimalNode, MinimalNodeEntity, AlfrescoApi, MinimalNodeEntryEntity, NodeEntry} from '@alfresco/js-api';
 import { NodesApiService } from '@alfresco/adf-content-services';
 import { DocumentListComponent, NodeEntityEvent, NodeEntryEvent } from '@alfresco/adf-content-services';
 import { PreviewService } from '../services/preview.service';
@@ -203,7 +203,6 @@ nodeClicked(event: NodeEntityEvent){
   
   }
   
-
 }
 
 onRowClick(taskId: string) {
@@ -212,5 +211,23 @@ onRowClick(taskId: string) {
   }
 }
 
+showBoxPreview(node){
+
+  console.log("recent object is :",node.value.entry.id);
+  if (node.value.entry.isFile === true) {
+    //this.contentEntry = event;
+    this.nodeId = node.value.entry.id
+    console.log("double clicked recents item:",this.nodeId);
+    //this.preview.showResource(event.entry.id);
+    this.showViewer = true;
+
+} else {
+   //this.router.navigate(['/files', event.entry.id]);
+   //change folder view to show contents of current folder
+
+   //this.documentList.currentFolderId = event.entry.id.toString();
+   //console.log("doc list folder id: ", this.documentList.currentFolderId)
+} 
+}
 
 }

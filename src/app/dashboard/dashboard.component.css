@@ -48,3 +48,14 @@
   .example-sidenav {
     padding: 20px;
   }
+
+  .adf-alfresco-viewer {
+    padding:5px;
+    position:absolute;
+    z-index: 1000;
+    min-width: 400px;
+    min-height: 400px;
+    float:right;
+    top: 60px;
+    right: 60px;
+  }
