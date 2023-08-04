@@ -11,6 +11,6 @@ export class AppsComponent {
   }
 
   onAppClicked(app: any) {
-    this.router.navigate(['/apps', app.name, 'tasks']);
+    this.router.navigate(['/apps', app.name, 'start-process']);
   }
 }

@@ -24,6 +24,22 @@
     </mat-drawer-container>
 show items thare are close to expiring in red and banner on top
   </div>
+  <div id="processButton">
+    <button (click)="createProcessClick()" mat-raised-button color="primary">Create NDA Form</button>
+  </div>
+
+
+<div id="process" *ngIf="showNDAForm">
+
+  <adf-cloud-start-process 
+      [appName]="'CLM-mvp-v1-alpha-1'"
+      [name]="processName"
+      [processDefinitionName]="'NDA Request Form'"
+      (success)="processSuccess()"
+      >
+ </adf-cloud-start-process>
+</div>
+
 
   <div id="tasks">
     <mat-card>
@@ -69,10 +85,14 @@ show items thare are close to expiring in red and banner on top
       </mat-card-content>
     </mat-card>
   </div>
+</div> <!-- div for container -->
 
-  <adf-alfresco-viewer class="adf-alfresco-viewer"
+<div class="adf-alfresco-viewer">
+  <adf-alfresco-viewer 
 [(showViewer)]="showViewer" 
 [overlayMode]="false" 
-[nodeId]="nodeId">
+[nodeId]="nodeId"
+
+>
 </adf-alfresco-viewer>
-</div> <!-- div for container -->
+</div>

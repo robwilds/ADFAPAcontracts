@@ -28,7 +28,7 @@ import { appRoutes } from './app.routes';
 import { AppLayoutComponent } from './app-layout/app-layout.component';
 import { DocumentsComponent } from './documents/documents.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
-
+import { DatePipe } from '@angular/common';
 
 
 @NgModule({
@@ -64,7 +64,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
         DashboardComponent
     ],
     providers: [
-        PreviewService,
+        PreviewService,DatePipe,
         {
             provide: TRANSLATION_PROVIDER,
             multi: true,

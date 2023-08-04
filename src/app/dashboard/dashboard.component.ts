@@ -10,7 +10,11 @@ import { AlfrescoApiService} from '@alfresco/adf-core';
 import { AlfrescoApiHttpClient } from '@alfresco/adf-core/api';
 import { TaskListCloudModule } from '@alfresco/adf-process-services-cloud';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DOCUMENT } from '@angular/common';
+import { DOCUMENT, DatePipe } from '@angular/common';
+import { ProcessCloudService } from '@alfresco/adf-process-services-cloud';
+import { AuthenticationService } from '@alfresco/adf-core';
+import {formatDate } from '@angular/common';
+import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'dashboard',
@@ -25,10 +29,17 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   chart: any;
   chartclickval: string = "CHART CLICKED";
 
+  currentUser: string;
+  currentDateTime: any = new Date();
+  processName: string;
+
   appName: any = "clm-mvp-v1-alpha-1";
   taskId: any = "28dad087-29a7-11ee-9f58-1a4996e78242";
 
   showFiller = false;
+
+  snackBarmessage: any;
+  snackBarValue: any;
 
   @ViewChild('documentList', { static: true })
   documentList: DocumentListComponent;
@@ -42,6 +53,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   nodeId: string = null;
   node: MinimalNode;
+
+  showNDAForm: boolean = false;
 
   displayDefaultProperties: boolean = true;
   
@@ -63,9 +76,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }`;
 
 
-  constructor(private router: Router,
+  constructor(private _snackBar: MatSnackBar,private authService: AuthenticationService, private processService: ProcessCloudService, private router: Router,
     private route: ActivatedRoute,private http: HttpClient,private alfrescoJsApi: AlfrescoApiHttpClient, private nodeApiService: NodesApiService, private preview: PreviewService, private nodeService: NodesApiService, private apiService: AlfrescoApiService) {
 
+
+      this.currentDateTime = formatDate(this.currentDateTime, 'dd-MM-yyyy hh:mm:ss a', 'en-US', '+0530');
   }
 
   ngAfterViewInit() {
@@ -75,6 +90,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
 
   ngOnInit() {
+    this.currentUser = this.authService.getEcmUsername();
+    console.log("current date time is: ",this.currentDateTime)
 
     this.getOpenCount(`{
       "query": { \
@@ -82,6 +99,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       } \
     }`)
 }
+
+openSnackBar(message: string, action: string) {
+  this._snackBar.open(message, action);
+}
+
 
   getOpenCount(postBody){
 
@@ -228,6 +250,18 @@ showBoxPreview(node){
    //this.documentList.currentFolderId = event.entry.id.toString();
    //console.log("doc list folder id: ", this.documentList.currentFolderId)
 } 
+}
+
+createProcessClick() {
+  this.processName = "New NDA request -" + this.currentUser +"-" + this.currentDateTime;
+  this.showNDAForm = !this.showNDAForm;
+}
+
+processSuccess(){
+  this.showNDAForm = false;
+  this.snackBarmessage = "NDA request submitted!";
+  this.snackBarValue = "close";
+  this.openSnackBar(this.snackBarmessage,this.snackBarValue);
 }
 
 }

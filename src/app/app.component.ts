@@ -1,6 +1,8 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 import { TranslationService, AuthenticationService } from '@alfresco/adf-core';
 import { Router } from '@angular/router';
+import { DatePipe } from '@angular/common';
+import {formatDate } from '@angular/common';
 
 @Component({
   selector: 'app-root',
@@ -10,7 +12,7 @@ import { Router } from '@angular/router';
 })
 export class AppComponent {
 
-  constructor(translationService: TranslationService,
+  constructor(public datepipe: DatePipe,translationService: TranslationService,
               private authService: AuthenticationService,
               private router: Router) {
     translationService.use('en');

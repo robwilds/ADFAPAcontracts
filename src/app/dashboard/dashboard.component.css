@@ -50,12 +50,17 @@
   }
 
   .adf-alfresco-viewer {
-    padding:5px;
+    padding:10px;
     position:absolute;
     z-index: 1000;
-    min-width: 400px;
-    min-height: 400px;
-    float:right;
+    width: 400px;
+    height: 400px;
     top: 60px;
-    right: 60px;
+    right: 50px;
+  }
+
+  #processButton {
+    width:100%;
+    margin-left: auto;
+    margin-right: auto;
   }
