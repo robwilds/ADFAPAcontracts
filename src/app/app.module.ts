@@ -29,11 +29,13 @@ import { AppLayoutComponent } from './app-layout/app-layout.component';
 import { DocumentsComponent } from './documents/documents.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { DatePipe } from '@angular/common';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 
 @NgModule({
     imports: [
         BrowserModule,
+        MatSlideToggleModule,
         HttpClientModule,
         BrowserAnimationsModule,
         RouterModule.forRoot(appRoutes // ,

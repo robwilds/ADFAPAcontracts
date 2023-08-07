@@ -66,7 +66,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   globalSearchUrl = "https://sse.dev.alfrescocloud.com/alfresco/api/-default-/public/search/versions/1/search";
   //let url = "http://3.90.226.222/alfresco/api/-default-/public/search/versions/1/search";
 
-
+  isAutoRefreshChart: boolean = false;
   newCount: any;
   inProgressCount: any;
   legalReviewCount: any;

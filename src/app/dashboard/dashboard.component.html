@@ -4,16 +4,11 @@
     
   <div id="chart" >
         <h1>Contracts Status</h1>
-        <button (click)="getCounts()" mat-raised-button color="primary">refresh</button>
+        <mat-slide-toggle [aria-label]="isAutoRefreshChart"></mat-slide-toggle>
+        <button (click)="getCounts()" mat-raised-button color="primary" *ngIf="isAutoRefreshChart === false">refresh</button>
+        <div *ngIf="isAutoRefreshChart">auto</div>
         <canvas id='canvas'><h1>Contracts Status</h1><p></p>{{chart}}</canvas>
 
-
-<!--         <mat-grid-list cols="2" rowHeight="4:1">
-          <mat-grid-tile class="backgroundRed" *ngIf="this.sevenDayCount">{{sevenDayCount}}</mat-grid-tile>
-          <mat-grid-tile>2</mat-grid-tile>
-          <mat-grid-tile>3</mat-grid-tile>
-          <mat-grid-tile>4</mat-grid-tile>
-        </mat-grid-list>  -->
 show items thare are close to expiring in red and banner on top
   </div>
    <mat-card class="dayalert">
