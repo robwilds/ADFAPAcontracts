@@ -1,18 +1,39 @@
-<div id="container">
-  fill up white space.  have details about each slice below pie (list of contracts) and show recent on the right
+<div id="container" >
+  <div id="sevendayalertdiv" *ngIf="sevenDayShowMessage">{{sevenDayMessage}}</div>
   <div id="topSection">
+    
   <div id="chart" >
         <h1>Contracts Status</h1>
         <button (click)="getCounts()" mat-raised-button color="primary">refresh</button>
         <canvas id='canvas'><h1>Contracts Status</h1><p></p>{{chart}}</canvas>
-        <mat-grid-list cols="2" rowHeight="4:1">
+
+
+<!--         <mat-grid-list cols="2" rowHeight="4:1">
           <mat-grid-tile class="backgroundRed" *ngIf="this.sevenDayCount">{{sevenDayCount}}</mat-grid-tile>
           <mat-grid-tile>2</mat-grid-tile>
           <mat-grid-tile>3</mat-grid-tile>
           <mat-grid-tile>4</mat-grid-tile>
-        </mat-grid-list> 
+        </mat-grid-list>  -->
 show items thare are close to expiring in red and banner on top
   </div>
+   <mat-card class="dayalert">
+    <mat-card-header>
+    <mat-card-title>30 DAY</mat-card-title>
+    </mat-card-header>
+    {{ thirtyDayCount}}
+   </mat-card>
+   <mat-card class="dayalert">
+    <mat-card-header>
+    <mat-card-title>60 DAY</mat-card-title>
+    </mat-card-header>
+    {{ sixtyDayCount}}
+   </mat-card>
+   <mat-card class="dayalert"> 
+    <mat-card-header>
+    <mat-card-title>90 DAY</mat-card-title>
+    </mat-card-header>
+    {{ ninetyDayCount}}
+   </mat-card>
   <!-- <div id="days"> -->
        
 

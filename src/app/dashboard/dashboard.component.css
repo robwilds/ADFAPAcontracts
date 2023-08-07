@@ -75,12 +75,26 @@
     margin-right: auto;
   }
 
-  mat-grid-tile {
+  .dayalert {
     background: rgb(10, 65, 83);
     color:antiquewhite;
     font-size: 40px;
+    text-align:center;
+    height: 60px;
+    margin:10px;
   }
 
   .backgroundRed{
     background-color: red;
+  }
+
+  #sevendayalertdiv{
+    width:100%;
+    height:20px;
+    margin: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    background-color: orangered;
+    color: whitesmoke;
   }

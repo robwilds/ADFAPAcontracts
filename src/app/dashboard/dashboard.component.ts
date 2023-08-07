@@ -73,6 +73,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   externalPartyReviewCount: any;
   negotiationCount: any;
   sevenDayCount: any;
+  thirtyDayCount: any;
+  sixtyDayCount: any;
+  ninetyDayCount: any;
+  sevenDayMessage: string = "";
+  sevenDayShowMessage: boolean = false;
 
   data:any;
 
@@ -112,6 +117,24 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     } \
   }`;
 
+  thirtyDayQuery = `{
+    "query": { \
+      "query": "ContractManagement:Expiration:[NOW/DAY TO NOW/DAY+30DAY] AND TYPE:'cm:folder'" \
+    } \
+  }`;
+
+  sixtyDayQuery = `{
+    "query": { \
+      "query": "ContractManagement:Expiration:[NOW/DAY+31DAY TO NOW/DAY+90DAY] AND TYPE:'cm:folder'" \
+    } \
+  }`;
+
+  ninetyDayQuery = `{
+    "query": { \
+      "query": "ContractManagement:Expiration:[NOW/DAY+91DAY TO NOW/DAY+120DAY] AND TYPE:'cm:folder'" \
+    } \
+  }`;
+
   constructor(private _snackBar: MatSnackBar,private authService: AuthenticationService, private processService: ProcessCloudService, private router: Router,
     private route: ActivatedRoute,private http: HttpClient,private alfrescoJsApi: AlfrescoApiHttpClient, private nodeApiService: NodesApiService, private preview: PreviewService, private nodeService: NodesApiService, private apiService: AlfrescoApiService) {
 
@@ -122,7 +145,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     //Copy in all the js code from the script.js. Typescript will complain but it works just fine
  }
-
 
   ngOnInit() {
     this.currentUser = this.authService.getEcmUsername();
@@ -243,6 +265,16 @@ this.http.post(this.globalSearchUrl, this.sevenDayQuery,{headers}).subscribe(
       this.sevenDayCount = Number(val['list']['pagination']['count']);
       //this.processChart();
       console.log("7 day count: ", this.sevenDayCount)
+      if (this.sevenDayCount > 1){
+        this.sevenDayMessage = "There are " + this.sevenDayCount + "Contracts expiring this week!!"
+        this.sevenDayShowMessage = true;
+      }
+      else if(this.sevenDayCount == 1){
+        this.sevenDayMessage = "There's " + this.sevenDayCount + "Contract expiring this week!!"
+        this.sevenDayShowMessage = true;
+      } else if (this.sevenDayCount == 0){
+        this.sevenDayShowMessage = false;
+      }
                   
   },
 
@@ -254,7 +286,67 @@ this.http.post(this.globalSearchUrl, this.sevenDayQuery,{headers}).subscribe(
       console.log("The PUT observable is now completed.");
   }
 );
+
+//Run 30 day count
+this.http.post(this.globalSearchUrl, this.thirtyDayQuery,{headers}).subscribe(
+  val => {
+      console.log("PUT call successful value returned in body", val);
+      this.thirtyDayCount = Number(val['list']['pagination']['count']);
+      //this.processChart();
+      console.log("30 day count: ", this.thirtyDayCount)
+                  
+  },
+
+  response => {
+      console.log("PUT call in error", response);
+  },
+
+  () => {
+      console.log("The PUT observable is now completed.");
   }
+);
+
+//Run 60 day count
+this.http.post(this.globalSearchUrl, this.sixtyDayQuery,{headers}).subscribe(
+  val => {
+      console.log("PUT call successful value returned in body", val);
+      this.sixtyDayCount = Number(val['list']['pagination']['count']);
+      //this.processChart();
+      console.log("7 day count: ", this.sixtyDayCount)
+                  
+  },
+
+  response => {
+      console.log("PUT call in error", response);
+  },
+
+  () => {
+      console.log("The PUT observable is now completed.");
+  }
+);
+
+//Run 90 day count
+this.http.post(this.globalSearchUrl, this.ninetyDayQuery,{headers}).subscribe(
+  val => {
+      console.log("PUT call successful value returned in body", val);
+      this.ninetyDayCount = Number(val['list']['pagination']['count']);
+      //this.processChart();
+      console.log("7 day count: ", this.ninetyDayCount)
+                  
+  },
+
+  response => {
+      console.log("PUT call in error", response);
+  },
+
+  () => {
+      console.log("The PUT observable is now completed.");
+  }
+);
+
+
+
+}
 
   processChart(){
     
