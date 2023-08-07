@@ -1,42 +1,42 @@
 <div id="container" >
-  <div id="sevendayalertdiv" *ngIf="sevenDayShowMessage">{{sevenDayMessage}}</div>
-  <div id="topSection">
-    
-  <div id="chart" >
-        <h1>Contracts Status</h1>
-        <mat-slide-toggle [aria-label]="isAutoRefreshChart"></mat-slide-toggle>
-        <button (click)="getCounts()" mat-raised-button color="primary" *ngIf="isAutoRefreshChart === false">refresh</button>
-        <div *ngIf="isAutoRefreshChart">auto</div>
-        <canvas id='canvas'><h1>Contracts Status</h1><p></p>{{chart}}</canvas>
 
-show items thare are close to expiring in red and banner on top
+
+  <div id="sevendayalertdiv" *ngIf="sevenDayShowMessage">{{sevenDayMessage}}</div>
+  <div id="processButton">
+  <button (click)="getCounts()" mat-raised-button color="primary" id="refreshButton" class="button"><mat-icon>refresh</mat-icon></button>
+    <button (click)="createProcessClick()" mat-raised-button color="primary" class="button">Create NDA Form</button>
+  </div>
+  <h1 style="width:300px;">Contract Status</h1>
+  <div id="topSection">
+
+  <div id="chart">
+
+        <canvas id='canvas' style='width:"1000"; height:"1000";'>{{chart}}</canvas>
   </div>
    <mat-card class="dayalert">
     <mat-card-header>
     <mat-card-title>30 DAY</mat-card-title>
     </mat-card-header>
-    {{ thirtyDayCount}}
+    {{thirtyDayCount}}
    </mat-card>
    <mat-card class="dayalert">
     <mat-card-header>
     <mat-card-title>60 DAY</mat-card-title>
     </mat-card-header>
-    {{ sixtyDayCount}}
+    {{sixtyDayCount}}
    </mat-card>
    <mat-card class="dayalert"> 
     <mat-card-header>
     <mat-card-title>90 DAY</mat-card-title>
     </mat-card-header>
-    {{ ninetyDayCount}}
+    {{ninetyDayCount}}
    </mat-card>
   <!-- <div id="days"> -->
        
 
   </div>
 <!-- </div> -->
-  <div id="processButton">
-    <button (click)="createProcessClick()" mat-raised-button color="primary">Create NDA Form</button>
-  </div>
+
 
 
 <div id="process" *ngIf="showNDAForm">

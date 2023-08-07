@@ -1,21 +1,28 @@
 #container{
-    display: flexbox;
-    flex-wrap: wrap;
+    display: flex;
+    flex-wrap:wrap;
     flex-direction: row;
     width: 100%;
     margin:10px;
-
+    justify-content: left;
 }
 
+.button{
+  margin:10px;
+}
 #topSection{
-  width:auto;
+  width:100%;
   margin-left: auto;
   margin-right: auto;
   margin:10px;
   display: flex;
+  height:auto;
 }
 #chart{
-
+  width: 600px;
+max-width:1000px;
+margin-left:auto;
+margin-right:auto;
 
 }
 

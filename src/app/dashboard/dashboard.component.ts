@@ -266,11 +266,11 @@ this.http.post(this.globalSearchUrl, this.sevenDayQuery,{headers}).subscribe(
       //this.processChart();
       console.log("7 day count: ", this.sevenDayCount)
       if (this.sevenDayCount > 1){
-        this.sevenDayMessage = "There are " + this.sevenDayCount + "Contracts expiring this week!!"
+        this.sevenDayMessage = "There are " + this.sevenDayCount + " Contracts expiring this week!!"
         this.sevenDayShowMessage = true;
       }
       else if(this.sevenDayCount == 1){
-        this.sevenDayMessage = "There's " + this.sevenDayCount + "Contract expiring this week!!"
+        this.sevenDayMessage = "There's " + this.sevenDayCount + " Contract expiring this week!!"
         this.sevenDayShowMessage = true;
       } else if (this.sevenDayCount == 0){
         this.sevenDayShowMessage = false;
@@ -366,7 +366,9 @@ this.http.post(this.globalSearchUrl, this.ninetyDayQuery,{headers}).subscribe(
         hoverBorderColor: ['grey', 'grey', 'grey','grey','grey'],
         hoverBorderWidth: 1,
         borderWidth: 7
-      }]
+      }],
+      options: [{responsive: true,
+      maintainAspectRatio: true}]
     };
     
     console.log("data set is: ",this.data)
