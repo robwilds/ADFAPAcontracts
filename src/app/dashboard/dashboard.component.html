@@ -1,29 +1,23 @@
 <div id="container">
   fill up white space.  have details about each slice below pie (list of contracts) and show recent on the right
-  <div id="chart" (click) = "chartdrawer.toggle(); updatechartclickVal(this.chart)">
-<!--     <mat-card>
-      <mat-card-content>
+  <div id="topSection">
+  <div id="chart" >
         <h1>Contracts Status</h1>
-        <canvas id='canvas' style="max-width: 100%;">{{chart}}</canvas>
-      </mat-card-content>
-    </mat-card> -->
-
-    <mat-drawer-container class="example-container" autosize>
-      <mat-drawer #chartdrawer class="example-sidenav" mode="side">
-        <p #cval >{{ chartclickval }}</p>
-      </mat-drawer>
-    
-      <div class="example-sidenav-content">
-       <!--  <button type="button" mat-button (click)="chartdrawer.toggle()" >
-        </button> -->
-        <h1>Contracts Status</h1>
-        <canvas id='canvas' style="max-width: 50%;"><h1>Contracts Status</h1><p></p>{{chart}}</canvas>
-        
-      </div>
-    
-    </mat-drawer-container>
+        <button (click)="getCounts()" mat-raised-button color="primary">refresh</button>
+        <canvas id='canvas'><h1>Contracts Status</h1><p></p>{{chart}}</canvas>
+        <mat-grid-list cols="2" rowHeight="4:1">
+          <mat-grid-tile class="backgroundRed" *ngIf="this.sevenDayCount">{{sevenDayCount}}</mat-grid-tile>
+          <mat-grid-tile>2</mat-grid-tile>
+          <mat-grid-tile>3</mat-grid-tile>
+          <mat-grid-tile>4</mat-grid-tile>
+        </mat-grid-list> 
 show items thare are close to expiring in red and banner on top
   </div>
+  <!-- <div id="days"> -->
+       
+
+  </div>
+<!-- </div> -->
   <div id="processButton">
     <button (click)="createProcessClick()" mat-raised-button color="primary">Create NDA Form</button>
   </div>
@@ -50,7 +44,7 @@ show items thare are close to expiring in red and banner on top
             <data-column key="name" title="Name" class="full-width name-column"></data-column>
             <data-column key="status" title="Status" class="full-width name-column"></data-column>
             <data-column key="priority" title="Priority" class="full-width name-column"></data-column>
-            <data-column key="createddate" title="Created" class="full-width name-column"></data-column>
+            <data-column key="createdate" title="Created" class="full-width name-column"></data-column>
           </data-columns>
           <!--  <adf-custom-empty-content>
       Your Content

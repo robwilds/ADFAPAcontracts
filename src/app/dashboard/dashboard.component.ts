@@ -63,18 +63,54 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   nodeEntry: any;
   searchTerm: string = null;
   
-  openCount: any;
-  inProcessCount: any;
-  rejectedCount: any;
+  globalSearchUrl = "https://sse.dev.alfrescocloud.com/alfresco/api/-default-/public/search/versions/1/search";
+  //let url = "http://3.90.226.222/alfresco/api/-default-/public/search/versions/1/search";
+
+
+  newCount: any;
+  inProgressCount: any;
+  legalReviewCount: any;
+  externalPartyReviewCount: any;
+  negotiationCount: any;
+  sevenDayCount: any;
 
   data:any;
 
-  openQuery = `{
+  newQuery = `{
     "query": { \
-      "query": "cm:description:open*" \
+      "query": "(ContractManagement:Status:new) AND TYPE:'cm:folder'" \
     } \
   }`;
 
+  inProgressQuery = `{
+    "query": { \
+      "query": "(ContractManagement:Status:'In Progress') AND TYPE:'cm:folder'" \
+    } \
+  }`;
+
+  legalReviewQuery = `{
+    "query": { \
+      "query": "(ContractManagement:Status:'Legal Review') AND TYPE:'cm:folder'" \
+    } \
+  }`;
+
+  externalPartyQuery = `{
+    "query": { \
+      "query": "(ContractManagement:Status:'External Party Review') AND TYPE:'cm:folder'" \
+    } \
+  }`;
+
+  negotiationQuery = `{
+    "query": { \
+      "query": "(ContractManagement:Status:Negotiation) AND TYPE:'cm:folder'" \
+    } \
+  }`;
+
+  sevenDayQuery = `{
+    "query": { \
+      "query": "ContractManagement:Expiration:[NOW/DAY TO NOW/DAY+7DAY] AND TYPE:'cm:folder'" \
+    } \
+  }`;
 
   constructor(private _snackBar: MatSnackBar,private authService: AuthenticationService, private processService: ProcessCloudService, private router: Router,
     private route: ActivatedRoute,private http: HttpClient,private alfrescoJsApi: AlfrescoApiHttpClient, private nodeApiService: NodesApiService, private preview: PreviewService, private nodeService: NodesApiService, private apiService: AlfrescoApiService) {
@@ -85,7 +121,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     //Copy in all the js code from the script.js. Typescript will complain but it works just fine
-
  }
 
 
@@ -93,33 +128,26 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.currentUser = this.authService.getEcmUsername();
     console.log("current date time is: ",this.currentDateTime)
 
-    this.getOpenCount(`{
-      "query": { \
-        "query": "cm:description:open*" \
-      } \
-    }`)
+    this.getCounts();
 }
 
 openSnackBar(message: string, action: string) {
   this._snackBar.open(message, action);
 }
 
-
-  getOpenCount(postBody){
+  getCounts(){
 
     const headers = new HttpHeaders()
     .set("Content-Type", "application/json")
     .set("Authorization","Basic cndpbGRzOmRlbW8=");
 
-    let url = "https://sse.dev.alfrescocloud.com/alfresco/api/-default-/public/search/versions/1/search";
-    //let url = "http://3.90.226.222/alfresco/api/-default-/public/search/versions/1/search";
-
-    this.http.post(url, postBody,{headers}).subscribe(
+    //Run New
+    this.http.post(this.globalSearchUrl, this.newQuery,{headers}).subscribe(
       val => {
           console.log("PUT call successful value returned in body", val);
-                      this.openCount = Number(val['list']['pagination']['count']);
-                      this.processChart();
-                      console.log("pagination count: ", this.openCount )
+          this.newCount = Number(val['list']['pagination']['count']);
+          //this.processChart();
+          console.log("new count: ", this.newCount )
                       
       },
 
@@ -132,28 +160,123 @@ openSnackBar(message: string, action: string) {
       }
   );
 
+ //Run In Progress
+ this.http.post(this.globalSearchUrl, this.inProgressQuery,{headers}).subscribe(
+  val => {
+      console.log("PUT call successful value returned in body", val);
+      this.inProgressCount = Number(val['list']['pagination']['count']);
+      //this.processChart();
+      console.log("in progress count: ", this.inProgressCount )
+                  
+  },
+
+  response => {
+      console.log("PUT call in error", response);
+  },
+
+  () => {
+      console.log("The PUT observable is now completed.");
+  }
+);
+
+//Run legal review
+this.http.post(this.globalSearchUrl, this.legalReviewQuery,{headers}).subscribe(
+  val => {
+      console.log("PUT call successful value returned in body", val);
+      this.legalReviewCount = Number(val['list']['pagination']['count']);
+      //this.processChart();
+      console.log("in progress count: ", this.legalReviewCount )
+                  
+  },
+
+  response => {
+      console.log("PUT call in error", response);
+  },
+
+  () => {
+      console.log("The PUT observable is now completed.");
+  }
+);
+
+//Run external party review
+this.http.post(this.globalSearchUrl, this.externalPartyQuery,{headers}).subscribe(
+  val => {
+      console.log("PUT call successful value returned in body", val);
+      this.externalPartyReviewCount = Number(val['list']['pagination']['count']);
+      //this.processChart();
+      console.log("in progress count: ", this.externalPartyReviewCount)
+                  
+  },
+
+  response => {
+      console.log("PUT call in error", response);
+  },
+
+  () => {
+      console.log("The PUT observable is now completed.");
+  }
+);
+
+//Run negotiation
+this.http.post(this.globalSearchUrl, this.negotiationQuery,{headers}).subscribe(
+  val => {
+      console.log("PUT call successful value returned in body", val);
+      this.negotiationCount = Number(val['list']['pagination']['count']);
+      this.processChart();
+      console.log("in progress count: ", this.negotiationCount)
+                  
+  },
+
+  response => {
+      console.log("PUT call in error", response);
+  },
+
+  () => {
+      console.log("The PUT observable is now completed.");
+  }
+);
+
+//Run 7 day count
+this.http.post(this.globalSearchUrl, this.sevenDayQuery,{headers}).subscribe(
+  val => {
+      console.log("PUT call successful value returned in body", val);
+      this.sevenDayCount = Number(val['list']['pagination']['count']);
+      //this.processChart();
+      console.log("7 day count: ", this.sevenDayCount)
+                  
+  },
+
+  response => {
+      console.log("PUT call in error", response);
+  },
+
+  () => {
+      console.log("The PUT observable is now completed.");
+  }
+);
   }
 
   processChart(){
-    console.log("open count is -->",this.openCount)
+    
     console.log("now setting data array for chart");
     this.data = {
       labels: [
-        'IN PROCESS',
-        'COMPLETED',
-        'REJECTED',
+        'New',
+        'In Progress',
+        'Legal Review',
+        'External Party Review',
+        'Negotiation'
       ],
       datasets: [{
         label: 'Contract Status',
-        data: [this.openCount, 1, 1],
-        backgroundColor: ['yellow','green','red',],
-        hoverBorderColor: ['grey', 'grey', 'grey'],
-        hoverBorderWidth: 10,
-        borderWidth: 0
+        data: [this.newCount, this.inProgressCount, this.legalReviewCount, this.externalPartyReviewCount,this.negotiationCount],
+        backgroundColor: ['yellow','green','red','purple','orange'],
+        hoverBorderColor: ['grey', 'grey', 'grey','grey','grey'],
+        hoverBorderWidth: 1,
+        borderWidth: 7
       }]
     };
     
-
     console.log("data set is: ",this.data)
     console.log("now instantiating chart object");
     
