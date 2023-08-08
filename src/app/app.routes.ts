@@ -38,7 +38,7 @@ export const appRoutes: Routes = [
     children: [
               {
                   path: '',
-                  component: DocumentsComponent
+                  component: DashboardComponent
               },
               {
                 path: 'apps',

@@ -2,11 +2,13 @@
 
   <adf-sidenav-layout-header>
     <ng-template let-toggleMenu="toggleMenu">
-      <adf-layout-header id="adf-header" [title]="'ADF'" color="primary" >
-      </adf-layout-header>
-    </ng-template>
-  </adf-sidenav-layout-header>
 
+      <adf-layout-header id="adf-header" [title]="'Contract Management ADF Application'" color="primary" logo="/assets/hylandlogo.png" [redirectUrl]="'/dashboard'">
+        <div id="rightHeader"><adf-notification-history [menuPositionX]="'before'" [menuPositionY]="'above'"></adf-notification-history></div>
+    </adf-layout-header>
+    </ng-template>
+
+  </adf-sidenav-layout-header>
     <adf-sidenav-layout-navigation>
         <ng-template let-isMenuMinimized="isMenuMinimized">
             <mat-nav-list class="adf-sidenav-linklist">
@@ -14,6 +16,10 @@
                     <mat-icon matListIcon class="sidenav-menu-icon">vpn_key</mat-icon>
                     <div class="sidenav-menu-label" *ngIf="!isMenuMinimized()">Login</div>
                 </a>
+<!--                 <a mat-list-item class="adf-sidenav-link">
+                    <div class="sidenav-menu-label" *ngIf="!isMenuMinimized()">Notificatinos</div>
+                    <adf-notification-history [menuPositionX]="'before'" [menuPositionY]="'above'"></adf-notification-history>
+                </a> -->
                 <a mat-list-item class="adf-sidenav-link">
                     <mat-icon matListIcon class="sidenav-menu-icon" routerLink="/dashboard">view_day</mat-icon>
                     <div class="sidenav-menu-label" *ngIf="!isMenuMinimized()">dashboard</div>
