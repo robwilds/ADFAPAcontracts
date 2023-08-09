@@ -138,7 +138,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   datalistdata: any;
   schema:any;
-  
+
   constructor(private _snackBar: MatSnackBar,private authService: AuthenticationService, private processService: ProcessCloudService, private router: Router,
     private route: ActivatedRoute,private http: HttpClient,private alfrescoJsApi: AlfrescoApiHttpClient, private nodeApiService: NodesApiService, private preview: PreviewService, private nodeService: NodesApiService, private apiService: AlfrescoApiService) {
 

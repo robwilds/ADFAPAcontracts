@@ -43,10 +43,12 @@
    <div id="details" fxFlex="50">
 
     <adf-datatable
-        [data]="datalistdata">
+        [data]="datalistdata"
+        [stickyHeader]="'true'">
         <data-columns>
-            <data-column type="text" key="name" title="Name"></data-column>
-            <data-column type="text" key="users" title="Users"></data-column>
+          <data-column key="icon" type="image" [sortable]="false"></data-column>
+            <data-column type="text" key="id" title="ID"></data-column>
+            <data-column type="text" key="name" title="NAME"></data-column>
             <data-column type="text" key="status" title="Status"></data-column>
         </data-columns>
     </adf-datatable>
