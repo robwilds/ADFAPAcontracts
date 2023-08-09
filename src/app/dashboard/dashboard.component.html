@@ -40,7 +40,18 @@
     {{ninetyDayCount}}
    </mat-card>
    </div>
-   <div id="details" fxFlex="50"> content content</div>
+   <div id="details" fxFlex="50">
+
+    <adf-datatable
+        [data]="datalistdata">
+        <data-columns>
+            <data-column type="text" key="name" title="Name"></data-column>
+            <data-column type="text" key="users" title="Users"></data-column>
+            <data-column type="text" key="status" title="Status"></data-column>
+        </data-columns>
+    </adf-datatable>
+
+   </div>
    </div>
   </mat-card-content>
 </mat-card>

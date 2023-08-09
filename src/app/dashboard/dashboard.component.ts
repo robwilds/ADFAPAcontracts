@@ -15,6 +15,7 @@ import { ProcessCloudService } from '@alfresco/adf-process-services-cloud';
 import { AuthenticationService } from '@alfresco/adf-core';
 import {formatDate } from '@angular/common';
 import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
+import { ObjectDataTableAdapter }  from '@alfresco/adf-core';
 
 @Component({
   selector: 'dashboard',
@@ -135,12 +136,40 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     } \
   }`;
 
+  datalistdata: any;
+  schema:any;
+  
   constructor(private _snackBar: MatSnackBar,private authService: AuthenticationService, private processService: ProcessCloudService, private router: Router,
     private route: ActivatedRoute,private http: HttpClient,private alfrescoJsApi: AlfrescoApiHttpClient, private nodeApiService: NodesApiService, private preview: PreviewService, private nodeService: NodesApiService, private apiService: AlfrescoApiService) {
 
 
       this.currentDateTime = formatDate(this.currentDateTime, 'dd-MM-yyyy hh:mm:ss a', 'en-US', '+0530');
-  }
+  
+      this.datalistdata = new ObjectDataTableAdapter(
+        // data
+        [
+            {id: 1, name: 'Name 1'},
+            {id: 2, name: 'Name 2'}
+        ],
+        []
+    );
+    // columns
+    this.schema =
+        [
+            {
+                type: 'text',
+                key: 'id',
+                title: 'Id',
+                sortable: true
+            },
+            {
+                type: 'text',
+                key: 'name',
+                title: 'Name',
+                sortable: true
+            }
+        ];
+    }
 
   ngAfterViewInit() {
     //Copy in all the js code from the script.js. Typescript will complain but it works just fine
