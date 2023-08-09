@@ -4,13 +4,23 @@
   <button (click)="getCounts()" mat-raised-button color="primary" id="refreshButton" class="button"><mat-icon>refresh</mat-icon></button>
     <button (click)="createProcessClick()" mat-raised-button color="primary" class="button">Create NDA Form</button>
   </div>
-  <h1 style="width:300px;">Contract Status</h1>
-  <div id="topSection">
+  
+  <div id="topSection" fxLayout
+  fxLayoutAlign="center"
+  fxLayout="column"
+  >
+  <mat-card>
+    <mat-card-content>
 
+      <h1 >Contract Status</h1>
   <div id="chart">
-
-        <canvas id='canvas' style='width:"1000"; height:"1000";'>{{chart}}</canvas>
+        <canvas id='canvas' >{{chart}}</canvas>
   </div>
+
+  <div id="lowerSection" fxLayoutAlign="center"
+  fxLayout="row"
+  fxLayoutAlign="space-around center" fxfill>
+    <div id="thirty6090" fxFlex="50">
    <mat-card class="dayalert">
     <mat-card-header>
     <mat-card-title>30 DAY</mat-card-title>
@@ -29,10 +39,17 @@
     </mat-card-header>
     {{ninetyDayCount}}
    </mat-card>
-  <!-- <div id="days"> -->
-       
-
+   </div>
+   <div id="details" fxFlex="50"> content content</div>
+   </div>
+  </mat-card-content>
+</mat-card>
   </div>
+ 
+
+  
+
+  <!-- <div id="days"> -->
 <!-- </div> -->
 
 

@@ -4,7 +4,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { ApolloModule } from 'apollo-angular';
-
+import { FlexLayoutModule } from "@angular/flex-layout";
 // ADF modules
 import { ContentModule } from '@alfresco/adf-content-services';
 import { ProcessServicesCloudModule } from '@alfresco/adf-process-services-cloud';
@@ -38,6 +38,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
         MatSlideToggleModule,
         HttpClientModule,
         BrowserAnimationsModule,
+        FlexLayoutModule,
         RouterModule.forRoot(appRoutes // ,
 // { enableTracing: true } // <-- debugging purposes only
 , { relativeLinkResolution: 'legacy' }),
