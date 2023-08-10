@@ -11,7 +11,12 @@
     </mat-card-content>
   </mat-card>
 
+  <div id="process" *ngIf="showNDAForm">
 
+    <adf-cloud-start-process [appName]="'CLM-mvp-v1-alpha-1'" [name]="processName"
+      [processDefinitionName]="'NDA Request Form'" (success)="processSuccess()">
+    </adf-cloud-start-process>
+  </div> <!--div for process-->
 <mat-card style="width:100%;margin:10px;">
   <h1>Contract Status</h1>
 
@@ -74,19 +79,6 @@
       </div> <!-- div for 306090 details -->
     </mat-card>
   </div> <!-- div for lower section-->
-
-
-
-
-
-
-  <div id="process" *ngIf="showNDAForm">
-
-    <adf-cloud-start-process [appName]="'CLM-mvp-v1-alpha-1'" [name]="processName"
-      [processDefinitionName]="'NDA Request Form'" (success)="processSuccess()">
-    </adf-cloud-start-process>
-  </div> <!--div for process-->
-
 
   <div id="tasks">
     <mat-card>
