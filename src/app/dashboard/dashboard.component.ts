@@ -16,11 +16,35 @@ import { AuthenticationService } from '@alfresco/adf-core';
 import {formatDate } from '@angular/common';
 import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
 import { ObjectDataTableAdapter }  from '@alfresco/adf-core';
+import { trigger, state, style, animate, transition } from '@angular/animations';
 
 @Component({
   selector: 'dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+  styleUrls: ['./dashboard.component.css'],
+  animations: [
+    trigger(
+      'inOutAnimation', 
+      [
+        transition(
+          ':enter', 
+          [
+            style({ height: 0, opacity: 0 }),
+            animate('1s ease-out', 
+                    style({ height: 300, opacity: 1 }))
+          ]
+        ),
+        transition(
+          ':leave', 
+          [
+            style({ height: 300, opacity: 1 }),
+            animate('1s ease-in', 
+                    style({ height: 0, opacity: 0 }))
+          ]
+        )
+      ]
+    )
+  ]
 })
 
 
@@ -79,6 +103,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   ninetyDayCount: any;
   sevenDayMessage: string = "";
   sevenDayShowMessage: boolean = false;
+  showSummaryPanel: boolean = false;
 
   data:any;
 
@@ -138,6 +163,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   datalistdata: any;
   schema:any;
+  
 
   constructor(private _snackBar: MatSnackBar,private authService: AuthenticationService, private processService: ProcessCloudService, private router: Router,
     private route: ActivatedRoute,private http: HttpClient,private alfrescoJsApi: AlfrescoApiHttpClient, private nodeApiService: NodesApiService, private preview: PreviewService, private nodeService: NodesApiService, private apiService: AlfrescoApiService) {
@@ -182,6 +208,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.getCounts();
 }
 
+thirty6090Clicked(id)
+{
+  this.showSummaryPanel = !this.showSummaryPanel;
+  console.log("summary 1 clicked");
+}
 openSnackBar(message: string, action: string) {
   this._snackBar.open(message, action);
 }
