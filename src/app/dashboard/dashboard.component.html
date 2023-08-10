@@ -10,6 +10,8 @@
       </div>
     </mat-card-content>
   </mat-card>
+
+
 <mat-card style="width:100%;margin:10px;">
   <h1>Contract Status</h1>
 
@@ -20,6 +22,18 @@
       <canvas id='canvas'>{{chart}}</canvas>
       <!--         <div id="chartDetail" fxFlex="50">chart detail goes here</div> -->
     </div>
+    <div id="details" fxFlex="100" *ngIf="showChartPanel" [@inOutAnimation] style="margin:10px;">
+
+      <adf-datatable [data]="datalistdata" [stickyHeader]="'true'">
+        <data-columns>
+          <data-column key="icon" type="image" [sortable]="false"></data-column>
+          <data-column type="text" key="id" title="ID"></data-column>
+          <data-column type="text" key="name" title="NAME"></data-column>
+          <data-column type="text" key="status" title="Status"></data-column>
+        </data-columns>
+      </adf-datatable>
+
+    </div> <!-- div for 306090 details -->
   </div>
 </mat-card>
 

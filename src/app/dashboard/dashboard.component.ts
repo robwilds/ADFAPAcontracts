@@ -104,6 +104,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   sevenDayMessage: string = "";
   sevenDayShowMessage: boolean = false;
   showSummaryPanel: boolean = false;
+  showChartPanel: boolean = false;
 
   data:any;
 
@@ -169,7 +170,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     private route: ActivatedRoute,private http: HttpClient,private alfrescoJsApi: AlfrescoApiHttpClient, private nodeApiService: NodesApiService, private preview: PreviewService, private nodeService: NodesApiService, private apiService: AlfrescoApiService) {
 
 
-      this.currentDateTime = formatDate(this.currentDateTime, 'dd-MM-yyyy hh:mm:ss a', 'en-US', '+0530');
+      //this.currentDateTime = formatDate(this.currentDateTime, 'dd-MM-yyyy hh:mm:ss a', 'en-US', '+0530');
   
       this.datalistdata = new ObjectDataTableAdapter(
         // data
@@ -304,7 +305,7 @@ this.http.post(this.globalSearchUrl, this.negotiationQuery,{headers}).subscribe(
   val => {
       console.log("PUT call successful value returned in body", val);
       this.negotiationCount = Number(val['list']['pagination']['count']);
-      this.processChart();
+      //this.processChart();
       console.log("in progress count: ", this.negotiationCount)
                   
   },
@@ -390,7 +391,7 @@ this.http.post(this.globalSearchUrl, this.ninetyDayQuery,{headers}).subscribe(
   val => {
       console.log("PUT call successful value returned in body", val);
       this.ninetyDayCount = Number(val['list']['pagination']['count']);
-      //this.processChart();
+      this.processChart();
       console.log("7 day count: ", this.ninetyDayCount)
                   
   },
@@ -438,11 +439,20 @@ this.http.post(this.globalSearchUrl, this.ninetyDayQuery,{headers}).subscribe(
       type: 'pie',
       data: this.data,
       options: {
-        onClick : function (evt, item) {
+        /* onClick : function (evt, item) {
             console.log ('legend onClick', evt);
             console.log('legd item', item);
             this.chartclickval = item[0]['_index'].toString();
-            console.log('clicked value',this.chartclickval);
+            this.showChartPanel = !this.showChartPanel;
+            this.openSnackBar("clicked on chart "+ item[0]['_index'].toString(),"close")
+            console.log('clicked value',this.chartclickval); 
+            
+        }*/
+        onClick: (evt, item) => {
+          console.log("This is working!");
+          this.chartclickval = item[0]['_index'].toString();
+          this.showChartPanel = !this.showChartPanel;
+          this.openSnackBar("clicked on chart "+ item[0]['_index'].toString(),"close")
         }
     }
     });
