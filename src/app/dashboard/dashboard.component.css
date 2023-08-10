@@ -19,8 +19,8 @@
   height:auto;
 }
 #chart{
-  width: 600px;
-max-width:1000px;
+ /* width: 600px;*/
+max-width:900px;
 margin-left:auto;
 margin-right:auto;
 

@@ -1,9 +1,14 @@
 <div id="container" >
-  <div id="sevendayalertdiv" *ngIf="sevenDayShowMessage">{{sevenDayMessage}}</div>
+  <mat-card fxLayoutAlign="space-around center" fxfill fxLayoutAlign="center"
+  fxLayout="row" style="width:100%;">
+    <mat-card-content  fxFlex="auto">
+  <div id="sevendayalertdiv" *ngIf="sevenDayShowMessage" style="width:100%;">{{sevenDayMessage}}</div>
   <div id="processButton">
   <button (click)="getCounts()" mat-raised-button color="primary" id="refreshButton" class="button"><mat-icon>refresh</mat-icon></button>
     <button (click)="createProcessClick()" mat-raised-button color="primary" class="button">Create NDA Form</button>
   </div>
+  </mat-card-content>
+  </mat-card>
   
   <div id="topSection" fxLayout
   fxLayoutAlign="center"
@@ -21,7 +26,7 @@
   fxLayout="row"
   fxLayoutAlign="space-around center" fxfill>
     <div id="thirty6090" fxFlex="50">
-   <mat-card class="dayalert">
+   <mat-card class="dayalert" (click)="this.thirtyClicked(1)">
     <mat-card-header>
     <mat-card-title>30 DAY</mat-card-title>
     </mat-card-header>
@@ -40,7 +45,7 @@
     {{ninetyDayCount}}
    </mat-card>
    </div>
-   <div id="details" fxFlex="50">
+   <div id="details" fxFlex="50" *ngIf="showSummaryPanel" [@inOutAnimation]>
 
     <adf-datatable
         [data]="datalistdata"
