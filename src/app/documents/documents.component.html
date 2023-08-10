@@ -7,13 +7,15 @@
         </span>
     </ng-template>
 </adf-search>  -->
-<div id="startWF">SHERRY SAID SO!  PUT BUTTON ON FLOAT RIGHT<p>show only folders here...single click show props, double click show viewer 50/50 and turn off proprs</p></div>
+<!-- <div id="startWF"></div> -->
 <adf-search-control 
     [expandable]="true"
     [highlight]="true"
     (optionClicked)="onSearchItemClicked($event)"
     (submit)="onSearchSubmit($event)">
 </adf-search-control>
+<adf-search-filter-chips [showContextFacets]=true></adf-search-filter-chips>
+
 
 <div class="doclist-div-wrapper">
 <adf-toolbar>

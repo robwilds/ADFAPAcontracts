@@ -1,87 +1,77 @@
-<div id="container" >
-  <mat-card fxLayoutAlign="space-around center" fxfill fxLayoutAlign="center"
-  fxLayout="row" style="width:100%;">
-    <mat-card-content  fxFlex="auto">
-  <div id="sevendayalertdiv" *ngIf="sevenDayShowMessage" style="width:100%;">{{sevenDayMessage}}</div>
-  <div id="processButton">
-  <button (click)="getCounts()" mat-raised-button color="primary" id="refreshButton" class="button"><mat-icon>refresh</mat-icon></button>
-    <button (click)="createProcessClick()" mat-raised-button color="primary" class="button">Create NDA Form</button>
-  </div>
-  </mat-card-content>
+<div id="container">
+  <mat-card fxLayoutAlign="space-around center" fxfill fxLayoutAlign="center" fxLayout="row"
+    style="width:100%;margin:10px;position:sticky;position:-webkit-sticky;top: 0;z-index: 12;">
+    <mat-card-content fxFlex="auto">
+      <div id="sevendayalertdiv" *ngIf="sevenDayShowMessage" style="width:100%;">{{sevenDayMessage}}</div>
+      <div id="processButton">
+        <button (click)="getCounts()" mat-raised-button color="primary" id="refreshButton"
+          class="button"><mat-icon>refresh</mat-icon></button>
+        <button (click)="createProcessClick()" mat-raised-button color="primary" class="button">Create NDA Form</button>
+      </div>
+    </mat-card-content>
   </mat-card>
-  
-  <div id="topSection" fxLayout
-  fxLayoutAlign="center"
-  fxLayout="column"
-  >
-  <mat-card>
-    <mat-card-content>
+<mat-card style="width:100%;margin:10px;">
+  <h1>Contract Status</h1>
 
-      <h1 >Contract Status</h1>
-  <div id="chart">
-        <canvas id='canvas' >{{chart}}</canvas>
+  <div id="topSection" fxLayout fxLayoutAlign="center" fxLayout="row">
+
+
+    <div id="chart" fxFlex="50">
+      <canvas id='canvas'>{{chart}}</canvas>
+      <!--         <div id="chartDetail" fxFlex="50">chart detail goes here</div> -->
+    </div>
   </div>
+</mat-card>
 
-  <div id="lowerSection" fxLayoutAlign="center"
-  fxLayout="row"
-  fxLayoutAlign="space-around center" fxfill>
-    <div id="thirty6090" fxFlex="50">
-   <mat-card class="dayalert" (click)="this.thirtyClicked(1)">
-    <mat-card-header>
-    <mat-card-title>30 DAY</mat-card-title>
-    </mat-card-header>
-    {{thirtyDayCount}}
-   </mat-card>
-   <mat-card class="dayalert">
-    <mat-card-header>
-    <mat-card-title>60 DAY</mat-card-title>
-    </mat-card-header>
-    {{sixtyDayCount}}
-   </mat-card>
-   <mat-card class="dayalert"> 
-    <mat-card-header>
-    <mat-card-title>90 DAY</mat-card-title>
-    </mat-card-header>
-    {{ninetyDayCount}}
-   </mat-card>
-   </div>
-   <div id="details" fxFlex="50" *ngIf="showSummaryPanel" [@inOutAnimation]>
+  <div id="lowerSection" fxLayout="row" fxLayoutAlign="space-evenly start" fxfill style="width:100%">
+    <mat-card style="width:100%;margin:10px;">
+      <div id="thirty6090" fxFlex="100">
+        <mat-card class="dayalert" (click)="this.thirty6090Clicked(1)">
+          <mat-card-header>
+            <mat-card-title>30 DAY</mat-card-title>
+          </mat-card-header>
+          {{thirtyDayCount}}
+        </mat-card>
+        <mat-card class="dayalert" (click)="this.thirty6090Clicked(2)">
+          <mat-card-header>
+            <mat-card-title>60 DAY</mat-card-title>
+          </mat-card-header>
+          {{sixtyDayCount}}
+        </mat-card>
+        <mat-card class="dayalert" (click)="this.thirty6090Clicked(3)">
+          <mat-card-header>
+            <mat-card-title>90 DAY</mat-card-title>
+          </mat-card-header>
+          {{ninetyDayCount}}
+        </mat-card>
+      </div>
 
-    <adf-datatable
-        [data]="datalistdata"
-        [stickyHeader]="'true'">
-        <data-columns>
-          <data-column key="icon" type="image" [sortable]="false"></data-column>
+      <div id="details" fxFlex="100" *ngIf="showSummaryPanel" [@inOutAnimation] style="margin:10px;">
+
+        <adf-datatable [data]="datalistdata" [stickyHeader]="'true'">
+          <data-columns>
+            <data-column key="icon" type="image" [sortable]="false"></data-column>
             <data-column type="text" key="id" title="ID"></data-column>
             <data-column type="text" key="name" title="NAME"></data-column>
             <data-column type="text" key="status" title="Status"></data-column>
-        </data-columns>
-    </adf-datatable>
+          </data-columns>
+        </adf-datatable>
 
-   </div>
-   </div>
-  </mat-card-content>
-</mat-card>
-  </div>
- 
-
-  
-
-  <!-- <div id="days"> -->
-<!-- </div> -->
+      </div> <!-- div for 306090 details -->
+    </mat-card>
+  </div> <!-- div for lower section-->
 
 
 
-<div id="process" *ngIf="showNDAForm">
 
-  <adf-cloud-start-process 
-      [appName]="'CLM-mvp-v1-alpha-1'"
-      [name]="processName"
-      [processDefinitionName]="'NDA Request Form'"
-      (success)="processSuccess()"
-      >
- </adf-cloud-start-process>
-</div>
+
+
+  <div id="process" *ngIf="showNDAForm">
+
+    <adf-cloud-start-process [appName]="'CLM-mvp-v1-alpha-1'" [name]="processName"
+      [processDefinitionName]="'NDA Request Form'" (success)="processSuccess()">
+    </adf-cloud-start-process>
+  </div> <!--div for process-->
 
 
   <div id="tasks">
@@ -95,24 +85,20 @@
             <data-column key="priority" title="Priority" class="full-width name-column"></data-column>
             <data-column key="createdate" title="Created" class="full-width name-column"></data-column>
           </data-columns>
-          <!--  <adf-custom-empty-content>
-      Your Content
-  </adf-custom-empty-content> -->
         </adf-cloud-task-list>
         <adf-pagination [target]="taskCloud" [supportedPageSizes]="[5]" [pagination]="5">
         </adf-pagination>
       </mat-card-content>
     </mat-card>
   </div> <!-- div for tasks -->
+
+
   <div id="recents">
     <mat-card>
       <mat-card-content>
         <h1>My Recent Items</h1>
-        <adf-document-list
-        [currentFolderId]="'-recent-'"
-        [headerFilters]="true"
-        (preview) = "showBoxPreview($event)"
-        #recentList>
+        <adf-document-list [currentFolderId]="'-recent-'" [headerFilters]="true" (preview)="showBoxPreview($event)"
+          #recentList>
           >
           see if expiration date can be fetched and turn row red
           <data-columns>
@@ -127,15 +113,10 @@
         </adf-pagination>
       </mat-card-content>
     </mat-card>
-  </div>
+  </div> <!--div for recents-->
 </div> <!-- div for container -->
 
 <div class="adf-alfresco-viewer">
-  <adf-alfresco-viewer 
-[(showViewer)]="showViewer" 
-[overlayMode]="false" 
-[nodeId]="nodeId"
-
->
-</adf-alfresco-viewer>
+  <adf-alfresco-viewer [(showViewer)]="showViewer" [overlayMode]="false" [nodeId]="nodeId">
+  </adf-alfresco-viewer>
 </div>
