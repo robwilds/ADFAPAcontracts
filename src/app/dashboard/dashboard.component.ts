@@ -8,12 +8,9 @@ import { Chart } from 'chart.js';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { AlfrescoApiService} from '@alfresco/adf-core';
 import { AlfrescoApiHttpClient } from '@alfresco/adf-core/api';
-import { TaskListCloudModule } from '@alfresco/adf-process-services-cloud';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DOCUMENT, DatePipe } from '@angular/common';
 import { ProcessCloudService } from '@alfresco/adf-process-services-cloud';
 import { AuthenticationService } from '@alfresco/adf-core';
-import {formatDate } from '@angular/common';
 import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
 import { ObjectDataTableAdapter }  from '@alfresco/adf-core';
 import { trigger, state, style, animate, transition } from '@angular/animations';

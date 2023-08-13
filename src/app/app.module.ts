@@ -30,7 +30,7 @@ import { DocumentsComponent } from './documents/documents.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { DatePipe } from '@angular/common';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
-
+import { CommonModule } from '@angular/common';
 
 @NgModule({
     imports: [
@@ -39,6 +39,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
         HttpClientModule,
         BrowserAnimationsModule,
         FlexLayoutModule,
+        CommonModule,
         RouterModule.forRoot(appRoutes // ,
 // { enableTracing: true } // <-- debugging purposes only
 , { relativeLinkResolution: 'legacy' }),

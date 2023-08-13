@@ -1,5 +1,8 @@
 
 
+.is-hidden {
+    display: none !important;
+}
 
 .doclist-div-wrapper{
     width:max;
@@ -7,24 +10,23 @@
 }
 
 .adf-content-metadata-card-div-wrapper{
-    width:20% !important;
-    float:right;
+    /*width:20% !important;*/
+    // float:right;
 }
 
 .adf-document-list-div-wrapper{
-width: 80% !important;
-height: 900px;
-float:left;
+
+
 
 }
 
 .adf-alfresco-viewer-div-wrapper{
-width:100px;
+/* width:100px;
 height:100px;
 float:left;
-margin-top: 10px;
+margin-top: 10px; */
 }
 
 .adf-viewer-content {
-    width:300px !important;
+/*     width:300px !important; */
 }

@@ -2,7 +2,6 @@ import { Component, ViewEncapsulation } from '@angular/core';
 import { TranslationService, AuthenticationService } from '@alfresco/adf-core';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
-import {formatDate } from '@angular/common';
 
 @Component({
   selector: 'app-root',

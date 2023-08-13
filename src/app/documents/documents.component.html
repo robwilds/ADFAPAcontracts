@@ -8,16 +8,24 @@
     </ng-template>
 </adf-search>  -->
 <!-- <div id="startWF"></div> -->
-<adf-search-control 
+
+  <mat-card style="margin:10px;">
+    <mat-card-content>
+<adf-search-control style="width:500px"
     [expandable]="true"
     [highlight]="true"
     (optionClicked)="onSearchItemClicked($event)"
     (submit)="onSearchSubmit($event)">
 </adf-search-control>
 <adf-search-filter-chips [showContextFacets]=true></adf-search-filter-chips>
+</mat-card-content>
+</mat-card>
 
 
-<div class="doclist-div-wrapper">
+<div class="doclist-div-wrapper" fxLayoutAlign="start" fxLayout="column">
+
+<mat-card style="margin:10px">
+
 <adf-toolbar>
   <adf-toolbar-title>
     <adf-breadcrumb
@@ -29,18 +37,21 @@
     </adf-breadcrumb>
   </adf-toolbar-title>
 
-  <div class="adf-toolbar--spacer"></div>
-
-  <adf-upload-button
+  <adf-upload-button 
     [rootFolderId]="documentList.currentFolderId || '-root-'"
     [adf-check-allowable-operation]="'create'"
     (success)="uploadSuccess($event)"
   >
   </adf-upload-button>
 </adf-toolbar>
-<!-- contracts folder 5be4a4cc-f413-4f28-8329-dce29671b224 -->
-<div class="adf-document-list-div-wrapper">
+</mat-card> 
+<!--end of mat card for breadcrumb and upload button-->
 
+<!-- Doc List Wrapper STart -->
+<mat-card style="margin:10px;" >
+<div class="adf-document-list-div-wrapper" fxLayoutAlign="start" fxLayout="row" >
+
+<div fxLayoutAlign="none" fxLayout="column" fxFlex="{{fxFlexForDocList}}" [class.is-hidden]="isHidden">
 <adf-document-list
   #documentList
   [contextMenuActions]="true"
@@ -49,7 +60,7 @@
   (nodeClick)="nodeClicked($event)"
   [headerFilters]="true"
   [thumbnails]="'thumbnails'"
->
+  >
 <data-columns>
   <data-column key="$thumbnail" type="image"></data-column>
   <data-column title="Name" key="name" class="full-width ellipsis-cell"></data-column>
@@ -88,45 +99,45 @@
 </content-actions>
 </adf-document-list>
 
-
 <adf-pagination
-  [target]="documentList"
-  [supportedPageSizes]="[5, 10, 15, 20]"
-  [pagination]="5"
->
+    [target]="documentList"
+    [pagination]="5"
+    [supportedPageSizes]="[5,10,25]"
+    >
 </adf-pagination>
-<div style="width:100%; position:relative; height:500px;min-height:500px">
+</div>
+
+<!-- need to control viewer width!!! and put before meta-data card-->
+<!-- add metadata card here with fxFlex-->
+<adf-content-metadata-card
+    [displayEmpty]="false"
+    [preset]="'*'"
+    [node]="node"
+    fxFlex={{fxFlexForAux}}>
+</adf-content-metadata-card>
+<!--end meta data card-->
+
+<!-- <div id="viewWrapper" fxFlex={{fxFlexForAux}} fxLayoutAlign="none" fxLayout="column"> -->
+<div  [hidden]="!fxFlexForAux">
 <adf-alfresco-viewer
 [showViewer]="showViewer" 
 [overlayMode]="false" 
-[nodeId]="nodeId">
+[nodeId]="nodeId"
+(showViewerChange)="viewerClosed()"
+fxFlex={{fxFlexForAux}}
+>
 </adf-alfresco-viewer>
 </div>
+
+<!-- </div> -->
+
+
+
+
+
 </div> <!-- div for doc list and pagination -->
-
-<div class="adf-content-metadata-card-div-wrapper">
-  <adf-content-metadata-card
-    [displayEmpty]="true"
-    [multi] = "false"
-    [preset]="'*'"
-    [node]="node">
-<!--     <adf-node-comments
-    [nodeId]="nodeId"
-    [readOnly]="false">
-</adf-node-comments> -->
-</adf-content-metadata-card>
-</div>
-<!-- <div style="z-index:1000;position:absolute;left:300px;top:500px;height:500px;width:500px;">
-  
-  </div> -->
+</mat-card>
 </div> <!-- div for wrapper -->
-
-<!--viewer here-->
-<!-- <adf-node-comments
-    [nodeId]="nodeId"
-    [readOnly]="false">
-</adf-node-comments> -->
-<!-- <adf-like [nodeId]="nodeId"></adf-like> -->
 
 
 <adf-file-uploading-dialog></adf-file-uploading-dialog>
