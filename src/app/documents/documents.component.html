@@ -108,32 +108,24 @@
 </div>
 
 <!-- need to control viewer width!!! and put before meta-data card-->
-<!-- add metadata card here with fxFlex-->
+<div  class="adf-alfresco-viewer" [class.is-hidden]="!isHidden"  fxFlex={{fxFlexForAux}}>
+  <adf-alfresco-viewer
+  [(showViewer)]="showViewer" 
+  [overlayMode]="false" 
+  [nodeId]="nodeId"
+  (showViewerChange)="viewerClosed()"
+  >
+  </adf-alfresco-viewer>
+  </div>
+  
+<!-- metadata card here with fxFlex-->
 <adf-content-metadata-card
-    [displayEmpty]="false"
+    [displayEmpty]="true"
     [preset]="'*'"
     [node]="node"
     fxFlex={{fxFlexForAux}}>
 </adf-content-metadata-card>
 <!--end meta data card-->
-
-<!-- <div id="viewWrapper" fxFlex={{fxFlexForAux}} fxLayoutAlign="none" fxLayout="column"> -->
-<div  [hidden]="!fxFlexForAux">
-<adf-alfresco-viewer
-[showViewer]="showViewer" 
-[overlayMode]="false" 
-[nodeId]="nodeId"
-(showViewerChange)="viewerClosed()"
-fxFlex={{fxFlexForAux}}
->
-</adf-alfresco-viewer>
-</div>
-
-<!-- </div> -->
-
-
-
-
 
 </div> <!-- div for doc list and pagination -->
 </mat-card>
