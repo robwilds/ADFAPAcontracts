@@ -17,7 +17,7 @@
     (optionClicked)="onSearchItemClicked($event)"
     (submit)="onSearchSubmit($event)">
 </adf-search-control>
-<adf-search-filter-chips [showContextFacets]=true></adf-search-filter-chips>
+<adf-search-filter-chips [showContextFacets]=false></adf-search-filter-chips>
 </mat-card-content>
 </mat-card>
 
@@ -51,7 +51,7 @@
 <mat-card style="margin:10px;" >
 <div class="adf-document-list-div-wrapper" fxLayoutAlign="start" fxLayout="row" >
 
-<div fxLayoutAlign="none" fxLayout="column" fxFlex="{{fxFlexForDocList}}" [class.is-hidden]="isHidden">
+<div fxLayoutAlign="none" fxLayout="column" fxFlex="{{fxFlexForDocList}}" [class.is-hidden]="isHidden" [@inOutAnimation]>
 <adf-document-list
   #documentList
   [contextMenuActions]="true"
@@ -109,7 +109,7 @@
 
 <!-- need to control viewer width!!! and put before meta-data card-->
 <!-- <div  class="adf-alfresco-viewer" [class.is-hidden]="!isHidden"  fxFlex={{fxFlexForAux}}> -->
-  <adf-alfresco-viewer [class.is-hidden]="!isHidden" fxFlex={{fxFlexForAux}}
+  <adf-alfresco-viewer [class.is-hidden]="!isHidden" fxFlex={{fxFlexForAux}} [@inOutAnimation]
   [(showViewer)]="showViewer" 
   [overlayMode]="false" 
   [nodeId]="nodeId"
