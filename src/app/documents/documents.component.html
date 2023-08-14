@@ -108,15 +108,15 @@
 </div>
 
 <!-- need to control viewer width!!! and put before meta-data card-->
-<div  class="adf-alfresco-viewer" [class.is-hidden]="!isHidden"  fxFlex={{fxFlexForAux}}>
-  <adf-alfresco-viewer
+<!-- <div  class="adf-alfresco-viewer" [class.is-hidden]="!isHidden"  fxFlex={{fxFlexForAux}}> -->
+  <adf-alfresco-viewer [class.is-hidden]="!isHidden" fxFlex={{fxFlexForAux}}
   [(showViewer)]="showViewer" 
   [overlayMode]="false" 
   [nodeId]="nodeId"
   (showViewerChange)="viewerClosed()"
   >
   </adf-alfresco-viewer>
-  </div>
+  <!-- </div> -->
   
 <!-- metadata card here with fxFlex-->
 <adf-content-metadata-card
