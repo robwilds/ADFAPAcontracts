@@ -100,19 +100,13 @@ export class DocumentsComponent {
   
   onSearchItemClicked(event: MinimalNodeEntity) {
 
-    console.log("option clicked object: ", this.documentList.selection[0])
-    if (this.documentList.selection[0].entry.isFile === true) {
-        //this.contentEntry = event;
-        console.log("clicked searched node id:",this.documentList.selection[0].entry);
+    console.log("option clicked object: ", event.entry.id)
+    console.log("seach item object: ",event)
+    if (event.entry.isFile === true) {
+      this.currentFolderId = event.entry.parentId;
 
-
-        this.preview.showResource(this.documentList.selection[0].entry);
     } else {
-       //this.router.navigate(['/files', event.entry.id]);
-       //change folder view to show contents of current folder
-
-       //this.documentList.currentFolderId = event.entry.id.toString();
-       //console.log("doc list folder id: ", this.documentList.currentFolderId)
+      this.currentFolderId = event.entry.id;
     }
 }
 
