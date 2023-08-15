@@ -170,14 +170,16 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     } \
   }`;
 
-  datalistdata: ObjectDataTableAdapter;
+
   thirtyDayDataListData: any;
+
   thirtyDayArray = [];
-  dataSource: MatTableDataSource<folderData>;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
-  @ViewChild(MatSort, {static:false}) sort: MatSort;
+  sixtyDayArray = [];
+  ninetyDayArray = [];
+  mainDataArray = [];
+
   schema:any;
-  displayedColumns: string[] = ['nd', 'name','node'];
+  displayedColumns: string[] = ['id', 'name','node'];
   
 
   constructor(private _snackBar: MatSnackBar,private authService: AuthenticationService, private processService: ProcessCloudService, private router: Router,
@@ -186,8 +188,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
 
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+
   }
 
   ngOnInit() {
@@ -200,8 +201,33 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
 thirty6090Clicked(id)
 {
-  this.showSummaryPanel = !this.showSummaryPanel;
-  console.log("summary ",id," clicked");
+
+
+  switch(id) { 
+    case 1: { 
+       this.mainDataArray = this.thirtyDayArray;
+       console.log("detail 1 clicked ",this.mainDataArray)
+       break; 
+    } 
+    case 2: { 
+       this.mainDataArray = this.sixtyDayArray;
+       console.log("detail 2 clicked ",this.mainDataArray)
+       break; 
+    } 
+    case 3: {
+      this.mainDataArray = this.ninetyDayArray;
+      console.log("detail 3 clicked ",this.mainDataArray)
+      break;
+    }
+    default: { 
+       //statements; 
+       break; 
+    } 
+
+
+ } 
+ this.showSummaryPanel = !this.showSummaryPanel;
+
 }
 openSnackBar(message: string, action: string) {
   this._snackBar.open(message, action);
@@ -343,16 +369,17 @@ this.http.post(this.globalSearchUrl, this.thirtyDayQuery,{headers}).subscribe(
       console.log("PUT call successful value returned in body", val);
       //val has the object with the node information in entries then each entry has id, name, nodetype
 
-    //this.thirtyDayDataList = val['list']['entries'];
+    //Now process the rows for the mat table.  make sure array is empty first
+    this.thirtyDayArray = [];
     for (var ent in val['list']['entries']){
       this.thirtyDayArray.push({
-        nd:ent,
+        id:ent,
         name:val['list']['entries'][ent]['entry']['name'],
         node:val['list']['entries'][ent]['entry']['id']
       });
     }
 
-    this.dataSource = new MatTableDataSource<folderData>(this.thirtyDayArray)
+    //this.dataSource = new MatTableDataSource<folderData>(this.thirtyDayArray)
 
     console.log("ROW ENTRY ",this.thirtyDayArray);
     console.log("sample ROW data ",[{nd: "0", name: "test"}, {nd: "1", name: "test"}])
@@ -381,6 +408,18 @@ this.http.post(this.globalSearchUrl, this.sixtyDayQuery,{headers}).subscribe(
       console.log("PUT call successful value returned in body", val);
       this.sixtyDayCount = Number(val['list']['pagination']['count']);
       //this.processChart();
+
+      //Now process the rows for the mat table.  make sure array is empty first
+    this.sixtyDayArray = [];
+    for (var ent in val['list']['entries']){
+      this.sixtyDayArray.push({
+        id:ent,
+        name:val['list']['entries'][ent]['entry']['name'],
+        node:val['list']['entries'][ent]['entry']['id']
+      });
+    }
+
+
       console.log("7 day count: ", this.sixtyDayCount)
                   
   },
@@ -400,7 +439,18 @@ this.http.post(this.globalSearchUrl, this.ninetyDayQuery,{headers}).subscribe(
       console.log("PUT call successful value returned in body", val);
       this.ninetyDayCount = Number(val['list']['pagination']['count']);
       this.processChart();
-      console.log("7 day count: ", this.ninetyDayCount)
+
+      //Now process the rows for the mat table.  make sure array is empty first
+    this.ninetyDayArray = [];
+    for (var ent in val['list']['entries']){
+      this.ninetyDayArray.push({
+        id:ent,
+        name:val['list']['entries'][ent]['entry']['name'],
+        node:val['list']['entries'][ent]['entry']['id']
+      });
+    }
+
+      console.log("90 day count: ", this.ninetyDayCount)
                   
   },
 
