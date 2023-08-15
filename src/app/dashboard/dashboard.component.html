@@ -6,7 +6,7 @@
       <div id="processButton">
         <button (click)="getCounts()" mat-raised-button color="primary" id="refreshButton"
           class="button"><mat-icon>refresh</mat-icon></button>
-        <button (click)="createProcessClick()" mat-raised-button color="primary" class="button">Create NDA Form</button>
+        <button (click)="createProcessClick()" mat-raised-button color="primary" class="button">Create NDA</button>
       </div>
     </mat-card-content>
   </mat-card>
@@ -68,16 +68,41 @@
         </mat-card>
       </div>
 
-      <div id="details" fxFlex="100" *ngIf="showSummaryPanel" [@inOutAnimation] style="margin:10px;">
-
-        <adf-datatable [data]="datalistdata" [stickyHeader]="'true'">
+      <div id="details" fxFlex="100" *ngIf="showSummaryPanel" style="margin:10px;">
+        <!-- <adf-datatable [data]="datalistdata" [stickyHeader]="'true'">
           <data-columns>
-            <data-column key="icon" type="image" [sortable]="false"></data-column>
-            <data-column type="text" key="id" title="ID"></data-column>
+            <data-column type="text" key="nd" title="ID"></data-column>
             <data-column type="text" key="name" title="NAME"></data-column>
-            <data-column type="text" key="status" title="Status"></data-column>
           </data-columns>
-        </adf-datatable>
+        </adf-datatable> -->
+        <div class="mat-elevation-z8">
+        <table mat-table [dataSource]="thirtyDayArray">
+        
+          <!-- id Column -->
+          <ng-container matColumnDef="nd">
+            <th mat-header-cell *matHeaderCellDef> No. </th>
+            <td mat-cell *matCellDef="let element"> {{element.nd}} </td>
+          </ng-container>
+        
+          <!-- Name Column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef> name </th>
+            <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+          </ng-container>
+
+          <!-- node Column -->
+          <ng-container matColumnDef="node">
+            <th mat-header-cell *matHeaderCellDef> Node </th>
+            <td mat-cell *matCellDef="let element"> {{element.node}} </td>
+          </ng-container>
+
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        </table>
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of folderData"></mat-paginator>
+        </div>
 
       </div> <!-- div for 306090 details -->
     </mat-card>

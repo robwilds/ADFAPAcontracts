@@ -14,6 +14,17 @@ import { AuthenticationService } from '@alfresco/adf-core';
 import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
 import { ObjectDataTableAdapter }  from '@alfresco/adf-core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSortModule } from '@angular/material/sort';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+
+export interface folderData {
+  nd: string;
+  name: string;
+  node: string;
+}
 
 @Component({
   selector: 'dashboard',
@@ -159,8 +170,13 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     } \
   }`;
 
-  datalistdata: any;
+  datalistdata: ObjectDataTableAdapter;
+  thirtyDayDataListData: any;
+  thirtyDayArray = [];
+  dataSource: MatTableDataSource<folderData>;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
   schema:any;
+  displayedColumns: string[] = ['nd', 'name','node'];
   
 
   constructor(private _snackBar: MatSnackBar,private authService: AuthenticationService, private processService: ProcessCloudService, private router: Router,
@@ -169,47 +185,32 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
       //this.currentDateTime = formatDate(this.currentDateTime, 'dd-MM-yyyy hh:mm:ss a', 'en-US', '+0530');
   
-      this.datalistdata = new ObjectDataTableAdapter(
-        // data
-        [
-            {id: 1, name: 'Name 1'},
-            {id: 2, name: 'Name 2'}
-        ],
-        []
-    );
-    // columns
-    this.schema =
-        [
-            {
-                type: 'text',
-                key: 'id',
-                title: 'Id',
-                sortable: true
-            },
-            {
-                type: 'text',
-                key: 'name',
-                title: 'Name',
-                sortable: true
-            }
-        ];
+      //this.thirtyDayDataList = new ObjectDataTableAdapter;
+      //this.thirtyDayDataListData = new ObjectDataTableAdapter(this.thirtyDayArray);
+      
+    //   this.datalistdata = new ObjectDataTableAdapter(
+    //     // data
+    //     //[{nd: "0", name: "test"}, {nd: "1", name: "test"}]
+    //    this.thirtyDayArray
+    // );
     }
 
-  ngAfterViewInit() {
-    //Copy in all the js code from the script.js. Typescript will complain but it works just fine
- }
+    ngAfterViewInit() {
+      this.dataSource.paginator = this.paginator;
+    }
 
   ngOnInit() {
     this.currentUser = this.authService.getEcmUsername();
     console.log("current date time is: ",this.currentDateTime)
 
     this.getCounts();
+    
 }
 
 thirty6090Clicked(id)
 {
   this.showSummaryPanel = !this.showSummaryPanel;
-  console.log("summary 1 clicked");
+  console.log("summary ",id," clicked");
 }
 openSnackBar(message: string, action: string) {
   this._snackBar.open(message, action);
@@ -349,6 +350,25 @@ this.http.post(this.globalSearchUrl, this.sevenDayQuery,{headers}).subscribe(
 this.http.post(this.globalSearchUrl, this.thirtyDayQuery,{headers}).subscribe(
   val => {
       console.log("PUT call successful value returned in body", val);
+      //val has the object with the node information in entries then each entry has id, name, nodetype
+
+    //this.thirtyDayDataList = val['list']['entries'];
+    for (var ent in val['list']['entries']){
+      this.thirtyDayArray.push({
+        nd:ent,
+        name:val['list']['entries'][ent]['entry']['name'],
+        node:val['list']['entries'][ent]['entry']['id']
+      });
+    }
+
+    this.dataSource = new MatTableDataSource<folderData>(this.thirtyDayArray)
+
+    console.log("ROW ENTRY ",this.thirtyDayArray);
+    console.log("sample ROW data ",[{nd: "0", name: "test"}, {nd: "1", name: "test"}])
+    //now loop is done add data to datatable adapter
+    
+    //console.log("isolated 30 day data is ",this.thirtyDayDataListData);
+
       this.thirtyDayCount = Number(val['list']['pagination']['count']);
       //this.processChart();
       console.log("30 day count: ", this.thirtyDayCount)

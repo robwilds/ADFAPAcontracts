@@ -4,7 +4,12 @@
     <ng-template let-toggleMenu="toggleMenu">
 
       <adf-layout-header id="adf-header" [title]="'Contract Management ADF Application'" color="primary" logo="/assets/hylandlogo.png" [redirectUrl]="'/dashboard'">
-        <div id="rightHeader">{{userName}}<adf-notification-history [menuPositionX]="'before'" [menuPositionY]="'above'"></adf-notification-history></div>
+        <div id="rightHeader" fxLayout="row">
+            <img src="{{userImage}}" alt="{{userName}}">
+            <adf-notification-history [menuPositionX]="'before'" [menuPositionY]="'above'" fxFlex-Basis:10>
+
+            </adf-notification-history>
+        </div>
     </adf-layout-header>
     </ng-template>
 
