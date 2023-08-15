@@ -8,6 +8,11 @@
           class="button"><mat-icon>refresh</mat-icon></button>
         <button (click)="createProcessClick()" mat-raised-button color="primary" class="button">Create NDA</button>
       </div>
+      <div class="scroll-to-top" [ngClass]="{'show-scrollTop': windowScrolled}">
+        <button type="button" class="btn active" data-toggle="button" aria-pressed="true" (click)="scrollToTop()">
+            <i class="fas fa-chevron-up" ></i>
+        </button>
+      </div>
     </mat-card-content>
   </mat-card>
 
@@ -72,7 +77,7 @@
 
       <div id="details" fxFlex="100" *ngIf="showSummaryPanel" style="margin: 10px;">
         <div class="mat-elevation-z8" style="max-height:300px;overflow: scroll;">
-        <table mat-table [dataSource]="mainDataArray" matSort>
+        <table mat-table [dataSource]="mainDataArray" tabindex="0">
         
           <!-- id Column -->
           <ng-container matColumnDef="id">

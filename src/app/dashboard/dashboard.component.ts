@@ -1,9 +1,9 @@
 
-import { MinimalNode, MinimalNodeEntity, AlfrescoApi, MinimalNodeEntryEntity, NodeEntry} from '@alfresco/js-api';
+import { MinimalNode, MinimalNodeEntity} from '@alfresco/js-api';
 import { NodesApiService } from '@alfresco/adf-content-services';
 import { DocumentListComponent, NodeEntityEvent, NodeEntryEvent } from '@alfresco/adf-content-services';
 import { PreviewService } from '../services/preview.service';
-import { Component, ViewChild, Input, OnInit, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, ViewChild, Input, OnInit, ElementRef, Inject,HostListener } from '@angular/core';
 import { Chart } from 'chart.js';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { AlfrescoApiService} from '@alfresco/adf-core';
@@ -11,14 +11,10 @@ import { AlfrescoApiHttpClient } from '@alfresco/adf-core/api';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProcessCloudService } from '@alfresco/adf-process-services-cloud';
 import { AuthenticationService } from '@alfresco/adf-core';
-import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
-import { ObjectDataTableAdapter }  from '@alfresco/adf-core';
+import { MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
 import { trigger, state, style, animate, transition } from '@angular/animations';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { DOCUMENT } from '@angular/common';
+
 
 export interface folderData {
   nd: string;
@@ -56,8 +52,8 @@ export interface folderData {
 })
 
 
-export class DashboardComponent implements OnInit, AfterViewInit {
-
+export class DashboardComponent implements OnInit {
+  windowScrolled: boolean;
  /*  title = 'ng-chart'; */
   chart: any;
   chartclickval: string = "CHART CLICKED";
@@ -182,14 +178,29 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = ['id', 'name','node'];
   
 
-  constructor(private _snackBar: MatSnackBar,private authService: AuthenticationService, private processService: ProcessCloudService, private router: Router,
+  constructor(@Inject(DOCUMENT) private document: Document,private _snackBar: MatSnackBar,private authService: AuthenticationService, private processService: ProcessCloudService, private router: Router,
     private route: ActivatedRoute,private http: HttpClient,private alfrescoJsApi: AlfrescoApiHttpClient, private nodeApiService: NodesApiService, private preview: PreviewService, private nodeService: NodesApiService, private apiService: AlfrescoApiService) {
 
     }
 
-  ngAfterViewInit() {
-
-  }
+    @HostListener("window:scroll", [])
+    onWindowScroll() {
+        if (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop > 100) {
+            this.windowScrolled = true;
+        } 
+       else if (this.windowScrolled && window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop < 10) {
+            this.windowScrolled = false;
+        }
+    }
+    scrollToTop() {
+        (function smoothscroll() {
+            var currentScroll = document.documentElement.scrollTop || document.body.scrollTop;
+            if (currentScroll > 0) {
+                window.requestAnimationFrame(smoothscroll);
+                window.scrollTo(0, currentScroll - (currentScroll / 8));
+            }
+        })();
+    }
 
   ngOnInit() {
     this.currentUser = this.authService.getEcmUsername();
@@ -201,7 +212,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
 thirty6090Clicked(id)
 {
-
 
   switch(id) { 
     case 1: { 
@@ -223,12 +233,16 @@ thirty6090Clicked(id)
        //statements; 
        break; 
     } 
-
-
  } 
- this.showSummaryPanel = !this.showSummaryPanel;
+
+ if (this.showSummaryPanel){
+  //if panel is showing, turn off then back on (this refreshes content)
+  this.showSummaryPanel = !this.showSummaryPanel;
+  this.showSummaryPanel = !this.showSummaryPanel;
+ }else{ this.showSummaryPanel = !this.showSummaryPanel;}
 
 }
+
 openSnackBar(message: string, action: string) {
   this._snackBar.open(message, action);
 }
