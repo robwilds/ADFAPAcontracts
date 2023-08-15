@@ -17,7 +17,7 @@ import { trigger, state, style, animate, transition } from '@angular/animations'
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSortModule } from '@angular/material/sort';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 
 export interface folderData {
@@ -174,7 +174,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   thirtyDayDataListData: any;
   thirtyDayArray = [];
   dataSource: MatTableDataSource<folderData>;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
+  @ViewChild(MatSort, {static:false}) sort: MatSort;
   schema:any;
   displayedColumns: string[] = ['nd', 'name','node'];
   
@@ -182,22 +183,12 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   constructor(private _snackBar: MatSnackBar,private authService: AuthenticationService, private processService: ProcessCloudService, private router: Router,
     private route: ActivatedRoute,private http: HttpClient,private alfrescoJsApi: AlfrescoApiHttpClient, private nodeApiService: NodesApiService, private preview: PreviewService, private nodeService: NodesApiService, private apiService: AlfrescoApiService) {
 
-
-      //this.currentDateTime = formatDate(this.currentDateTime, 'dd-MM-yyyy hh:mm:ss a', 'en-US', '+0530');
-  
-      //this.thirtyDayDataList = new ObjectDataTableAdapter;
-      //this.thirtyDayDataListData = new ObjectDataTableAdapter(this.thirtyDayArray);
-      
-    //   this.datalistdata = new ObjectDataTableAdapter(
-    //     // data
-    //     //[{nd: "0", name: "test"}, {nd: "1", name: "test"}]
-    //    this.thirtyDayArray
-    // );
     }
 
-    ngAfterViewInit() {
-      this.dataSource.paginator = this.paginator;
-    }
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
 
   ngOnInit() {
     this.currentUser = this.authService.getEcmUsername();
@@ -453,7 +444,7 @@ this.http.post(this.globalSearchUrl, this.ninetyDayQuery,{headers}).subscribe(
     console.log("now instantiating chart object");
     
     this.chart = new Chart('canvas', {
-      type: 'pie',
+      type: 'polarArea',
       data: this.data,
       options: {
         /* onClick : function (evt, item) {

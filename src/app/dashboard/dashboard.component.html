@@ -42,12 +42,13 @@
   </div>
 </mat-card>
 
-  <div id="lowerSection" fxLayout="row" fxLayoutAlign="space-evenly start" fxfill style="width:100%">
-    
     <mat-card style="width:100%;margin:10px;">
+  <div id="lowerSection" fxLayout="column" fxLayoutAlign="space-evenly stretch" fxfill style="width:100%">
+    <div fxFlex="100" style="margin-right:auto"><h1>Contract Outlook</h1></div>
 
       <div id="thirty6090" fxFlex="100">
-        <h1>Contract Outlook</h1>
+        
+
         <mat-card class="dayalert" (click)="this.thirty6090Clicked(1)">
           <mat-card-header>
             <mat-card-title>30 DAY</mat-card-title>
@@ -66,17 +67,18 @@
           </mat-card-header>
           {{ninetyDayCount}}
         </mat-card>
-      </div>
 
-      <div id="details" fxFlex="100" *ngIf="showSummaryPanel" style="margin:10px;">
+    </div>
+
+      <div id="details" fxFlex="100" *ngIf="showSummaryPanel" style="margin: 10px;">
         <!-- <adf-datatable [data]="datalistdata" [stickyHeader]="'true'">
           <data-columns>
             <data-column type="text" key="nd" title="ID"></data-column>
             <data-column type="text" key="name" title="NAME"></data-column>
           </data-columns>
         </adf-datatable> -->
-        <div class="mat-elevation-z8">
-        <table mat-table [dataSource]="thirtyDayArray">
+        <div class="mat-elevation-z8" style="max-height:300px;overflow: scroll;">
+        <table mat-table [dataSource]="thirtyDayArray" matSort>
         
           <!-- id Column -->
           <ng-container matColumnDef="nd">
@@ -98,16 +100,16 @@
 
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          <tr mat-row matRipple *matRowDef="let row; columns: displayedColumns;"></tr>
 
         </table>
         <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of folderData"></mat-paginator>
         </div>
 
       </div> <!-- div for 306090 details -->
-    </mat-card>
-  </div> <!-- div for lower section-->
 
+  </div> <!-- div for lower section-->
+    </mat-card>
   <div id="tasks">
     <mat-card>
       <mat-card-content>
