@@ -54,7 +54,6 @@ export interface folderData {
 
 export class DashboardComponent implements OnInit {
   windowScrolled: boolean;
- /*  title = 'ng-chart'; */
   chart: any;
   chartclickval: string = "CHART CLICKED";
 
@@ -167,14 +166,22 @@ export class DashboardComponent implements OnInit {
   }`;
 
 
-  thirtyDayDataListData: any;
+
 
   thirtyDayArray = [];
   sixtyDayArray = [];
   ninetyDayArray = [];
-  mainDataArray = [];
 
-  schema:any;
+  newChartDataArray = [];
+  LegalReviewChartDataArray = [];
+  inProgressChartDataArray = [];
+  externalChartDataArray = [];
+  negotiationChartDataArray = [];
+
+  mainDataArray = [];
+  chartDataArray = [];
+
+
   displayedColumns: string[] = ['id', 'name','node'];
   
 
@@ -260,6 +267,16 @@ openSnackBar(message: string, action: string) {
           this.newCount = Number(val['list']['pagination']['count']);
           //this.processChart();
           console.log("new count: ", this.newCount )
+
+          //Now process the rows for the mat table.  make sure array is empty first
+   this.newChartDataArray = [];
+    for (var ent in val['list']['entries']){
+      this.newChartDataArray.push({
+        id:ent,
+        name:val['list']['entries'][ent]['entry']['name'],
+        node:val['list']['entries'][ent]['entry']['id']
+      });
+    }
                       
       },
 
@@ -279,7 +296,15 @@ openSnackBar(message: string, action: string) {
       this.inProgressCount = Number(val['list']['pagination']['count']);
       //this.processChart();
       console.log("in progress count: ", this.inProgressCount )
-                  
+      //Now process the rows for the mat table.  make sure array is empty first
+   this.inProgressChartDataArray = [];
+   for (var ent in val['list']['entries']){
+    this.inProgressChartDataArray.push({
+       id:ent,
+       name:val['list']['entries'][ent]['entry']['name'],
+       node:val['list']['entries'][ent]['entry']['id']
+     });
+   }
   },
 
   response => {
@@ -298,7 +323,15 @@ this.http.post(this.globalSearchUrl, this.legalReviewQuery,{headers}).subscribe(
       this.legalReviewCount = Number(val['list']['pagination']['count']);
       //this.processChart();
       console.log("in progress count: ", this.legalReviewCount )
-                  
+      //Now process the rows for the mat table.  make sure array is empty first
+   this.LegalReviewChartDataArray = [];
+   for (var ent in val['list']['entries']){
+    this.LegalReviewChartDataArray.push({
+       id:ent,
+       name:val['list']['entries'][ent]['entry']['name'],
+       node:val['list']['entries'][ent]['entry']['id']
+     });
+   }            
   },
 
   response => {
@@ -317,7 +350,15 @@ this.http.post(this.globalSearchUrl, this.externalPartyQuery,{headers}).subscrib
       this.externalPartyReviewCount = Number(val['list']['pagination']['count']);
       //this.processChart();
       console.log("in progress count: ", this.externalPartyReviewCount)
-                  
+      //Now process the rows for the mat table.  make sure array is empty first
+   this.externalChartDataArray = [];
+   for (var ent in val['list']['entries']){
+    this.externalChartDataArray.push({
+       id:ent,
+       name:val['list']['entries'][ent]['entry']['name'],
+       node:val['list']['entries'][ent]['entry']['id']
+     });
+   }            
   },
 
   response => {
@@ -336,7 +377,15 @@ this.http.post(this.globalSearchUrl, this.negotiationQuery,{headers}).subscribe(
       this.negotiationCount = Number(val['list']['pagination']['count']);
       //this.processChart();
       console.log("in progress count: ", this.negotiationCount)
-                  
+      //Now process the rows for the mat table.  make sure array is empty first
+   this.negotiationChartDataArray = [];
+   for (var ent in val['list']['entries']){
+    this.negotiationChartDataArray.push({
+       id:ent,
+       name:val['list']['entries'][ent]['entry']['name'],
+       node:val['list']['entries'][ent]['entry']['id']
+     });
+   }            
   },
 
   response => {
@@ -477,8 +526,6 @@ this.http.post(this.globalSearchUrl, this.ninetyDayQuery,{headers}).subscribe(
   }
 );
 
-
-
 }
 
   processChart(){
@@ -523,8 +570,48 @@ this.http.post(this.globalSearchUrl, this.ninetyDayQuery,{headers}).subscribe(
         onClick: (evt, item) => {
           console.log("This is working!");
           this.chartclickval = item[0]['_index'].toString();
-          this.showChartPanel = !this.showChartPanel;
+         
           this.openSnackBar("clicked on chart "+ item[0]['_index'].toString(),"close")
+          
+          //clear chartdataarray now!
+          this.chartDataArray = [];
+
+          switch(item[0]['_index']) { 
+            case 0: { 
+               this.chartDataArray = this.newChartDataArray;
+               break; 
+            } 
+            case 1: { 
+               this.chartDataArray = this.inProgressChartDataArray; 
+               break; 
+            } 
+            case 2: {
+              this.chartDataArray = this.LegalReviewChartDataArray;
+            }
+            case 3: {
+              this.chartDataArray = this.externalChartDataArray;
+            }
+            case 4: {
+              this.chartDataArray = this.negotiationChartDataArray;
+            }
+            default: { 
+               //statements; 
+               break; 
+            } 
+
+            
+         } 
+
+         if (this.showChartPanel ){
+          this.showChartPanel = !this.showChartPanel;
+          this.showChartPanel = !this.showChartPanel;
+        }
+        else
+        {
+        this.showChartPanel = !this.showChartPanel;
+        }
+
+
         }
     }
     });
