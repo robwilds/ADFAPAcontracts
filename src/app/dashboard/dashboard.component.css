@@ -191,3 +191,7 @@ padding: 10px;
 .mat-row:hover td::before {
   border-color: gray;
 }
+
+.make-red {
+  background-color: rgb(255, 89, 0)
+}

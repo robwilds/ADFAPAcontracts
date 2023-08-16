@@ -558,15 +558,7 @@ this.http.post(this.globalSearchUrl, this.ninetyDayQuery,{headers}).subscribe(
       type: 'polarArea',
       data: this.data,
       options: {
-        /* onClick : function (evt, item) {
-            console.log ('legend onClick', evt);
-            console.log('legd item', item);
-            this.chartclickval = item[0]['_index'].toString();
-            this.showChartPanel = !this.showChartPanel;
-            this.openSnackBar("clicked on chart "+ item[0]['_index'].toString(),"close")
-            console.log('clicked value',this.chartclickval); 
-            
-        }*/
+
         onClick: (evt, item) => {
           console.log("This is working!");
           this.chartclickval = item[0]['_index'].toString();
@@ -587,19 +579,21 @@ this.http.post(this.globalSearchUrl, this.ninetyDayQuery,{headers}).subscribe(
             } 
             case 2: {
               this.chartDataArray = this.LegalReviewChartDataArray;
+              break;
             }
             case 3: {
               this.chartDataArray = this.externalChartDataArray;
+              break;
             }
             case 4: {
               this.chartDataArray = this.negotiationChartDataArray;
+              break;
             }
             default: { 
                //statements; 
                break; 
             } 
 
-            
          } 
 
          if (this.showChartPanel ){
@@ -708,6 +702,11 @@ processSuccess(){
   this.snackBarmessage = "NDA request submitted!";
   this.snackBarValue = "close";
   this.openSnackBar(this.snackBarmessage,this.snackBarValue);
+}
+
+clickedDetailRow(row){
+  console.log("row object clicked: ",row['node']);
+  this.router.navigate(['/documents', {fid:row['node']}]);
 }
 
 }

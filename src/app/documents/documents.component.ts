@@ -1,11 +1,12 @@
-import { Component, ViewChild, Input } from '@angular/core';
+import { Component, ViewChild, Input, OnInit } from '@angular/core';
 import { NotificationService } from '@alfresco/adf-core';
 import { DocumentListComponent, NodeEntityEvent, NodeEntryEvent } from '@alfresco/adf-content-services';
 import { PreviewService } from '../services/preview.service';
-import { Router,PRIMARY_OUTLET } from '@angular/router';
+import { ActivatedRoute,Router,PRIMARY_OUTLET } from '@angular/router';
 import { MinimalNode, MinimalNodeEntity} from '@alfresco/js-api';
 import { NodesApiService } from '@alfresco/adf-content-services';
 import { trigger, state, style, animate, transition } from '@angular/animations';
+import { empty } from '@apollo/client';
 
 
 @Component({
@@ -36,7 +37,7 @@ import { trigger, state, style, animate, transition } from '@angular/animations'
     )
   ]
 })
-export class DocumentsComponent {
+export class DocumentsComponent implements OnInit{
 
   @ViewChild('documentList', { static: true })
   documentList: DocumentListComponent;
@@ -64,12 +65,22 @@ export class DocumentsComponent {
   currentFolderId: string = "5be4a4cc-f413-4f28-8329-dce29671b224";
 
   nodeEntry: any;
+  sub: any;
 
-  constructor(public router: Router, private notificationService: NotificationService, private preview: PreviewService, private nodeService: NodesApiService) {
+  constructor(private route: ActivatedRoute, public router: Router, private notificationService: NotificationService, private preview: PreviewService, private nodeService: NodesApiService) {
   this.fxFlexForDocList = 100;
   this.fxFlexForAux = 0;
   }
 
+  ngOnInit(): void {
+    this.sub = this.route
+    .params
+    .subscribe
+    (
+      value => (this.currentFolderId = value['fid'] == null? '5be4a4cc-f413-4f28-8329-dce29671b224' : value['fid'])
+      
+    );
+  }
   onViewerVisibilityChanged() {
     const primaryUrl = this.router
       .parseUrl(this.router.url)

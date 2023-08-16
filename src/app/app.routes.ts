@@ -66,9 +66,14 @@ export const appRoutes: Routes = [
                 ,canActivate: [ AuthGuardEcm ]
               },
               {
+                path:'dashboard/:fid',
+                component: DashboardComponent
+                //,canActivate: [ AuthGuardEcm ]
+              }
+              ,{
                 path:'dashboard',
                 component: DashboardComponent
-                ,canActivate: [ AuthGuardEcm ]
+                //,canActivate: [ AuthGuardEcm ]
               }
 
           ]
