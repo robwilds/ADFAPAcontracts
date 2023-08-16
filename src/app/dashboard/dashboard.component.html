@@ -4,7 +4,7 @@
     <mat-card-content fxFlex="auto">
       <div id="sevendayalertdiv" *ngIf="sevenDayShowMessage" style="width:100%;">{{sevenDayMessage}}</div>
       <div id="processButton">
-        <button (click)="getCounts()" mat-raised-button color="primary" id="refreshButton"
+        <button (click)="runChartProcess()" mat-raised-button color="primary" id="refreshButton"
           class="button"><mat-icon>refresh</mat-icon></button>
         <button (click)="createProcessClick()" mat-raised-button color="primary" class="button">Create NDA</button>
       </div>
