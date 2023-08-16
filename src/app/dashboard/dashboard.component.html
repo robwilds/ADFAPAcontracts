@@ -43,6 +43,12 @@
             <td mat-cell *matCellDef="let element"> {{element.name}} </td>
           </ng-container>
 
+          <!-- node expiration Column -->
+          <ng-container matColumnDef="nodeEx">
+            <th mat-header-cell *matHeaderCellDef> Expiration </th>
+            <td mat-cell *matCellDef="let element"> {{element.nodeEx | date:'mediumDate'}} </td>
+          </ng-container>
+
           <!-- node Column -->
           <ng-container matColumnDef="node">
             <th mat-header-cell *matHeaderCellDef> Node </th>
@@ -103,6 +109,12 @@
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef> name </th>
             <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+          </ng-container>
+          
+          <!-- node expiration Column -->
+          <ng-container matColumnDef="nodeEx">
+            <th mat-header-cell *matHeaderCellDef> Expiration </th>
+            <td mat-cell *matCellDef="let element"> {{element.nodeEx}} </td>
           </ng-container>
 
           <!-- node Column -->

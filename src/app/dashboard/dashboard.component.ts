@@ -165,9 +165,6 @@ export class DashboardComponent implements OnInit {
     } \
   }`;
 
-
-
-
   thirtyDayArray = [];
   sixtyDayArray = [];
   ninetyDayArray = [];
@@ -181,8 +178,10 @@ export class DashboardComponent implements OnInit {
   mainDataArray = [];
   chartDataArray = [];
 
+  nodeMetadata: NodesApiService;
 
-  displayedColumns: string[] = ['id', 'name','node'];
+
+  displayedColumns: string[] = ['id', 'name','node','nodeEx'];
   
 
   constructor(@Inject(DOCUMENT) private document: Document,private _snackBar: MatSnackBar,private authService: AuthenticationService, private processService: ProcessCloudService, private router: Router,
@@ -190,24 +189,6 @@ export class DashboardComponent implements OnInit {
 
     }
 
-    @HostListener("window:scroll", [])
-    onWindowScroll() {
-        if (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop > 100) {
-            this.windowScrolled = true;
-        } 
-       else if (this.windowScrolled && window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop < 10) {
-            this.windowScrolled = false;
-        }
-    }
-    scrollToTop() {
-        (function smoothscroll() {
-            var currentScroll = document.documentElement.scrollTop || document.body.scrollTop;
-            if (currentScroll > 0) {
-                window.requestAnimationFrame(smoothscroll);
-                window.scrollTo(0, currentScroll - (currentScroll / 8));
-            }
-        })();
-    }
 
   ngOnInit() {
     this.currentUser = this.authService.getEcmUsername();
@@ -246,7 +227,9 @@ thirty6090Clicked(id)
   //if panel is showing, turn off then back on (this refreshes content)
   this.showSummaryPanel = !this.showSummaryPanel;
   this.showSummaryPanel = !this.showSummaryPanel;
- }else{ this.showSummaryPanel = !this.showSummaryPanel;}
+ }
+ else{ this.showSummaryPanel = !this.showSummaryPanel; //just turn it on
+}
 
 }
 
@@ -255,6 +238,8 @@ openSnackBar(message: string, action: string) {
 }
 
   getCounts(){
+
+    let nodeExp: any;
 
     const headers = new HttpHeaders()
     .set("Content-Type", "application/json")
@@ -270,12 +255,31 @@ openSnackBar(message: string, action: string) {
 
           //Now process the rows for the mat table.  make sure array is empty first
    this.newChartDataArray = [];
+
     for (var ent in val['list']['entries']){
+
+      //code below fetches the properties for the current nodeid..search doesn't return properties just a list of nodes
+      let nodeII = val['list']['entries'][ent]['entry']['id'];
+      this.nodeService.getNode(nodeII).subscribe((entry: MinimalNode) => {
+     const node: MinimalNode = entry;
+     for (let key in node.properties) {
+      if(key =  "ContractManagement:Expiration"){
+        console.log ('key: ' +  key + ',  value: ' + node.properties[key]);
+        nodeExp = node.properties[key];
+      }
+  }
+
+   });
+
       this.newChartDataArray.push({
         id:ent,
         name:val['list']['entries'][ent]['entry']['name'],
-        node:val['list']['entries'][ent]['entry']['id']
+        node:val['list']['entries'][ent]['entry']['id'],
+        nodeEx:nodeExp
       });
+
+      //clear out expiration for the next entry
+      nodeExp = "";
     }
                       
       },
@@ -299,12 +303,28 @@ openSnackBar(message: string, action: string) {
       //Now process the rows for the mat table.  make sure array is empty first
    this.inProgressChartDataArray = [];
    for (var ent in val['list']['entries']){
+
+          //code below fetches the properties for the current nodeid..search doesn't return properties just a list of nodes
+          let nodeII = val['list']['entries'][ent]['entry']['id'];
+          this.nodeService.getNode(nodeII).subscribe((entry: MinimalNode) => {
+         const node: MinimalNode = entry;
+         for (let key in node.properties) {
+          if(key =  "ContractManagement:Expiration"){
+            console.log ('key: ' +  key + ',  value: ' + node.properties[key]);
+            nodeExp = node.properties[key];
+          }
+      }
+    
+       });
     this.inProgressChartDataArray.push({
        id:ent,
        name:val['list']['entries'][ent]['entry']['name'],
-       node:val['list']['entries'][ent]['entry']['id']
+       node:val['list']['entries'][ent]['entry']['id'],
+       nodeEx:nodeExp
      });
    }
+   //clear out expiration for the next entry
+   nodeExp = "";
   },
 
   response => {
@@ -326,12 +346,30 @@ this.http.post(this.globalSearchUrl, this.legalReviewQuery,{headers}).subscribe(
       //Now process the rows for the mat table.  make sure array is empty first
    this.LegalReviewChartDataArray = [];
    for (var ent in val['list']['entries']){
+
+          //code below fetches the properties for the current nodeid..search doesn't return properties just a list of nodes
+          let nodeII = val['list']['entries'][ent]['entry']['id'];
+          this.nodeService.getNode(nodeII).subscribe((entry: MinimalNode) => {
+         const node: MinimalNode = entry;
+         for (let key in node.properties) {
+          if(key =  "ContractManagement:Expiration"){
+            console.log ('key: ' +  key + ',  value: ' + node.properties[key]);
+            nodeExp = node.properties[key];
+          }
+      }
+    
+       });
+
+
     this.LegalReviewChartDataArray.push({
        id:ent,
        name:val['list']['entries'][ent]['entry']['name'],
-       node:val['list']['entries'][ent]['entry']['id']
+       node:val['list']['entries'][ent]['entry']['id'],
+       nodeEx:nodeExp
      });
-   }            
+   }     
+   //clear out expiration for the next entry
+   nodeExp = "";       
   },
 
   response => {
@@ -356,9 +394,12 @@ this.http.post(this.globalSearchUrl, this.externalPartyQuery,{headers}).subscrib
     this.externalChartDataArray.push({
        id:ent,
        name:val['list']['entries'][ent]['entry']['name'],
-       node:val['list']['entries'][ent]['entry']['id']
+       node:val['list']['entries'][ent]['entry']['id'],
+       nodeEx:nodeExp
      });
-   }            
+   }   
+   //clear out expiration for the next entry
+   nodeExp = "";         
   },
 
   response => {
@@ -380,12 +421,30 @@ this.http.post(this.globalSearchUrl, this.negotiationQuery,{headers}).subscribe(
       //Now process the rows for the mat table.  make sure array is empty first
    this.negotiationChartDataArray = [];
    for (var ent in val['list']['entries']){
+
+          //code below fetches the properties for the current nodeid..search doesn't return properties just a list of nodes
+          let nodeII = val['list']['entries'][ent]['entry']['id'];
+          this.nodeService.getNode(nodeII).subscribe((entry: MinimalNode) => {
+         const node: MinimalNode = entry;
+         for (let key in node.properties) {
+          if(key =  "ContractManagement:Expiration"){
+            console.log ('key: ' +  key + ',  value: ' + node.properties[key]);
+            nodeExp = node.properties[key];
+          }
+      }
+    
+       });
+
+
     this.negotiationChartDataArray.push({
        id:ent,
        name:val['list']['entries'][ent]['entry']['name'],
-       node:val['list']['entries'][ent]['entry']['id']
+       node:val['list']['entries'][ent]['entry']['id'],
+       nodeEx:nodeExp
      });
-   }            
+   }
+   //clear out expiration for the next entry
+   nodeExp = "";            
   },
 
   response => {
@@ -434,13 +493,33 @@ this.http.post(this.globalSearchUrl, this.thirtyDayQuery,{headers}).subscribe(
 
     //Now process the rows for the mat table.  make sure array is empty first
     this.thirtyDayArray = [];
+    console.log("30 day object: ", val)
     for (var ent in val['list']['entries']){
+
+            //code below fetches the properties for the current nodeid..search doesn't return properties just a list of nodes
+            let nodeII = val['list']['entries'][ent]['entry']['id'];
+            this.nodeService.getNode(nodeII).subscribe((entry: MinimalNode) => {
+           const node: MinimalNode = entry;
+           for (let key in node.properties) {
+            if(key =  "ContractManagement:Expiration"){
+              console.log ('key: ' +  key + ',  value: ' + node.properties[key]);
+              nodeExp = node.properties[key];
+            }
+        }
+      
+         });
+
+
       this.thirtyDayArray.push({
         id:ent,
         name:val['list']['entries'][ent]['entry']['name'],
-        node:val['list']['entries'][ent]['entry']['id']
+        node:val['list']['entries'][ent]['entry']['id'],
+        nodeEx:nodeExp
       });
     }
+
+    //clear out expiration for the next entry
+    nodeExp = "";
 
     //this.dataSource = new MatTableDataSource<folderData>(this.thirtyDayArray)
 
@@ -475,12 +554,30 @@ this.http.post(this.globalSearchUrl, this.sixtyDayQuery,{headers}).subscribe(
       //Now process the rows for the mat table.  make sure array is empty first
     this.sixtyDayArray = [];
     for (var ent in val['list']['entries']){
+
+            //code below fetches the properties for the current nodeid..search doesn't return properties just a list of nodes
+            let nodeII = val['list']['entries'][ent]['entry']['id'];
+            this.nodeService.getNode(nodeII).subscribe((entry: MinimalNode) => {
+           const node: MinimalNode = entry;
+           for (let key in node.properties) {
+            if(key =  "ContractManagement:Expiration"){
+              console.log ('key: ' +  key + ',  value: ' + node.properties[key]);
+              nodeExp = node.properties[key];
+            }
+        }
+      
+         });
+
+
       this.sixtyDayArray.push({
         id:ent,
         name:val['list']['entries'][ent]['entry']['name'],
-        node:val['list']['entries'][ent]['entry']['id']
+        node:val['list']['entries'][ent]['entry']['id'],
+        nodeEx:nodeExp
       });
     }
+    //clear out expiration for the next entry
+    nodeExp = "";
 
 
       console.log("7 day count: ", this.sixtyDayCount)
@@ -506,13 +603,29 @@ this.http.post(this.globalSearchUrl, this.ninetyDayQuery,{headers}).subscribe(
       //Now process the rows for the mat table.  make sure array is empty first
     this.ninetyDayArray = [];
     for (var ent in val['list']['entries']){
+
+            //code below fetches the properties for the current nodeid..search doesn't return properties just a list of nodes
+            let nodeII = val['list']['entries'][ent]['entry']['id'];
+            this.nodeService.getNode(nodeII).subscribe((entry: MinimalNode) => {
+           const node: MinimalNode = entry;
+           for (let key in node.properties) {
+            if(key =  "ContractManagement:Expiration"){
+              console.log ('key: ' +  key + ',  value: ' + node.properties[key]);
+              nodeExp = node.properties[key];
+            }
+        }
+      
+         });
+
       this.ninetyDayArray.push({
         id:ent,
         name:val['list']['entries'][ent]['entry']['name'],
-        node:val['list']['entries'][ent]['entry']['id']
+        node:val['list']['entries'][ent]['entry']['id'],
+        nodeEx:nodeExp
       });
     }
-
+//clear out expiration for the next entry
+nodeExp = "";
       console.log("90 day count: ", this.ninetyDayCount)
                   
   },
