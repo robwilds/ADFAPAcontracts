@@ -198,14 +198,13 @@ export class DashboardComponent implements OnInit,AfterViewInit {
     }));
   }
   ngAfterViewInit() {
-
     }
 
-  ngAfterContentInit(){this.runChartProcess();}
+  ngAfterContentInit(){//
+  }
 
   ngOnInit() {
     this.runChartProcess();
-
   }
 
   runChartProcess()
