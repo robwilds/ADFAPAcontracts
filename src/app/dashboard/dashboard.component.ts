@@ -3,7 +3,7 @@ import { MinimalNode, MinimalNodeEntity } from '@alfresco/js-api';
 import { NodesApiService } from '@alfresco/adf-content-services';
 import { DocumentListComponent, NodeEntityEvent, NodeEntryEvent } from '@alfresco/adf-content-services';
 import { PreviewService } from '../services/preview.service';
-import { Component, ViewChild, Input, OnInit, ElementRef, Inject, HostListener } from '@angular/core';
+import { Component, ViewChild, Input, OnInit, ElementRef, Inject, HostListener, AfterViewInit } from '@angular/core';
 import { Chart } from 'chart.js';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { AlfrescoApiService } from '@alfresco/adf-core';
@@ -15,7 +15,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { DOCUMENT } from '@angular/common';
 import { subscribe } from 'graphql';
-import { Observable, of, forkJoin, pipe } from 'rxjs';
+import { Observable, of, forkJoin, pipe, Subscription } from 'rxjs';
+import { interval } from 'rxjs';
 
 export interface folderData {
   nd: string;
@@ -53,7 +54,7 @@ export interface folderData {
 })
 
 
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit,AfterViewInit {
   snackBarDuration = 5000;
   windowScrolled: boolean;
   chart: any;
@@ -97,6 +98,8 @@ export class DashboardComponent implements OnInit {
   //let url = "http://3.90.226.222/alfresco/api/-default-/public/search/versions/1/search";
 
   isAutoRefreshChart: boolean = false;
+  chartAnimationDuration = 5000;
+  chartRunState: boolean = true;
   newCount: any;
   inProgressCount: any;
   legalReviewCount: any;
@@ -182,17 +185,27 @@ export class DashboardComponent implements OnInit {
 
   nodeMetadata: NodesApiService;
 
-
   displayedColumns: string[] = ['id', 'name', 'node', 'nodeEx'];
 
+  timeSubscription: Subscription;
 
   constructor(@Inject(DOCUMENT) private document: Document, private _snackBar: MatSnackBar, private authService: AuthenticationService, private processService: ProcessCloudService, private router: Router,
-    private route: ActivatedRoute, private http: HttpClient, private alfrescoJsApi: AlfrescoApiHttpClient, private nodeApiService: NodesApiService, private preview: PreviewService, private nodeService: NodesApiService, private apiService: AlfrescoApiService) {
-
+    private route: ActivatedRoute, private http: HttpClient, private alfrescoJsApi: AlfrescoApiHttpClient, private nodeApiService: NodesApiService, private preview: PreviewService, private nodeService: NodesApiService, private apiService: AlfrescoApiService) 
+    {
+      this.timeSubscription= interval(5000).subscribe((x =>{
+        if (this.chartRunState){this.runChartProcess();this.chartRunState = false;this.chartAnimationDuration=0;}else{this.runChartProcess()}
+        
+    }));
   }
+  ngAfterViewInit() {
+
+    }
+
+  ngAfterContentInit(){this.runChartProcess();}
 
   ngOnInit() {
     this.runChartProcess();
+
   }
 
   runChartProcess()
@@ -676,6 +689,9 @@ export class DashboardComponent implements OnInit {
       type: 'doughnut',
       data: this.data,
       options: {
+        animation: {
+          duration: this.chartAnimationDuration
+      },
         onClick: (evt, item) => {
           this.chartclickval = item[0]['_index'].toString();
 
