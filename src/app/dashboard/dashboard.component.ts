@@ -33,28 +33,29 @@ export interface folderData {
   styleUrls: ['./dashboard.component.css'],
   animations: [
     trigger(
-      'inOutAnimation',
+      'inOutAnimation', 
       [
         transition(
-          ':enter',
+          ':enter', 
           [
-            style({ height: 0, opacity: 1 }),
-            animate('2s ease-out',
-              style({ height: 300, opacity: 1 }))
+            style({ height: 0, opacity: 0 }),
+            animate('2s ease-out', 
+                    style({ height: 300, opacity: 1 }))
           ]
         ),
         transition(
-          ':leave',
+          ':leave', 
           [
-            style({ height: 0, opacity: 1 }),
-            animate('2s ease-in',
-              style({ height: 0, opacity: 0 }))
+            style({ height: 300, opacity: 1 }),
+            animate('2s ease-in', 
+                    style({ height: 0, opacity: 0 }))
           ]
         )
       ]
     )
   ]
 })
+
 
 
 export class DashboardComponent implements OnInit,AfterViewInit {
@@ -381,58 +382,9 @@ export class DashboardComponent implements OnInit,AfterViewInit {
 
       (array)=>{this.ninetyDayArray = array;}
     )
-    //    //Run 30 day count
-    // this.http.post(this.globalSearchUrl, this.thirtyDayQuery, { headers }).subscribe(
-    //   val => {
-    //     console.log("30 day PUT call successful value returned in body", val);
 
-    //     //Now process the rows for the mat table.  make sure array is empty first
-    //     this.thirtyDayArray = [];
 
-    //     //first for loop to get data into the array
-    //     for (var ent in val['list']['entries']) {
-    //       console.log("30 day start for loop for main data")
-
-    //       //code below fetches the properties for the current nodeid..search doesn't return properties just a list of nodes
-    //       this.getDateFromNodeID(val['list']['entries'][ent]['entry']['id']).subscribe( 
-            
-    //       (tempDate) => {
-    //         console.log("30 day val from get date",tempDate,val['list']['entries'][ent]['entry']['id']);
-            
-    //         this.thirtyDayArray.push({
-    //         id: ent,
-    //         name: val['list']['entries'][ent]['entry']['name'],
-    //         node: val['list']['entries'][ent]['entry']['id'],
-    //         nodeEx: tempDate//"placeholder"//this.getDateFromNodeID(val['list']['entries'][ent]['entry']['id'])
-    //       });}
-
-    //       );
-
-    //     }
-    //     console.log("main loop done")
-
-    //     //now loop again and add the date values to the existing array elements
-    //     // this.thirtyDayArray.forEach(element =>
-    //     //   element.nodeEx = this.getDateFromNodeID(element.node)
-    //     //   )
-
-    //     console.log("30 day ROW ENTRY ", this.thirtyDayArray);
-
-    //     this.thirtyDayCount = Number(val['list']['pagination']['count']);
-
-    //     console.log("30 day count at the end: ", this.thirtyDayCount)
-    //   },
-
-    //   response => {
-    //   },
-
-    //   () => {
-
-    //     console.log("The PUT observable is now completed.");
-
-        
-    //   }
-    // );
+    //****** GET CHART INFO BELOW ******
 
     //Run New
     this.http.post(this.globalSearchUrl, this.newQuery, { headers }).subscribe(

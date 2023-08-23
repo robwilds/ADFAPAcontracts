@@ -11,7 +11,7 @@
     </mat-card-content>
   </mat-card>
 
-  <div id="process" *ngIf="showNDAForm">
+  <div id="process" *ngIf="showNDAForm" [@inOutAnimation]>
     <adf-cloud-start-process [appName]="'CLM-mvp-v1-alpha-1'" [name]="processName"
       [processDefinitionName]="'NDA Request Form'" (success)="processSuccess()">
     </adf-cloud-start-process>
@@ -28,7 +28,7 @@
       <canvas id='canvas'>{{chart}}</canvas>
       <!--         <div id="chartDetail" fxFlex="50">chart detail goes here</div> -->
     </div>
-    <div id="details" fxFlex="100" *ngIf="showChartPanel" style="margin:10px;">
+    <div id="details" fxFlex="100" *ngIf="showChartPanel" style="margin:10px;" [@inOutAnimation]>
       <div class="mat-elevation-z8" style="max-height:300px;overflow: scroll;">
         <mat-card style="text-align: center;">{{chartClickedLegend}}</mat-card>
         <table mat-table [dataSource]="chartDataArray" tabindex="0">
@@ -97,7 +97,7 @@
 
     </div>
 
-      <div id="details" fxFlex="100" *ngIf="showSummaryPanel" style="margin: 10px;">
+      <div id="details" fxFlex="100" *ngIf="showSummaryPanel" style="margin: 10px;" [@inOutAnimation]>
         <div class="mat-elevation-z8" style="max-height:300px;overflow: scroll;">
         <table mat-table [dataSource]="mainDataArray" tabindex="0" matSort>
         
