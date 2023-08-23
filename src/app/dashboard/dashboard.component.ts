@@ -13,15 +13,18 @@ import { ProcessCloudService } from '@alfresco/adf-process-services-cloud';
 import { AuthenticationService } from '@alfresco/adf-core';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { trigger, state, style, animate, transition } from '@angular/animations';
-import { DOCUMENT } from '@angular/common';
-import { subscribe } from 'graphql';
+import { DOCUMENT, formatDate } from '@angular/common';
 import { Observable, of, forkJoin, pipe, Subscription } from 'rxjs';
 import { interval } from 'rxjs';
+import {MatPaginator} from '@angular/material/paginator';
+import {MatSort} from '@angular/material/sort';
+import {MatTableDataSource} from '@angular/material/table';
 
 export interface folderData {
-  nd: string;
+  id: string;
   name: string;
   node: string;
+  nodeEx: string;
 }
 
 @Component({
@@ -55,6 +58,11 @@ export interface folderData {
 
 
 export class DashboardComponent implements OnInit,AfterViewInit {
+
+  dateFormat = 'MM/dd/yyyy';
+  locale = 'en-US';
+
+
   snackBarDuration = 5000;
   windowScrolled: boolean;
   chart: any;
@@ -180,53 +188,106 @@ export class DashboardComponent implements OnInit,AfterViewInit {
   externalChartDataArray = [];
   negotiationChartDataArray = [];
 
-  mainDataArray = [];
+  //mainDataArray = [];
+
+
   chartDataArray = [];
 
   nodeMetadata: NodesApiService;
 
-  displayedColumns: string[] = ['id', 'name', 'node', 'nodeEx'];
+
+  displayedColumns: string[] = ['id', 'name', 'nodeEx','node'];
+  mainDataArray: MatTableDataSource<folderData>;
+  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  @ViewChild(MatSort, {static: true}) sort: MatSort;
+  expirationDateTemp: any;
+
+  chartClickedLegend = ""
 
   timeSubscription: Subscription;
 
   constructor(@Inject(DOCUMENT) private document: Document, private _snackBar: MatSnackBar, private authService: AuthenticationService, private processService: ProcessCloudService, private router: Router,
     private route: ActivatedRoute, private http: HttpClient, private alfrescoJsApi: AlfrescoApiHttpClient, private nodeApiService: NodesApiService, private preview: PreviewService, private nodeService: NodesApiService, private apiService: AlfrescoApiService) 
     {
-      this.timeSubscription= interval(5000).subscribe((x =>{
-        if (this.chartRunState){this.runChartProcess();this.chartRunState = false;this.chartAnimationDuration=0;}else{this.runChartProcess()}
+
+      //this.runChartProcess();
+
+    //   this.timeSubscription= interval(5000).subscribe((x =>{
+    //     if (this.chartRunState){this.runChartProcess();this.chartRunState = false;this.chartAnimationDuration=0;}else{this.runChartProcess()}
         
-    }));
+    // }));
+
+
   }
+
   ngAfterViewInit() {
+    
     }
 
-  ngAfterContentInit(){//
+  ngAfterContentInit(){
+  
   }
 
   ngOnInit() {
-    this.runChartProcess();
-  }
+    //this.runChartProcess();
+    const headers = new HttpHeaders()
+    .set("Content-Type", "application/json")
+    .set("Authorization", "Basic cndpbGRzOmRlbW8=");
+    let iter = 0;
+
+    this.http.post(this.globalSearchUrl, this.thirtyDayQuery, { headers }).subscribe(
+      val => {
+        console.log("30 day PUT call successful value returned in body", val);
+
+        //Now process the rows for the mat table.  make sure array is empty first
+        this.thirtyDayArray = [];
+
+        //first for loop to get data into the array
+        for (var ent in val['list']['entries']) {
+          
+          this.nodeApiService.getNode(val['list']['entries'][ent]['entry']['id'])
+          .subscribe(
+              (node) => {
+                  this.thirtyDayArray.push({
+                    id: iter,
+                    name: node.name,
+                    node: node.id,
+                    nodeEx: formatDate(node.properties['ContractManagement:Expiration'],this.dateFormat,this.locale)//node.properties.ContractManagement.Expiration//"placeholder"//this.getDateFromNodeID(val['list']['entries'][ent]['entry']['id'])
+                  })
+                  //console.log("TESTTEST node object is: ",iter,node.name,node.properties['ContractManagement:Expiration'])
+                  console.log("TESTTEST thirty day array is: ",this.thirtyDayArray);
+                  iter = iter+1;
+              },
+              error => { console.log("Ouch, an error happened!"); }
+          );
+            }    
+  });
+}
+
 
   runChartProcess()
   {
-    this.getCounts().subscribe( val => {this.processChart(val)});
+    //this.getCounts().subscribe( val => {this.processChart(val)});
   }
 
   thirty6090Clicked(id) {
 
     switch (id) {
       case 1: {
-        this.mainDataArray = this.thirtyDayArray;
+        //this.mainDataArray = this.thirtyDayArray;
+        this.mainDataArray = new MatTableDataSource(this.thirtyDayArray);
         console.log("detail 1 clicked ", this.mainDataArray)
         break;
       }
       case 2: {
-        this.mainDataArray = this.sixtyDayArray;
+        //this.mainDataArray = this.sixtyDayArray;
+        this.mainDataArray = new MatTableDataSource(this.sixtyDayArray);
         console.log("detail 2 clicked ", this.mainDataArray)
         break;
       }
       case 3: {
-        this.mainDataArray = this.ninetyDayArray;
+        //this.mainDataArray = this.ninetyDayArray;
+        this.mainDataArray = new MatTableDataSource(this.ninetyDayArray);
         console.log("detail 3 clicked ", this.mainDataArray)
         break;
       }
@@ -253,49 +314,111 @@ export class DashboardComponent implements OnInit,AfterViewInit {
     });
   }
 
+  getDateFromNodeID(nID): Observable<string>{
+
+    let tempDate:string;
+    //this.expirationDateTemp='';
+
+    this.nodeService.getNode(nID).subscribe((entry: MinimalNode) => {
+      console.log("node SErvice date for: ",nID," entry properties are: ",entry.properties);
+
+      for (let key in entry.properties) {
+        if (key = "ContractManagement:Expiration")
+        {
+          this.expirationDateTemp = entry.properties[key]
+          console.log("in for loop, tempDate is ",this.expirationDateTemp)
+          break;
+        }
+      }
+      
+    });
+    
+    console.log("date for nodeid: ",nID,' is: ',this.expirationDateTemp);
+    
+    of(this.expirationDateTemp).subscribe( (ret) => {tempDate = ret; console.log("inside ret: ",tempDate)})
+    return of(tempDate)
+  }
+
   getCounts(): Observable<any> {
 
     let nodeExp: any;
+    let nodeExpDate: any;
 
     const headers = new HttpHeaders()
       .set("Content-Type", "application/json")
       .set("Authorization", "Basic cndpbGRzOmRlbW8=");
+
+       //Run 30 day count
+    this.http.post(this.globalSearchUrl, this.thirtyDayQuery, { headers }).subscribe(
+      val => {
+        console.log("30 day PUT call successful value returned in body", val);
+
+        //Now process the rows for the mat table.  make sure array is empty first
+        this.thirtyDayArray = [];
+
+        //first for loop to get data into the array
+        for (var ent in val['list']['entries']) {
+          console.log("30 day start for loop for main data")
+
+          //code below fetches the properties for the current nodeid..search doesn't return properties just a list of nodes
+          this.getDateFromNodeID(val['list']['entries'][ent]['entry']['id']).subscribe( 
+            
+          (tempDate) => {
+            console.log("30 day val from get date",tempDate,val['list']['entries'][ent]['entry']['id']);
+            
+            this.thirtyDayArray.push({
+            id: ent,
+            name: val['list']['entries'][ent]['entry']['name'],
+            node: val['list']['entries'][ent]['entry']['id'],
+            nodeEx: tempDate//"placeholder"//this.getDateFromNodeID(val['list']['entries'][ent]['entry']['id'])
+          });}
+
+          );
+
+        }
+        console.log("main loop done")
+
+        //now loop again and add the date values to the existing array elements
+        // this.thirtyDayArray.forEach(element =>
+        //   element.nodeEx = this.getDateFromNodeID(element.node)
+        //   )
+
+        console.log("30 day ROW ENTRY ", this.thirtyDayArray);
+
+        this.thirtyDayCount = Number(val['list']['pagination']['count']);
+
+        console.log("30 day count at the end: ", this.thirtyDayCount)
+      },
+
+      response => {
+      },
+
+      () => {
+
+        console.log("The PUT observable is now completed.");
+
+        
+      }
+    );
 
     //Run New
     this.http.post(this.globalSearchUrl, this.newQuery, { headers }).subscribe(
       val => {
         console.log("PUT call successful value returned in body", val);
         this.newCount = Number(val['list']['pagination']['count']);
-        //this.processChart();
-        console.log("new count: ", this.newCount)
+        //console.log("new count: ", this.newCount)
 
         //Now process the rows for the mat table.  make sure array is empty first
         this.newChartDataArray = [];
 
         for (var ent in val['list']['entries']) {
 
-          //code below fetches the properties for the current nodeid..search doesn't return properties just a list of nodes
-          let nodeII = val['list']['entries'][ent]['entry']['id'];
-          this.nodeService.getNode(nodeII).subscribe((entry: MinimalNode) => {
-            const node: MinimalNode = entry;
-            for (let key in node.properties) {
-              if (key = "ContractManagement:Expiration") {
-                console.log('key: ' + key + ',  value: ' + node.properties[key]);
-                nodeExp = node.properties[key];
-              }
-            }
-
-          });
-
           this.newChartDataArray.push({
             id: ent,
             name: val['list']['entries'][ent]['entry']['name'],
             node: val['list']['entries'][ent]['entry']['id'],
-            nodeEx: nodeExp
+            
           });
-
-          //clear out expiration for the next entry
-          nodeExp = "";
         }
 
       },
@@ -312,35 +435,22 @@ export class DashboardComponent implements OnInit,AfterViewInit {
     //Run In Progress
     this.http.post(this.globalSearchUrl, this.inProgressQuery, { headers }).subscribe(
       val => {
-        console.log("PUT call successful value returned in body", val);
+        //console.log("PUT call successful value returned in body", val);
         this.inProgressCount = Number(val['list']['pagination']['count']);
-        //this.processChart();
-        console.log("in progress count: ", this.inProgressCount)
+
+        //console.log("in progress count: ", this.inProgressCount)
         //Now process the rows for the mat table.  make sure array is empty first
         this.inProgressChartDataArray = [];
         for (var ent in val['list']['entries']) {
 
-          //code below fetches the properties for the current nodeid..search doesn't return properties just a list of nodes
-          let nodeII = val['list']['entries'][ent]['entry']['id'];
-          this.nodeService.getNode(nodeII).subscribe((entry: MinimalNode) => {
-            const node: MinimalNode = entry;
-            for (let key in node.properties) {
-              if (key = "ContractManagement:Expiration") {
-                console.log('key: ' + key + ',  value: ' + node.properties[key]);
-                nodeExp = node.properties[key];
-              }
-            }
-
-          });
           this.inProgressChartDataArray.push({
             id: ent,
             name: val['list']['entries'][ent]['entry']['name'],
             node: val['list']['entries'][ent]['entry']['id'],
-            nodeEx: nodeExp
+            
           });
         }
-        //clear out expiration for the next entry
-        nodeExp = "";
+
       },
 
       response => {
@@ -355,37 +465,21 @@ export class DashboardComponent implements OnInit,AfterViewInit {
     //Run legal review
     this.http.post(this.globalSearchUrl, this.legalReviewQuery, { headers }).subscribe(
       val => {
-        console.log("PUT call successful value returned in body", val);
+        //console.log("PUT call successful value returned in body", val);
         this.legalReviewCount = Number(val['list']['pagination']['count']);
-        //this.processChart();
-        console.log("in progress count: ", this.legalReviewCount)
+
+        //console.log("in progress count: ", this.legalReviewCount)
         //Now process the rows for the mat table.  make sure array is empty first
         this.LegalReviewChartDataArray = [];
         for (var ent in val['list']['entries']) {
-
-          //code below fetches the properties for the current nodeid..search doesn't return properties just a list of nodes
-          let nodeII = val['list']['entries'][ent]['entry']['id'];
-          this.nodeService.getNode(nodeII).subscribe((entry: MinimalNode) => {
-            const node: MinimalNode = entry;
-            for (let key in node.properties) {
-              if (key = "ContractManagement:Expiration") {
-                console.log('key: ' + key + ',  value: ' + node.properties[key]);
-                nodeExp = node.properties[key];
-              }
-            }
-
-          });
-
-
           this.LegalReviewChartDataArray.push({
             id: ent,
             name: val['list']['entries'][ent]['entry']['name'],
             node: val['list']['entries'][ent]['entry']['id'],
-            nodeEx: nodeExp
+            
           });
         }
-        //clear out expiration for the next entry
-        nodeExp = "";
+
       },
 
       response => {
@@ -400,10 +494,10 @@ export class DashboardComponent implements OnInit,AfterViewInit {
     //Run external party review
     this.http.post(this.globalSearchUrl, this.externalPartyQuery, { headers }).subscribe(
       val => {
-        console.log("PUT call successful value returned in body", val);
+       // console.log("PUT call successful value returned in body", val);
         this.externalPartyReviewCount = Number(val['list']['pagination']['count']);
-        //this.processChart();
-        console.log("in progress count: ", this.externalPartyReviewCount)
+
+        //console.log("in progress count: ", this.externalPartyReviewCount)
         //Now process the rows for the mat table.  make sure array is empty first
         this.externalChartDataArray = [];
         for (var ent in val['list']['entries']) {
@@ -411,11 +505,10 @@ export class DashboardComponent implements OnInit,AfterViewInit {
             id: ent,
             name: val['list']['entries'][ent]['entry']['name'],
             node: val['list']['entries'][ent]['entry']['id'],
-            nodeEx: nodeExp
+           
           });
         }
-        //clear out expiration for the next entry
-        nodeExp = "";
+        
       },
 
       response => {
@@ -430,37 +523,22 @@ export class DashboardComponent implements OnInit,AfterViewInit {
     //Run negotiation
     this.http.post(this.globalSearchUrl, this.negotiationQuery, { headers }).subscribe(
       val => {
-        console.log("PUT call successful value returned in body", val);
+        //console.log("PUT call successful value returned in body", val);
         this.negotiationCount = Number(val['list']['pagination']['count']);
-        //this.processChart();
-        console.log("in progress count: ", this.negotiationCount)
+
+        //console.log("in progress count: ", this.negotiationCount)
         //Now process the rows for the mat table.  make sure array is empty first
         this.negotiationChartDataArray = [];
         for (var ent in val['list']['entries']) {
-
-          //code below fetches the properties for the current nodeid..search doesn't return properties just a list of nodes
-          let nodeII = val['list']['entries'][ent]['entry']['id'];
-          this.nodeService.getNode(nodeII).subscribe((entry: MinimalNode) => {
-            const node: MinimalNode = entry;
-            for (let key in node.properties) {
-              if (key = "ContractManagement:Expiration") {
-                console.log('key: ' + key + ',  value: ' + node.properties[key]);
-                nodeExp = node.properties[key];
-              }
-            }
-
-          });
-
 
           this.negotiationChartDataArray.push({
             id: ent,
             name: val['list']['entries'][ent]['entry']['name'],
             node: val['list']['entries'][ent]['entry']['id'],
-            nodeEx: nodeExp
+            
           });
         }
-        //clear out expiration for the next entry
-        nodeExp = "";
+        
       },
 
       response => {
@@ -503,156 +581,106 @@ export class DashboardComponent implements OnInit,AfterViewInit {
 
     //Run 30 day count
     this.http.post(this.globalSearchUrl, this.thirtyDayQuery, { headers }).subscribe(
-      val => {
-        console.log("PUT call successful value returned in body", val);
-        //val has the object with the node information in entries then each entry has id, name, nodetype
 
-        //Now process the rows for the mat table.  make sure array is empty first
-        this.thirtyDayArray = [];
-        console.log("30 day object: ", val)
-        for (var ent in val['list']['entries']) {
-
-          //code below fetches the properties for the current nodeid..search doesn't return properties just a list of nodes
-          let nodeII = val['list']['entries'][ent]['entry']['id'];
-          this.nodeService.getNode(nodeII).subscribe((entry: MinimalNode) => {
-            const node: MinimalNode = entry;
-            for (let key in node.properties) {
-              if (key = "ContractManagement:Expiration") {
-                console.log('key: ' + key + ',  value: ' + node.properties[key]);
-                nodeExp = node.properties[key];
-              }
-            }
-
-          });
+    )
 
 
-          this.thirtyDayArray.push({
-            id: ent,
-            name: val['list']['entries'][ent]['entry']['name'],
-            node: val['list']['entries'][ent]['entry']['id'],
-            nodeEx: nodeExp
-          });
-        }
+   
 
-        //clear out expiration for the next entry
-        nodeExp = "";
+    // //Run 60 day count
+    // this.http.post(this.globalSearchUrl, this.sixtyDayQuery, { headers }).subscribe(
+    //   val => {
+    //     console.log("PUT call successful value returned in body", val);
+    //     this.sixtyDayCount = Number(val['list']['pagination']['count']);
+    //     //this.processChart();
 
-        //this.dataSource = new MatTableDataSource<folderData>(this.thirtyDayArray)
+    //     //Now process the rows for the mat table.  make sure array is empty first
+    //     this.sixtyDayArray = [];
+    //     for (var ent in val['list']['entries']) {
 
-        console.log("ROW ENTRY ", this.thirtyDayArray);
-        console.log("sample ROW data ", [{ nd: "0", name: "test" }, { nd: "1", name: "test" }])
-        //now loop is done add data to datatable adapter
+    //       //code below fetches the properties for the current nodeid..search doesn't return properties just a list of nodes
+    //       let nodeII = val['list']['entries'][ent]['entry']['id'];
+    //       this.nodeService.getNode(nodeII).subscribe((entry: MinimalNode) => {
+    //         const node: MinimalNode = entry;
+    //         for (let key in node.properties) {
+    //           if (key = "ContractManagement:Expiration") {
+    //             console.log('key: ' + key + ',  value: ' + node.properties[key]);
+    //             nodeExp = node.properties[key];
+    //           }
+    //         }
 
-        //console.log("isolated 30 day data is ",this.thirtyDayDataListData);
-
-        this.thirtyDayCount = Number(val['list']['pagination']['count']);
-        //this.processChart();
-        console.log("30 day count: ", this.thirtyDayCount)
-      },
-
-      response => {
-        console.log("PUT call in error", response);
-      },
-
-      () => {
-        console.log("The PUT observable is now completed.");
-      }
-    );
-
-    //Run 60 day count
-    this.http.post(this.globalSearchUrl, this.sixtyDayQuery, { headers }).subscribe(
-      val => {
-        console.log("PUT call successful value returned in body", val);
-        this.sixtyDayCount = Number(val['list']['pagination']['count']);
-        //this.processChart();
-
-        //Now process the rows for the mat table.  make sure array is empty first
-        this.sixtyDayArray = [];
-        for (var ent in val['list']['entries']) {
-
-          //code below fetches the properties for the current nodeid..search doesn't return properties just a list of nodes
-          let nodeII = val['list']['entries'][ent]['entry']['id'];
-          this.nodeService.getNode(nodeII).subscribe((entry: MinimalNode) => {
-            const node: MinimalNode = entry;
-            for (let key in node.properties) {
-              if (key = "ContractManagement:Expiration") {
-                console.log('key: ' + key + ',  value: ' + node.properties[key]);
-                nodeExp = node.properties[key];
-              }
-            }
-
-          });
+    //       });
 
 
-          this.sixtyDayArray.push({
-            id: ent,
-            name: val['list']['entries'][ent]['entry']['name'],
-            node: val['list']['entries'][ent]['entry']['id'],
-            nodeEx: nodeExp
-          });
-        }
-        //clear out expiration for the next entry
-        nodeExp = "";
+    //       this.sixtyDayArray.push({
+    //         id: ent,
+    //         name: val['list']['entries'][ent]['entry']['name'],
+    //         node: val['list']['entries'][ent]['entry']['id'],
+    //         nodeEx: nodeExp
+    //       });
+    //     }
+    //     //clear out expiration for the next entry
+    //     nodeExp = "";
 
 
-        console.log("7 day count: ", this.sixtyDayCount)
+    //     console.log("7 day count: ", this.sixtyDayCount)
 
-      },
+    //   },
 
-      response => {
-        console.log("PUT call in error", response);
-      },
+    //   response => {
+    //     console.log("PUT call in error", response);
+    //   },
 
-      () => {
-        console.log("The PUT observable is now completed.");
-      }
-    );
+    //   () => {
+    //     console.log("The PUT observable is now completed.");
+    //   }
+    // );
 
-    //Run 90 day count
-    this.http.post(this.globalSearchUrl, this.ninetyDayQuery, { headers }).subscribe(
-      val => {
-        console.log("PUT call successful value returned in body", val);
-        this.ninetyDayCount = Number(val['list']['pagination']['count']);
-        //this.processChart();
+    // //Run 90 day count
+    // this.http.post(this.globalSearchUrl, this.ninetyDayQuery, { headers }).subscribe(
+    //   val => {
+    //     console.log("PUT call successful value returned in body", val);
+    //     this.ninetyDayCount = Number(val['list']['pagination']['count']);
+    //     //this.processChart();
 
-        //Now process the rows for the mat table.  make sure array is empty first
-        this.ninetyDayArray = [];
-        for (var ent in val['list']['entries']) {
+    //     //Now process the rows for the mat table.  make sure array is empty first
+    //     this.ninetyDayArray = [];
+    //     for (var ent in val['list']['entries']) {
 
-          //code below fetches the properties for the current nodeid..search doesn't return properties just a list of nodes
-          let nodeII = val['list']['entries'][ent]['entry']['id'];
-          this.nodeService.getNode(nodeII).subscribe((entry: MinimalNode) => {
-            const node: MinimalNode = entry;
-            for (let key in node.properties) {
-              if (key = "ContractManagement:Expiration") {
-                console.log('key: ' + key + ',  value: ' + node.properties[key]);
-                nodeExp = node.properties[key];
-              }
-            }
+    //       //code below fetches the properties for the current nodeid..search doesn't return properties just a list of nodes
+    //       let nodeII = val['list']['entries'][ent]['entry']['id'];
+    //       this.nodeService.getNode(nodeII).subscribe((entry: MinimalNode) => {
+    //         const node: MinimalNode = entry;
+    //         for (let key in node.properties) {
+    //           if (key = "ContractManagement:Expiration") {
+    //             console.log('key: ' + key + ',  value: ' + node.properties[key]);
+    //             nodeExp = node.properties[key];
+    //           }
+    //         }
 
-          });
+    //       });
 
-          this.ninetyDayArray.push({
-            id: ent,
-            name: val['list']['entries'][ent]['entry']['name'],
-            node: val['list']['entries'][ent]['entry']['id'],
-            nodeEx: nodeExp
-          });
-        }
-        //clear out expiration for the next entry
-        nodeExp = "";
-        console.log("90 day count: ", this.ninetyDayCount)
+    //       this.ninetyDayArray.push({
+    //         id: ent,
+    //         name: val['list']['entries'][ent]['entry']['name'],
+    //         node: val['list']['entries'][ent]['entry']['id'],
+    //         nodeEx: nodeExp
+    //       });
+    //     }
+    //     //clear out expiration for the next entry
+    //     nodeExp = "";
+    //     console.log("90 day count: ", this.ninetyDayCount)
 
-      },
+    //   },
 
-      response => {
-        console.log("PUT call in error", response);
-      },
+    //   response => {
+    //     console.log("PUT call in error", response);
+    //   },
 
-      () => {
-        console.log("The PUT observable is now completed.");
-      }
-    );
+    //   () => {
+    //     console.log("The PUT observable is now completed.");
+    //   }
+    // );
     return of({ client: 'Client 1' });
   }
 
@@ -694,7 +722,7 @@ export class DashboardComponent implements OnInit,AfterViewInit {
         onClick: (evt, item) => {
           this.chartclickval = item[0]['_index'].toString();
 
-          this.openSnackBar("clicked on chart " + item[0]['_index'].toString(), "close")
+          this.openSnackBar("clicked on chart " + item[0]['_index'].toString(), "")
 
           //clear chartdataarray now!
           this.chartDataArray = [];
@@ -702,22 +730,27 @@ export class DashboardComponent implements OnInit,AfterViewInit {
           switch (item[0]['_index']) {
             case 0: {
               this.chartDataArray = this.newChartDataArray;
+              this.chartClickedLegend = "New";
               break;
             }
             case 1: {
               this.chartDataArray = this.inProgressChartDataArray;
+              this.chartClickedLegend = "In Progress";
               break;
             }
             case 2: {
               this.chartDataArray = this.LegalReviewChartDataArray;
+              this.chartClickedLegend = "Legal Review";
               break;
             }
             case 3: {
               this.chartDataArray = this.externalChartDataArray;
+              this.chartClickedLegend = "External Party Review";
               break;
             }
             case 4: {
               this.chartDataArray = this.negotiationChartDataArray;
+              this.chartClickedLegend = "Negotiation";
               break;
             }
             default: {
