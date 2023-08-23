@@ -205,17 +205,19 @@ export class DashboardComponent implements OnInit,AfterViewInit {
   chartClickedLegend = ""
 
   timeSubscription: Subscription;
+    
 
   constructor(@Inject(DOCUMENT) private document: Document, private _snackBar: MatSnackBar, private authService: AuthenticationService, private processService: ProcessCloudService, private router: Router,
     private route: ActivatedRoute, private http: HttpClient, private alfrescoJsApi: AlfrescoApiHttpClient, private nodeApiService: NodesApiService, private preview: PreviewService, private nodeService: NodesApiService, private apiService: AlfrescoApiService) 
     {
 
-      //this.runChartProcess();
+      
+      this.runChartProcess();
 
-    //   this.timeSubscription= interval(5000).subscribe((x =>{
-    //     if (this.chartRunState){this.runChartProcess();this.chartRunState = false;this.chartAnimationDuration=0;}else{this.runChartProcess()}
+      this.timeSubscription= interval(5000).subscribe((x =>{
+        if (this.chartRunState){this.runChartProcess();this.chartRunState = false;this.chartAnimationDuration=0;}else{this.runChartProcess()}
         
-    // }));
+    }));
 
 
   }
@@ -228,46 +230,87 @@ export class DashboardComponent implements OnInit,AfterViewInit {
   
   }
 
-  ngOnInit() {
-    //this.runChartProcess();
+
+  getChartValues(query:any): Observable<any[]>{
+
     const headers = new HttpHeaders()
     .set("Content-Type", "application/json")
     .set("Authorization", "Basic cndpbGRzOmRlbW8=");
     let iter = 0;
+    let array = [];
 
-    this.http.post(this.globalSearchUrl, this.thirtyDayQuery, { headers }).subscribe(
+    this.http.post(this.globalSearchUrl, query,{headers}).subscribe(
       val => {
-        console.log("30 day PUT call successful value returned in body", val);
+        console.log("PUT call successful value returned in body ", val);
 
         //Now process the rows for the mat table.  make sure array is empty first
-        this.thirtyDayArray = [];
+        // this.thirtyDayArray = [];
+        
 
         //first for loop to get data into the array
         for (var ent in val['list']['entries']) {
           
-          this.nodeApiService.getNode(val['list']['entries'][ent]['entry']['id'])
-          .subscribe(
+          this.nodeApiService.getNode(val['list']['entries'][ent]['entry']['id']).subscribe(
               (node) => {
-                  this.thirtyDayArray.push({
+                  array.push({
                     id: iter,
                     name: node.name,
                     node: node.id,
                     nodeEx: formatDate(node.properties['ContractManagement:Expiration'],this.dateFormat,this.locale)//node.properties.ContractManagement.Expiration//"placeholder"//this.getDateFromNodeID(val['list']['entries'][ent]['entry']['id'])
                   })
                   //console.log("TESTTEST node object is: ",iter,node.name,node.properties['ContractManagement:Expiration'])
-                  console.log("TESTTEST thirty day array is: ",this.thirtyDayArray);
+                  console.log("TESTTEST thirty day array is: ",array);
                   iter = iter+1;
               },
               error => { console.log("Ouch, an error happened!"); }
           );
             }    
   });
+
+  return of(array);
+  }
+
+
+  ngOnInit() {
+    //this.runChartProcess();
+  //   const headers = new HttpHeaders()
+  //   .set("Content-Type", "application/json")
+  //   .set("Authorization", "Basic cndpbGRzOmRlbW8=");
+  //   let iter = 0;
+
+  //   this.http.post(this.globalSearchUrl, this.thirtyDayQuery,{headers}).subscribe(
+  //     val => {
+  //       console.log("30 day PUT call successful value returned in body", val);
+
+  //       //Now process the rows for the mat table.  make sure array is empty first
+  //       this.thirtyDayArray = [];
+
+  //       //first for loop to get data into the array
+  //       for (var ent in val['list']['entries']) {
+          
+  //         this.nodeApiService.getNode(val['list']['entries'][ent]['entry']['id'])
+  //         .subscribe(
+  //             (node) => {
+  //                 this.thirtyDayArray.push({
+  //                   id: iter,
+  //                   name: node.name,
+  //                   node: node.id,
+  //                   nodeEx: formatDate(node.properties['ContractManagement:Expiration'],this.dateFormat,this.locale)//node.properties.ContractManagement.Expiration//"placeholder"//this.getDateFromNodeID(val['list']['entries'][ent]['entry']['id'])
+  //                 })
+  //                 //console.log("TESTTEST node object is: ",iter,node.name,node.properties['ContractManagement:Expiration'])
+  //                 console.log("TESTTEST thirty day array is: ",this.thirtyDayArray);
+  //                 iter = iter+1;
+  //             },
+  //             error => { console.log("Ouch, an error happened!"); }
+  //         );
+  //           }    
+  // });
 }
 
 
   runChartProcess()
   {
-    //this.getCounts().subscribe( val => {this.processChart(val)});
+    this.getCounts().subscribe( val => {this.processChart(val)});
   }
 
   thirty6090Clicked(id) {
@@ -314,30 +357,6 @@ export class DashboardComponent implements OnInit,AfterViewInit {
     });
   }
 
-  getDateFromNodeID(nID): Observable<string>{
-
-    let tempDate:string;
-    //this.expirationDateTemp='';
-
-    this.nodeService.getNode(nID).subscribe((entry: MinimalNode) => {
-      console.log("node SErvice date for: ",nID," entry properties are: ",entry.properties);
-
-      for (let key in entry.properties) {
-        if (key = "ContractManagement:Expiration")
-        {
-          this.expirationDateTemp = entry.properties[key]
-          console.log("in for loop, tempDate is ",this.expirationDateTemp)
-          break;
-        }
-      }
-      
-    });
-    
-    console.log("date for nodeid: ",nID,' is: ',this.expirationDateTemp);
-    
-    of(this.expirationDateTemp).subscribe( (ret) => {tempDate = ret; console.log("inside ret: ",tempDate)})
-    return of(tempDate)
-  }
 
   getCounts(): Observable<any> {
 
@@ -348,58 +367,72 @@ export class DashboardComponent implements OnInit,AfterViewInit {
       .set("Content-Type", "application/json")
       .set("Authorization", "Basic cndpbGRzOmRlbW8=");
 
-       //Run 30 day count
-    this.http.post(this.globalSearchUrl, this.thirtyDayQuery, { headers }).subscribe(
-      val => {
-        console.log("30 day PUT call successful value returned in body", val);
+    this.getChartValues(this.thirtyDayQuery).subscribe(
 
-        //Now process the rows for the mat table.  make sure array is empty first
-        this.thirtyDayArray = [];
+      (array)=>{this.thirtyDayArray = array;}
+    )
 
-        //first for loop to get data into the array
-        for (var ent in val['list']['entries']) {
-          console.log("30 day start for loop for main data")
+    this.getChartValues(this.sixtyDayQuery).subscribe(
 
-          //code below fetches the properties for the current nodeid..search doesn't return properties just a list of nodes
-          this.getDateFromNodeID(val['list']['entries'][ent]['entry']['id']).subscribe( 
+      (array)=>{this.sixtyDayArray = array;}
+    )
+
+    this.getChartValues(this.ninetyDayArray).subscribe(
+
+      (array)=>{this.ninetyDayArray = array;}
+    )
+    //    //Run 30 day count
+    // this.http.post(this.globalSearchUrl, this.thirtyDayQuery, { headers }).subscribe(
+    //   val => {
+    //     console.log("30 day PUT call successful value returned in body", val);
+
+    //     //Now process the rows for the mat table.  make sure array is empty first
+    //     this.thirtyDayArray = [];
+
+    //     //first for loop to get data into the array
+    //     for (var ent in val['list']['entries']) {
+    //       console.log("30 day start for loop for main data")
+
+    //       //code below fetches the properties for the current nodeid..search doesn't return properties just a list of nodes
+    //       this.getDateFromNodeID(val['list']['entries'][ent]['entry']['id']).subscribe( 
             
-          (tempDate) => {
-            console.log("30 day val from get date",tempDate,val['list']['entries'][ent]['entry']['id']);
+    //       (tempDate) => {
+    //         console.log("30 day val from get date",tempDate,val['list']['entries'][ent]['entry']['id']);
             
-            this.thirtyDayArray.push({
-            id: ent,
-            name: val['list']['entries'][ent]['entry']['name'],
-            node: val['list']['entries'][ent]['entry']['id'],
-            nodeEx: tempDate//"placeholder"//this.getDateFromNodeID(val['list']['entries'][ent]['entry']['id'])
-          });}
+    //         this.thirtyDayArray.push({
+    //         id: ent,
+    //         name: val['list']['entries'][ent]['entry']['name'],
+    //         node: val['list']['entries'][ent]['entry']['id'],
+    //         nodeEx: tempDate//"placeholder"//this.getDateFromNodeID(val['list']['entries'][ent]['entry']['id'])
+    //       });}
 
-          );
+    //       );
 
-        }
-        console.log("main loop done")
+    //     }
+    //     console.log("main loop done")
 
-        //now loop again and add the date values to the existing array elements
-        // this.thirtyDayArray.forEach(element =>
-        //   element.nodeEx = this.getDateFromNodeID(element.node)
-        //   )
+    //     //now loop again and add the date values to the existing array elements
+    //     // this.thirtyDayArray.forEach(element =>
+    //     //   element.nodeEx = this.getDateFromNodeID(element.node)
+    //     //   )
 
-        console.log("30 day ROW ENTRY ", this.thirtyDayArray);
+    //     console.log("30 day ROW ENTRY ", this.thirtyDayArray);
 
-        this.thirtyDayCount = Number(val['list']['pagination']['count']);
+    //     this.thirtyDayCount = Number(val['list']['pagination']['count']);
 
-        console.log("30 day count at the end: ", this.thirtyDayCount)
-      },
+    //     console.log("30 day count at the end: ", this.thirtyDayCount)
+    //   },
 
-      response => {
-      },
+    //   response => {
+    //   },
 
-      () => {
+    //   () => {
 
-        console.log("The PUT observable is now completed.");
+    //     console.log("The PUT observable is now completed.");
 
         
-      }
-    );
+    //   }
+    // );
 
     //Run New
     this.http.post(this.globalSearchUrl, this.newQuery, { headers }).subscribe(
@@ -580,9 +613,9 @@ export class DashboardComponent implements OnInit,AfterViewInit {
     );
 
     //Run 30 day count
-    this.http.post(this.globalSearchUrl, this.thirtyDayQuery, { headers }).subscribe(
+    // this.http.post(this.globalSearchUrl, this.thirtyDayQuery, { headers }).subscribe(
 
-    )
+    // )
 
 
    
