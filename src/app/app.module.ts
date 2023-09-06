@@ -31,9 +31,11 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { DatePipe } from '@angular/common';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { CommonModule } from '@angular/common';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @NgModule({
     imports: [
+        DragDropModule,
         BrowserModule,
         MatSlideToggleModule,
         HttpClientModule,

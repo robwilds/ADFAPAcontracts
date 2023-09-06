@@ -21,7 +21,7 @@ import { empty } from '@apollo/client';
           ':enter', 
           [
             style({ height: 0, opacity: 0 }),
-            animate('1s ease-out', 
+            animate('3s ease-out', 
                     style({ height: 300, opacity: 1 }))
           ]
         ),
@@ -29,7 +29,7 @@ import { empty } from '@apollo/client';
           ':leave', 
           [
             style({ height: 300, opacity: 1 }),
-            animate('1s ease-in', 
+            animate('3s ease-in', 
                     style({ height: 0, opacity: 0 }))
           ]
         )
