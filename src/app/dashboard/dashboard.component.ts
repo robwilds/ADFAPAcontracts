@@ -67,7 +67,7 @@ export class DashboardComponent implements OnInit,AfterViewInit {
   dateFormat = 'MM/dd/yyyy';
   locale = 'en-US';
 
-  snackBarDuration = 5000;
+  snackBarDuration = 3000;
   windowScrolled: boolean;
   chart: any;
   chartclickval: string = "CHART CLICKED";
@@ -110,7 +110,7 @@ export class DashboardComponent implements OnInit,AfterViewInit {
   //globalSearchUrl = "http://3.90.226.222/alfresco/api/-default-/public/search/versions/1/search";
 
   isAutoRefreshChart: boolean = false;
-  chartAnimationDuration = 2000;
+  chartAnimationDuration = 1000;
   chartRefreshInterval = 6000;
   chartRunState: boolean = true;
   newCount: number;
@@ -248,8 +248,8 @@ export class DashboardComponent implements OnInit,AfterViewInit {
 
   ngAfterViewInit(){
     console.log("AferViewInit called");
-    this.getCounts();
-    //this.runChartProcess()
+    //this.getCounts();
+    this.runChartProcess()
   }
   ngOnInit() {
       this.timeSubscription = interval(this.chartRefreshInterval).subscribe((x =>{
@@ -257,6 +257,7 @@ export class DashboardComponent implements OnInit,AfterViewInit {
           this.runChartProcess();
           this.chartRunState = false;
           this.chartAnimationDuration=0;
+          this.chartRefreshInterval = 6000;
         }else{
           this.runChartProcess()
         }
@@ -675,12 +676,11 @@ this.getDetailValues(this.thirtyDayQuery,30).subscribe(()=>
         data: [this.newCount, this.inProgressCount, this.legalReviewCount, this.externalPartyReviewCount, this.negotiationCount],
         backgroundColor: ['yellow', 'grey', 'red', 'purple', 'orange'],
         hoverBorderColor: ['purple', 'purple', 'purple', 'purple', 'purple'],
-        hoverBorderWidth: 1,
+        hoverBorderWidth: 8,
         borderWidth: 10
       }],
       options: [{
         responsive: false,
-        maintainAspectRatio: true,
         events: ['click']
       }]
     };
@@ -691,7 +691,9 @@ this.getDetailValues(this.thirtyDayQuery,30).subscribe(()=>
     if(this.chart){
       console.log("chart exists");
       //this.chart.clear();
-      this.chart.destroy();}
+      this.chart.destroy();
+      //this.chart.update();
+    }
       Chart.defaults.font.size = 18;
 
 
@@ -703,6 +705,7 @@ this.getDetailValues(this.thirtyDayQuery,30).subscribe(()=>
         animation: {
           duration: this.chartAnimationDuration
       },
+      maintainAspectRatio: true,
         onClick: (event, elements, chart) => {
 
           this.chartDataArray = [];
