@@ -7,6 +7,7 @@ import { MinimalNode, MinimalNodeEntity} from '@alfresco/js-api';
 import { NodesApiService } from '@alfresco/adf-content-services';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { empty } from '@apollo/client';
+import { AssociationsComponent } from 'app/associations/associations.component';
 
 
 @Component({
@@ -15,21 +16,21 @@ import { empty } from '@apollo/client';
   styleUrls: ['./documents.component.scss'],
   animations: [
     trigger(
-      'inOutAnimation', 
+      'inOutAnimation',
       [
         transition(
-          ':enter', 
+          ':enter',
           [
             style({ height: 0, opacity: 0 }),
-            animate('3s ease-out', 
+            animate('3s ease-out',
                     style({ height: 300, opacity: 1 }))
           ]
         ),
         transition(
-          ':leave', 
+          ':leave',
           [
             style({ height: 300, opacity: 1 }),
-            animate('3s ease-in', 
+            animate('3s ease-in',
                     style({ height: 0, opacity: 0 }))
           ]
         )
@@ -43,7 +44,7 @@ export class DocumentsComponent implements OnInit{
   documentList: DocumentListComponent;
   fxFlexForDocList: number = 0;
   fxFlexForAux: number = 0;
-  
+
   isHidden:boolean = false;
 
   showMetaContent:boolean = false;
@@ -52,7 +53,7 @@ export class DocumentsComponent implements OnInit{
 
   @Input()
   showViewer: boolean = false;
-  
+
   showView: boolean = false;
 
   thumbnails: boolean = true;
@@ -61,7 +62,7 @@ export class DocumentsComponent implements OnInit{
   node: MinimalNode;
 
   displayDefaultProperties: boolean = true;
-  
+
   currentFolderId: string = "5be4a4cc-f413-4f28-8329-dce29671b224";
 
   nodeEntry: any;
@@ -78,7 +79,7 @@ export class DocumentsComponent implements OnInit{
     .subscribe
     (
       value => (this.currentFolderId = value['fid'] == null? '5be4a4cc-f413-4f28-8329-dce29671b224' : value['fid'])
-      
+
     );
   }
   onViewerVisibilityChanged() {
@@ -105,10 +106,10 @@ export class DocumentsComponent implements OnInit{
     this.nodeId = null;
   }
 
-  onSearchSubmit($event:any){
+  onSearchSubmit(event:any){
     console.log("on search submit: ", event)
   }
-  
+
   onSearchItemClicked(event: MinimalNodeEntity) {
 
     console.log("option clicked object: ", event.entry.id)
@@ -150,11 +151,13 @@ nodeClicked(event: NodeEntityEvent){
     this.nodeId = this.documentList.selection[0].entry.id;
     this.node = this.documentList.selection[0].entry;
 
-  console.log("clicked foldernode id:", this.nodeId);
-  console.log("document list object for clicked foldernode is: ",this.node);
-  
+
+
+  //console.log("clicked foldernode id:", this.nodeId);
+  console.log("document list object for clicked foldernode is: ",this.node.properties['ContractManagement:associations']);
+
   }
-  
+
 
 }
 
@@ -173,6 +176,10 @@ viewerClosed(){
     this.isHidden = false;
 
 
+}
+
+loginfo(inf:any){
+  console.log("info from associations is: ",inf);
 }
 
 }

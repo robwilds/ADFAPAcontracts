@@ -1,0 +1,37 @@
+<p><h1>Association Info</h1>
+<p>association info is {{nodeinfo}} - selected node is {{selectedNode}}</p>
+
+
+  <!--- Note that these columns can be defined in any order.
+        The actual rendered columns are set as a property on the row definition" -->
+
+  <!-- Position Column -->
+  <div fxLayout="row"  id="container">
+    <div id="associnfo" fxFlex="50%">
+
+<table mat-table [dataSource]="nodeinfo" class="mat-elevation-z8">
+  <ng-container matColumnDef="associations">
+    <th mat-header-cell *matHeaderCellDef> associations</th>
+    <td mat-cell *matCellDef="let element"> {{element}} </td>
+  </ng-container>
+  <tr mat-header-row *matHeaderRowDef="['associations']"></tr>
+  <tr mat-row *matRowDef="let row; columns: ['associations'];" (click)="rowClicked(row)"></tr>
+</table>
+</div>
+
+<div id="viewer" fxFlex="50%" style="width:50px !important">
+<adf-alfresco-viewer style="width:50px !important"
+  [(showViewer)]="selectedNode"
+  [overlayMode]="false"
+  [nodeId]="selectedNode"
+  >
+  </adf-alfresco-viewer>
+
+
+</div>
+
+</div>
+
+
+
+

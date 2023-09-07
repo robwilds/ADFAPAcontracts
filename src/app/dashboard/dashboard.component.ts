@@ -19,7 +19,7 @@ import { interval } from 'rxjs';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
-import { FormOutcomeEvent } from '@alfresco/adf-core';
+import { AssociationsComponent } from 'app/associations/associations.component';
 
 export interface folderData {
   id: string;

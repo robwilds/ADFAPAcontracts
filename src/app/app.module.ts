@@ -32,6 +32,7 @@ import { DatePipe } from '@angular/common';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { CommonModule } from '@angular/common';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { AssociationsComponent } from './associations/associations.component';
 
 @NgModule({
     imports: [
@@ -67,7 +68,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
         BlobViewComponent,
         FileViewComponent,
         DocumentsComponent,
-        DashboardComponent
+        DashboardComponent,
+        AssociationsComponent
     ],
     providers: [
         PreviewService,DatePipe,

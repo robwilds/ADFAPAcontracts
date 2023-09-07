@@ -29,21 +29,25 @@
     </adf-breadcrumb>
   </adf-toolbar-title>
 
-  <adf-upload-button 
+  <adf-upload-button
     [rootFolderId]="documentList.currentFolderId || '-root-'"
     [adf-check-allowable-operation]="'create'"
     (success)="uploadSuccess($event)"
   >
   </adf-upload-button>
 </adf-toolbar>
-</mat-card> 
+</mat-card>
 <!--end of mat card for breadcrumb and upload button-->
 
 <!-- Doc List Wrapper STart -->
 <mat-card style="margin:10px;" >
 <div class="adf-document-list-div-wrapper" fxLayoutAlign="start" fxLayout="row" >
 
-<div fxLayoutAlign="none" fxLayout="column" fxFlex="{{fxFlexForDocList}}" [class.is-hidden]="isHidden" [@inOutAnimation]>
+<div fxLayoutAlign="none" fxLayout="column" fxFlex="{{fxFlexForDocList}}" [class.is-hidden]="isHidden">
+  <associations
+  [node]="node"
+  (assocInfo)="loginfo($event)"
+  ></associations>
 <adf-document-list
   #documentList
   [contextMenuActions]="true"
@@ -67,21 +71,21 @@
     </ng-template>
 </data-column>
   <data-column
-      title="Created By" 
+      title="Created By"
       key="createdByUser.displayName">
   </data-column>
   <data-column
-            title="Created On" 
-            key="createdAt" 
-            type="date" 
+            title="Created On"
+            key="createdAt"
+            type="date"
             format="medium"
             sortable="true"
             class="desktop-only">
         </data-column>
         <data-column
-            title="Expires" 
-            key="ContractManagement:Expiration" 
-            type="date" 
+            title="Expires"
+            key="ContractManagement:Expiration"
+            type="date"
             format="medium"
             sortable="true"
             class="desktop-only">
@@ -122,14 +126,14 @@
 <!-- need to control viewer width!!! and put before meta-data card-->
 <!-- <div  class="adf-alfresco-viewer" [class.is-hidden]="!isHidden"  fxFlex={{fxFlexForAux}}> -->
   <adf-alfresco-viewer [class.is-hidden]="!isHidden" fxFlex={{fxFlexForAux}} [@inOutAnimation]
-  [(showViewer)]="showViewer" 
-  [overlayMode]="false" 
+  [(showViewer)]="showViewer"
+  [overlayMode]="false"
   [nodeId]="nodeId"
   (showViewerChange)="viewerClosed()"
   >
   </adf-alfresco-viewer>
   <!-- </div> -->
-  
+
 <!-- metadata card here with fxFlex-->
 <adf-content-metadata-card
     [displayEmpty]="true"
