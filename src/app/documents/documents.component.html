@@ -28,13 +28,42 @@
     >
     </adf-breadcrumb>
   </adf-toolbar-title>
-
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item (click)="toggleGalleryView()">
+        <mat-icon *ngIf="displayMode === 'list'">view_comfy</mat-icon>
+        <mat-icon *ngIf="displayMode === 'gallery'">list</mat-icon>
+        <span>Card view mode</span>
+    </button>
+    <button mat-menu-item
+            (error)="openSnackMessageError($event)"
+            [adf-create-folder]="currentFolderId">
+        <mat-icon>create_new_folder</mat-icon>
+        <span>New folder</span>
+    </button>
+    <button mat-menu-item
+            [disabled]="!canEditFolder(documentList.selection)"
+            (error)="openSnackMessageError($event)"
+            [adf-edit-folder]="documentList.selection[0]?.entry">
+        <mat-icon>create</mat-icon>
+        <span>Edit folder</span>
+    </button>
+    <button mat-menu-item
+            adf-check-allowable-operation="delete"
+            [adf-nodes]="documentList.selection"
+            (delete)="onDeleteActionSuccess($event)"
+            [adf-delete]="documentList.selection">
+        <mat-icon>delete</mat-icon>
+        <span>Delete</span>
+    </button>
+</mat-menu>
+  <adf-toolbar-divider></adf-toolbar-divider>
   <adf-upload-button
     [rootFolderId]="documentList.currentFolderId || '-root-'"
     [adf-check-allowable-operation]="'create'"
     (success)="uploadSuccess($event)"
   >
   </adf-upload-button>
+
 </adf-toolbar>
 </mat-card>
 <!--end of mat card for breadcrumb and upload button-->
@@ -44,10 +73,7 @@
 <div class="adf-document-list-div-wrapper" fxLayoutAlign="start" fxLayout="row" >
 
 <div fxLayoutAlign="none" fxLayout="column" fxFlex="{{fxFlexForDocList}}" [class.is-hidden]="isHidden">
-  <associations
-  [node]="node"
-  (assocInfo)="loginfo($event)"
-  ></associations>
+
 <adf-document-list
   #documentList
   [contextMenuActions]="true"
@@ -92,13 +118,14 @@
         </data-column>
 </data-columns>
 
-
 <content-actions>
   <content-action
-      title="sherry said add properties....add action to change status (change property of status)"
+      title="associations"
       permission="update"
+      target="folder"
       [disableWithNoPermission]="true"
-      handler="copy">
+
+      (execute)="folderAssociationsCustomAction($event)">
   </content-action>
   <content-action
       title="Copy"
@@ -146,6 +173,14 @@
 </div> <!-- div for doc list and pagination -->
 </mat-card>
 </div> <!-- div for wrapper -->
-
-
+<div class="formView" *ngIf="showAssocations">
+<div id="associations" cdkDrag>
+  <button mat-mini-fab (click)="closeAssociation()">
+    <mat-icon>close</mat-icon>
+  </button>
+<associations
+  [_node]="folderNodeAssociation"
+  ></associations>
+</div>
+</div>
 <adf-file-uploading-dialog></adf-file-uploading-dialog>

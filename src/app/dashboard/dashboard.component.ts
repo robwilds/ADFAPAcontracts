@@ -231,8 +231,6 @@ export class DashboardComponent implements OnInit,AfterViewInit {
       //console.log("days plus 7",this.currentDayPlus7);
 
       this.currentUser = authService.getEcmUsername();
-      //this.runChartProcess();
-
 
     //   this.timeSubscription = interval(this.chartRefreshInterval).subscribe((x =>{
     //     if (this.chartRunState){
@@ -246,18 +244,25 @@ export class DashboardComponent implements OnInit,AfterViewInit {
     // }));
   }
 
+
   ngAfterViewInit(){
-    console.log("AferViewInit called");
+    //this.runChartProcess();
+    //alert("after view init")
+    //console.log("AferViewInit called");
     //this.getCounts();
-    this.runChartProcess()
+
   }
   ngOnInit() {
+
+    //this.runChartProcess(); //run the first time
+    //this.processChart("dummy");
+
       this.timeSubscription = interval(this.chartRefreshInterval).subscribe((x =>{
         if (this.chartRunState){
           this.runChartProcess();
           this.chartRunState = false;
           this.chartAnimationDuration=0;
-          this.chartRefreshInterval = 6000;
+          //this.chartRefreshInterval = 6000;
         }else{
           this.runChartProcess()
         }
@@ -445,12 +450,8 @@ export class DashboardComponent implements OnInit,AfterViewInit {
   getCounts(): Observable<any> {
     console.log("inside getcounts");
 
-    const headers = new HttpHeaders()
-      .set("Content-Type", "application/json")
-      .set("Authorization", "Basic cndpbGRzOmRlbW8=");
-
-
-this.getDetailValues(this.thirtyDayQuery,30).subscribe(()=>
+  //get the 306090 details and sum info
+  this.getDetailValues(this.thirtyDayQuery,30).subscribe(()=>
   this.getSum(this.thirtyDayQuery,30).subscribe(()=>
   this.getDetailValues(this.sixtyDayQuery,60).subscribe(()=>
   this.getSum(this.sixtyDayQuery,60).subscribe(()=>
@@ -460,6 +461,10 @@ this.getDetailValues(this.thirtyDayQuery,30).subscribe(()=>
   )
 )
     //****** GET CHART INFO BELOW ******
+    const headers = new HttpHeaders()
+    .set("Content-Type", "application/json")
+    .set("Authorization", "Basic cndpbGRzOmRlbW8=");
+
 
     //Run New
     this.http.post(this.globalSearchUrl, this.newQuery, { headers }).subscribe(
@@ -646,22 +651,7 @@ this.getDetailValues(this.thirtyDayQuery,30).subscribe(()=>
 
     console.log("now setting data array for chart");
 
-    const doughnutLabel =  {
-      id:'doughnutLabel',
-      beforeDatasetsDraw(chart,args,pluginOptions){
-        const { ctx,data} = chart;
 
-        ctx.save;
-        const xCoor = chart.getDatasetMeta(0).data[0].x;
-        const yCoor = chart.getDatasetMeta(0).data[0].y;
-
-        ctx.font = 'bold 30px sans-serif';
-        ctx.fillStyle = 'rgba(54,162,235,1)';
-        ctx.textaAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(data.labels[0],xCoor,yCoor);
-      }
-    }
 
     this.data = {
       labels: [
@@ -685,7 +675,7 @@ this.getDetailValues(this.thirtyDayQuery,30).subscribe(()=>
       }]
     };
 
-    console.log("data set is: ", this.data)
+    //console.log("data set is: ", this.data)
     console.log("now instantiating chart object");
 
     if(this.chart){

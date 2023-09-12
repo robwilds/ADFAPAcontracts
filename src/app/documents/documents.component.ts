@@ -1,14 +1,21 @@
 import { Component, ViewChild, Input, OnInit } from '@angular/core';
-import { NotificationService } from '@alfresco/adf-core';
-import { DocumentListComponent, NodeEntityEvent, NodeEntryEvent } from '@alfresco/adf-content-services';
+import { NotificationService,DisplayMode } from '@alfresco/adf-core';
+import { DocumentListComponent, NodeEntityEvent, NodeEntryEvent,ContentService,
+  FolderCreatedEvent,
+  UploadService,PermissionStyleModel,
+  UploadFilesEvent,
+  ConfirmDialogComponent,
+  ContentMetadataService,
+  FilterSearch,
+  DialogAspectListService,
+  FileUploadEvent, } from '@alfresco/adf-content-services';
 import { PreviewService } from '../services/preview.service';
 import { ActivatedRoute,Router,PRIMARY_OUTLET } from '@angular/router';
-import { MinimalNode, MinimalNodeEntity} from '@alfresco/js-api';
+import { MinimalNode, MinimalNodeEntity,NodeEntry} from '@alfresco/js-api';
 import { NodesApiService } from '@alfresco/adf-content-services';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { empty } from '@apollo/client';
 import { AssociationsComponent } from 'app/associations/associations.component';
-
 
 @Component({
   selector: 'app-documents',
@@ -68,7 +75,12 @@ export class DocumentsComponent implements OnInit{
   nodeEntry: any;
   sub: any;
 
-  constructor(private route: ActivatedRoute, public router: Router, private notificationService: NotificationService, private preview: PreviewService, private nodeService: NodesApiService) {
+  folderNodeAssociation:string;
+  showAssocations:boolean = false;
+
+  displayMode = DisplayMode.List;
+
+  constructor(private contentService: ContentService,private route: ActivatedRoute, public router: Router, private notificationService: NotificationService, private preview: PreviewService, private nodeService: NodesApiService) {
   this.fxFlexForDocList = 100;
   this.fxFlexForAux = 0;
   }
@@ -157,8 +169,6 @@ nodeClicked(event: NodeEntityEvent){
   console.log("document list object for clicked foldernode is: ",this.node.properties['ContractManagement:associations']);
 
   }
-
-
 }
 
 backButtonClicked(){
@@ -174,12 +184,60 @@ viewerClosed(){
     this.fxFlexForAux = 0;
     this.showDocListContent = true;
     this.isHidden = false;
-
-
 }
 
 loginfo(inf:any){
   console.log("info from associations is: ",inf);
 }
+
+folderAssociationsCustomAction(event) {
+  //let entry = event.value.entry;
+
+  this.folderNodeAssociation = event.value.entry;
+  this. showAssocations = true;
+console.log("association clicked", this.folderNodeAssociation,"show state ",this.showAssocations)
+  //alert(`Custom document action for ${entry.id}`);
+}
+
+closeAssociation(){
+  this.showAssocations = false;
+}
+
+toggleGalleryView(): void {
+  this.displayMode = this.displayMode === DisplayMode.List ? DisplayMode.Gallery : DisplayMode.List;
+  const url = this.router.createUrlTree(['/files', this.currentFolderId, 'display', this.displayMode]).toString();
+
+  //this.location.go(url);
+}
+
+openSnackMessageError(error: any) {
+  this.notificationService.showError(error.value || error);
+}
+
+openSnackMessageInfo(message: string) {
+  this.notificationService.showInfo(message);
+}
+
+canEditFolder(selection: Array<NodeEntry>): boolean {
+  if (selection && selection.length === 1) {
+      const entry = selection[0].entry;
+
+      if (entry && entry.isFolder) {
+          return this.contentService.hasAllowableOperations(entry, 'update');
+      }
+  }
+  return false;
+}
+
+onDeleteActionSuccess(message: string) {
+  //this.uploadService.fileDeleted.next(message);
+  //this.deleteElementSuccess.emit();
+  this.documentList.reload();
+  this.openSnackMessageInfo(message);
+}
+
+
+
+
 
 }

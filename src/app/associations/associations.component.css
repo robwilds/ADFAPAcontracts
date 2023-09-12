@@ -1,0 +1,43 @@
+
+table {
+  width: 100%;
+}
+
+td, th {
+  text-align: center !important;
+  vertical-align: middle !important;
+  word-wrap: break-word;
+    max-width: 200px
+}
+
+#associationWrapper{
+
+  height:auto;
+  width:auto;
+}
+
+.fillBackground{
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+
+  padding:20px;
+
+  /* this is what centers your element in the fixed wrapper*/
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center; /* aligns on vertical for column */
+  align-items: center; /* aligns on horizontal for column */
+
+  /* just for styling to see the limits
+  border: 2px dashed red;
+  box-sizing: border-box;
+  z-index:200;
+  //background-color: rgba(10, 77, 36, 0.935);
+  background: var(--theme-primary-color);
+  overflow: scroll;*/
+
+}

@@ -6,7 +6,7 @@
 
 .doclist-div-wrapper{
     width:max;
-    
+
 }
 
 .adf-content-metadata-card-div-wrapper{
@@ -38,4 +38,41 @@ margin-top: 10px; */
     //height: 400px;
     // top: 60px;
     // right: 50px;
+  }
+
+  #associations{
+
+    position:fixed;
+    z-index:300;
+    bottom:0;
+    background-color: white;
+
+  }
+  .formView{
+
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+
+    padding-top:300px;
+    padding-bottom:20px;
+
+    /* this is what centers your element in the fixed wrapper*/
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center; /* aligns on vertical for column */
+    align-items: center; /* aligns on horizontal for column */
+
+    backdrop-filter: blur(10px);
+    /* just for styling to see the limits */
+    //border: 2px dashed red;
+    box-sizing: border-box;
+    z-index:200;
+    //background-color: rgba(10, 77, 36, 0.5);
+    //background-color: (var(--theme-primary-color),.5);
+    overflow: scroll;
+
   }
