@@ -1,4 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
+import { MetadataDialogAdapterComponent } from './documents/metadata-dialog-adapter.component';
+import {MatButtonModule} from '@angular/material/button';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
@@ -36,7 +38,8 @@ import { AssociationsComponent } from './associations/associations.component';
 
 @NgModule({
     imports: [
-        DragDropModule,
+      MatButtonModule,
+      DragDropModule,
         BrowserModule,
         MatSlideToggleModule,
         HttpClientModule,
@@ -69,7 +72,8 @@ import { AssociationsComponent } from './associations/associations.component';
         FileViewComponent,
         DocumentsComponent,
         DashboardComponent,
-        AssociationsComponent
+        AssociationsComponent,
+        MetadataDialogAdapterComponent
     ],
     providers: [
         PreviewService,DatePipe,

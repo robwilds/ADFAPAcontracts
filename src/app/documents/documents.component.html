@@ -120,25 +120,44 @@
 
 <content-actions>
   <content-action
-      title="associations"
+  icon="redo"
+    title="associations"
       permission="update"
       target="folder"
       [disableWithNoPermission]="true"
 
       (execute)="folderAssociationsCustomAction($event)">
+      <content-action
+                        icon="get_app"
+                        title="Download"
+                        handler="download">
+                    </content-action>
   </content-action>
   <content-action
+  icon="info"
+  title="Info"
+  (execute)="onManageMetadata($event)">
+</content-action>
+  <content-action
+      icon="copy"
       title="Copy"
       permission="update"
       [disableWithNoPermission]="true"
       handler="copy">
   </content-action>
   <content-action
+      icon="delete"
       title="Delete"
       permission="delete"
       disableWithNoPermission="true"
       handler="delete">
   </content-action>
+  <content-action
+                        icon="beach_access"
+                        target="folder"
+                        title="Update Aspects"
+                        (execute)="onAspectUpdate($event)">
+                    </content-action>
 </content-actions>
 </adf-document-list>
 
@@ -166,6 +185,8 @@
     [displayEmpty]="true"
     [preset]="'*'"
     [node]="node"
+    [displayEmpty]="true"
+    [displayAspect]="'ContractManagement'"
     fxFlex={{fxFlexForAux}}>
 </adf-content-metadata-card>
 <!--end meta data card-->

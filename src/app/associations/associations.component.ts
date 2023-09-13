@@ -1,10 +1,9 @@
-import { Component, Input, Output, EventEmitter, AfterViewInit,OnInit,ViewChild } from '@angular/core';
-import { NodesApiService } from '@alfresco/adf-content-services';
-import { MinimalNode } from '@alfresco/js-api';
+import { Component, Input, Output, EventEmitter, AfterViewInit,OnInit,ViewChild, OnDestroy } from '@angular/core';
+import { DocumentListComponent, NodesApiService } from '@alfresco/adf-content-services';
+import { MinimalNode, NodeEntry } from '@alfresco/js-api';
 import { MatDialog } from '@angular/material/dialog';
 import {trigger, style, animate, transition} from '@angular/animations';
 import { MatTable } from '@angular/material/table';
-import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 export interface nodeData {
   id: number;
@@ -29,7 +28,7 @@ export interface nodeData {
   ]
 })
 
-export class AssociationsComponent implements OnInit,AfterViewInit{
+export class AssociationsComponent implements OnInit,AfterViewInit,OnDestroy{
   //table example: https://stackblitz.com/run?file=src%2Fexample%2Ftable-basic-example.html,src%2Fexample%2Ftable-basic-example.ts
   selectedAssociationTab:number;
 
@@ -44,8 +43,12 @@ export class AssociationsComponent implements OnInit,AfterViewInit{
   nodeAssociations: any[];
   selectedNode: string;
   newAssociationArray:nodeData[] = [];
+  showSaveCancelButtons:boolean = false;
+  isSaveButtonDisabled:boolean = false;
+  folderId:string="-my-";
 
   @ViewChild('table') table: MatTable<any>;
+  @ViewChild('documentList') doclist: DocumentListComponent;
 
   constructor(private nodeapi: NodesApiService,dialog: MatDialog) {}
 
@@ -58,6 +61,11 @@ export class AssociationsComponent implements OnInit,AfterViewInit{
   }
   ngOnChanges(changes) {
   }
+
+  ngOnDestroy(): void {
+      //alert("destroy due to close")
+  }
+
 
   updateNodeID(nodeVal:MinimalNode) {
 
@@ -113,16 +121,48 @@ export class AssociationsComponent implements OnInit,AfterViewInit{
 
     this.newAssociationArray.push(data);
     this.table.renderRows();
+    this.showSaveCancelButtons = true;
 
     //now set the tab back to zero (the initial tab)
     this.selectedAssociationTab = 0;
+  }
 
+  saveAssociations(){
+    //now loop through the array and create a new array with just the nodeIds
+    let tempArray:string[] = [];
+
+    for (let entry of this.newAssociationArray) {
+      tempArray.push(`"${entry.nodeid}"`)
+ }
+
+
+    //take new array and push to update properties on node
+    let updateStr = `{
+      "properties":
+      {
+        "ContractManagement:associations":[${tempArray}]
+      }
+     }`
+
+    console.log("associations update string: ",updateStr);
+
+    this.nodeapi.updateNode(this.node.id,updateStr).subscribe( val => {console.log("updating node: ",val)})
+    this.isSaveButtonDisabled = true;
   }
 
   closeit(){
     this.close = false;
   }
 
+  onSeachItemClicked(event:NodeEntry)
+  {
+    //this.doclist.currentFolderId = event.entry.parentId;
+    this.folderId = event.entry.parentId;
+
+    //console.log("doc list data: ",this.doclist.data);
+    //console.log("parent id of search item clicked: ",event.entry.parentId);
+
+  }
 }
 
 

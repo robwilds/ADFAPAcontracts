@@ -28,15 +28,57 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="rowClicked(row.nodeid)"></tr>
     </table>
   </mat-tab>
+
   <mat-tab label="Add Association" >
+    <adf-search-control
+    [highlight]="true"
+    [liveSearchEnabled]="true"
+    [expandable]="true"
+    (optionClicked)="onSeachItemClicked($event)"
+    >
+
+</adf-search-control>
+    <adf-breadcrumb
+    [target]="documentList"
+
+    >
+</adf-breadcrumb>
+
     <adf-document-list
     #documentList
-    [currentFolderId]="'-my-'"
+    [currentFolderId]="folderId"
     [contextMenuActions]="true"
     [contentActions]="true"
     [showHeader]="true"
     [allowDropFiles]="true"
-    [contentActionsPosition]="'right'">
+    [contentActionsPosition]="'right'"
+    [thumbnails]="true"
+    >
+    <data-columns>
+      <data-column key="$thumbnail" type="image"></data-column>
+      <data-column
+          title="Name"
+          key="name"
+          sortable="true"
+          class="full-width ellipsis-cell">
+      </data-column>
+      <data-column
+          title="Created By"
+          key="createdByUser.displayName"
+          sortable="true"
+          class="desktop-only">
+      </data-column>
+      <data-column
+          title="Created On"
+          key="createdAt"
+          type="date"
+          format="medium"
+          sortable="true"
+          class="desktop-only">
+      </data-column>
+  </data-columns>
+
+
     <content-actions>
       <content-action
           title="Associate with {{node.name}}"
@@ -59,6 +101,11 @@
       [nodeId]="selectedNode">
     </adf-alfresco-viewer>
   </ng-container>
+
+</div>
+<div id="buttons" style="width:100%;margin-left:auto;margin-right:auto;" *ngIf="showSaveCancelButtons">
+
+  <button mat-button (click)="saveAssociations()" [disabled]="isSaveButtonDisabled">Save</button>
 
 </div>
 </div> <!-- for wrapper -->

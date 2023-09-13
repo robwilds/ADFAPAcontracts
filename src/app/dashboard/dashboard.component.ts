@@ -246,10 +246,7 @@ export class DashboardComponent implements OnInit,AfterViewInit {
 
 
   ngAfterViewInit(){
-    //this.runChartProcess();
-    //alert("after view init")
-    //console.log("AferViewInit called");
-    //this.getCounts();
+    this.getCounts();  //do this first so the chart doesn't show NaN and the outlook blocks have data ready to go
 
   }
   ngOnInit() {
@@ -262,7 +259,7 @@ export class DashboardComponent implements OnInit,AfterViewInit {
           this.runChartProcess();
           this.chartRunState = false;
           this.chartAnimationDuration=0;
-          //this.chartRefreshInterval = 6000;
+
         }else{
           this.runChartProcess()
         }
@@ -289,7 +286,10 @@ export class DashboardComponent implements OnInit,AfterViewInit {
 
   runChartProcess()
   {
-    this.getCounts().subscribe( val => {this.processChart(val)});
+    this.getCounts().subscribe( val => {this.initializeChartData().subscribe(val => {this.processChart(val)})
+
+
+      });
   }
 
   thirty6090Clicked(id) {
@@ -352,7 +352,7 @@ export class DashboardComponent implements OnInit,AfterViewInit {
     const headers = new HttpHeaders()
     .set("Content-Type", "application/json")
     .set("Authorization", "Basic cndpbGRzOmRlbW8=");
-    let iter = 0;
+    let iter = 1;
     let array = [];
 
     this.http.post(this.globalSearchUrl, query,{headers}).subscribe(
@@ -642,10 +642,10 @@ export class DashboardComponent implements OnInit,AfterViewInit {
       }
     );
 
-    return of({ client: 'Client 1' });
+    return of('done');
   }
 
-  processChart(dummy) {
+  initializeChartData():Observable<any>{
 
     this.ctx = this.canvasRef.nativeElement.getContext('2d');
 
@@ -674,6 +674,14 @@ export class DashboardComponent implements OnInit,AfterViewInit {
         events: ['click']
       }]
     };
+
+    //done, return observable
+    return of('done');
+
+  }
+  processChart(dummy) {
+
+
 
     //console.log("data set is: ", this.data)
     console.log("now instantiating chart object");

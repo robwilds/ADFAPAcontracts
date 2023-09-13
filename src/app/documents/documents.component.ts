@@ -16,6 +16,8 @@ import { NodesApiService } from '@alfresco/adf-content-services';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { empty } from '@apollo/client';
 import { AssociationsComponent } from 'app/associations/associations.component';
+import { MatDialog } from '@angular/material/dialog';
+import { MetadataDialogAdapterComponent } from './metadata-dialog-adapter.component';
 
 @Component({
   selector: 'app-documents',
@@ -79,8 +81,9 @@ export class DocumentsComponent implements OnInit{
   showAssocations:boolean = false;
 
   displayMode = DisplayMode.List;
+  displayEmptyMetadata:boolean = true;
 
-  constructor(private contentService: ContentService,private route: ActivatedRoute, public router: Router, private notificationService: NotificationService, private preview: PreviewService, private nodeService: NodesApiService) {
+  constructor(private dialog: MatDialog,private dialogAspectListService: DialogAspectListService,private contentService: ContentService,private route: ActivatedRoute, public router: Router, private notificationService: NotificationService, private preview: PreviewService, private nodeService: NodesApiService) {
   this.fxFlexForDocList = 100;
   this.fxFlexForAux = 0;
   }
@@ -171,6 +174,14 @@ nodeClicked(event: NodeEntityEvent){
   }
 }
 
+onAspectUpdate(event: any) {
+  this.dialogAspectListService.openAspectListDialog(event.value.entry.id).subscribe((aspectList) => {
+      this.nodeService.updateNode(event.value.entry.id, { aspectNames: [...aspectList] }).subscribe(() => {
+          this.openSnackMessageInfo('Node Aspects Updated');
+      });
+  });
+}
+
 backButtonClicked(){
   this.fxFlexForDocList = 100;
     this.fxFlexForAux = 0;
@@ -235,7 +246,23 @@ onDeleteActionSuccess(message: string) {
   this.documentList.reload();
   this.openSnackMessageInfo(message);
 }
+onManageMetadata(event: any) {
+  const contentEntry = event.value.entry;
+  const displayEmptyMetadata = this.displayEmptyMetadata;
 
+  if (this.contentService.hasAllowableOperations(contentEntry, 'update')) {
+      this.dialog.open(MetadataDialogAdapterComponent, {
+          data: {
+              contentEntry,
+              displayEmptyMetadata
+          },
+          panelClass: 'adf-metadata-manager-dialog',
+          width: '630px'
+      });
+  } else {
+      this.openSnackMessageError('OPERATION.ERROR.PERMISSION');
+  }
+}
 
 
 
