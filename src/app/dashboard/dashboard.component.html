@@ -19,7 +19,7 @@
       <canvas #canvas id='canvas'>{{chart}}</canvas>
       <!--         <div id="chartDetail" fxFlex="50">chart detail goes here</div> -->
     </div>
-    <div id="details" fxFlex="100" *ngIf="showChartPanel" style="margin:10px;" [@inOutAnimation]>
+    <div id="details" fxFlex="100" *ngIf="showChartPanel" style="margin:10px;" [@animImageSlider]>
       <div class="mat-elevation-z8" style="max-height:350px;overflow: scroll;">
         <mat-card style="text-align: center;">{{chartClickedLegend}}</mat-card>
         <table mat-table [dataSource]="chartDataArray" tabindex="0">
@@ -60,7 +60,7 @@
 </mat-card>
 
     <mat-card style="width:100%;margin:10px;">
-  <div id="lowerSection" fxLayout="column" fxLayoutAlign="space-evenly stretch" fxfill style="width:100%">
+  <div id="lowerSection" fxLayout="column" fxLayoutAlign="space-evenly stretch" fxfill style="width:100%" >
     <div fxFlex="100" style="margin-right:auto"><h1>Contract Outlook</h1></div>
 
       <div id="thirty6090" fxFlex="100"> <!--Add logic to turn off other cards if one is clicked-->
@@ -82,12 +82,11 @@
           </mat-card-header>
           {{ninetyDayCount}}
         </mat-card>
-
     </div>
 
       <div id="details" fxFlex="100" *ngIf="showSummaryPanel" style="margin: 10px;" [@inOutAnimation]>
-        <div class="mat-elevation-z8" style="max-height:400px;overflow: scroll;">
-        <table mat-table [dataSource]="mainDataArray" tabindex="0" matSort>
+        <div class="mat-elevation-z20" style="max-height:400px;overflow: scroll;">
+        <table #detailTable mat-table [dataSource]="mainDataArray" tabindex="0" matSort>
 
           <!-- id Column -->
           <ng-container matColumnDef="id">
@@ -130,7 +129,7 @@
 <mat-card>
   <h1>My Tasks</h1>
   <mat-tab-group animationDuration="1000ms" mat-align-tabs="center">
-      <mat-tab label="Assigned">
+      <mat-tab label="Assigned" class="mat-elevation-z8">
         <adf-cloud-task-list #taskCloud
         [appName]="appName"
         [showMainDatatableActions]="'true'"
@@ -146,7 +145,7 @@
             <data-column key="priority" title="Priority" ></data-column>
             <data-column key="createdDate" title="Created" >
               <ng-template let-entry="$implicit">
-                <div>{{entry.row.obj.createdDate | date:'MMM d, yyyy' }} </div>
+                <div>{{entry.row.obj.createdDate | date:'MMM d, yyyy h:mm:ss a' }} </div>
         </ng-template>
             </data-column>
             <data-column key="description" title="Description"></data-column>
@@ -156,7 +155,7 @@
         <adf-pagination [target]="taskCloud" [supportedPageSizes]="[5]" [pagination]="5">
         </adf-pagination>
       </mat-tab>
-      <mat-tab label="Completed">
+      <mat-tab label="Completed" class="mat-elevation-z8">
         <adf-cloud-task-list #taskCloud
         [appName]="appName"
         [showMainDatatableActions]="true"
@@ -172,7 +171,7 @@
             <!--data-column key="priority" title="Priority" ></data-column-->
             <data-column key="createdDate" title="Created" >
               <ng-template let-entry="$implicit">
-                <div>{{entry.row.obj.createdDate | date:'MMM d, yyyy' }} </div>
+                <div>{{entry.row.obj.createdDate | date:'MMM d, yyyy h:mm:ss a' }} </div>
         </ng-template>
             </data-column>
             <data-column key="description" title="Description"></data-column>
@@ -182,16 +181,64 @@
         <adf-pagination [target]="taskCloud" [supportedPageSizes]="[5]" [pagination]="5">
         </adf-pagination>
       </mat-tab>
+      <mat-tab label="Task Details" class="mat-elevation-z8">
+        task details here
+
+      </mat-tab>
     </mat-tab-group>
   </mat-card>
   </div> <!-- div for tasks -->
 
   <div id="recents">
-    <mat-card>
-      <mat-card-content>
-        <h1>My Recent Items</h1>
+    <!-- <mat-card>
+      <mat-card-content> -->
+        <mat-tab-group style='min-height:600px'>
+          <h1>My Items</h1>
+          <mat-tab label="My Files" style="z-index: 400;">
+
+            <adf-upload-drag-area (success)="onSuccess($event)" [rootFolderId]="'-my-'" [versioning]="'false'">
+              <adf-document-list
+              #documentList
+              [currentFolderId]="'-my-'"
+              [contextMenuActions]="true"
+              [contentActions]="true"
+              (nodeClick)="showBoxPreview($event)"
+              (preview)="showBoxPreview($event)"
+              [allowDropFiles]="'true'"
+              [stickyHeader]="'true'"
+              [showHeader]="'true'"
+              ></adf-document-list>
+          </adf-upload-drag-area>
+          <adf-file-uploading-dialog style="z-index: 400;"></adf-file-uploading-dialog>
+
+        </mat-tab>
+
+      <mat-tab label="Favorites">
+        <adf-document-list #favoriteList
+        [currentFolderId]="'-favorites-'"
+        [headerFilters]="true"
+        [contextMenuActions]="true"
+        [contentActions]="true"
+        [stickyHeader]="true"
+        (nodeClick)="showBoxPreview($event)"
+        (preview)="showBoxPreview($event)"
+          >
+          <data-columns>
+            <data-column key="$thumbnail" type="image"></data-column>
+            <data-column title="Name" key="name" class="full-width ellipsis-cell"></data-column>
+            <data-column title="Created By" key="createdByUser.displayName">
+            </data-column>
+            <data-column key="createdOn" title="Created"></data-column>
+          </data-columns>
+        </adf-document-list>
+        <adf-pagination [target]="recentList" [supportedPageSizes]="[5]" [pagination]="5">
+        </adf-pagination>
+
+      </mat-tab>
+      <mat-tab label="Recents">
+
         <adf-document-list #recentList
-        [currentFolderId]="'-recent-'"
+        [currentFolderId]="'-recents-'"
         [headerFilters]="true"
         [contextMenuActions]="true"
         [contentActions]="true"
@@ -210,12 +257,14 @@
         </adf-document-list>
         <adf-pagination [target]="recentList" [supportedPageSizes]="[5]" [pagination]="5">
         </adf-pagination>
-      </mat-card-content>
-    </mat-card>
+      </mat-tab>
+      </mat-tab-group>
+      <!-- </mat-card-content>
+    </mat-card> -->
   </div> <!--div for recents-->
 </div> <!-- div for container -->
 
-<div class="adf-alfresco-viewer" cdkDrag *ngIf="showViewer">
+<div class="adf-alfresco-viewer" cdkDrag *ngIf="showViewer" class="mat-elevation-z8">
   <adf-alfresco-viewer [(showViewer)]="showViewer" [overlayMode]="false" [nodeId]="nodeId">
   </adf-alfresco-viewer>
 </div>
@@ -234,10 +283,10 @@
     [taskId]="taskId"
     [showRefreshButton]="'true'"
     (formSaved)="clickedTaskSave($event)"
-    (executeOutcome)="taskFormCompleted()"
+    (executeOutcome)="executeOutcome()"
     (cancelClick)="taskFormCanceled()"
-    (taskCompleted)="taskFormCompleted()"
-    (formCompleted)="taskFormCompleted()"
+    (taskCompleted)="taskCompleted()"
+    (formCompleted)="FormCompleted()"
     (error)="taskFormError($event)"
     (onTaskLoaded)="onTaskLoaded($event)"
     >

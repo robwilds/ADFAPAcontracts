@@ -3,7 +3,10 @@ import { DocumentListComponent, NodesApiService } from '@alfresco/adf-content-se
 import { MinimalNode, NodeEntry } from '@alfresco/js-api';
 import { MatDialog } from '@angular/material/dialog';
 import {trigger, style, animate, transition} from '@angular/animations';
-import { MatTable } from '@angular/material/table';
+import { MatTable,MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort,Sort } from '@angular/material/sort';
+import { MatSortable } from '@angular/material/sort';
 
 export interface nodeData {
   id: number;
@@ -19,14 +22,15 @@ export interface nodeData {
     trigger('fade', [
       transition('void => *', [ // using status here for transition
         style({ opacity: 0 }),
-        animate(500, style({ opacity: 1 }))
+        animate(1000, style({ opacity: 1 }))
       ]),
       transition('* => void', [
-        animate(500, style({ opacity: 0 }))
+        animate(1000, style({ opacity: 0 }))
       ])
     ])
   ]
 })
+
 
 export class AssociationsComponent implements OnInit,AfterViewInit,OnDestroy{
   //table example: https://stackblitz.com/run?file=src%2Fexample%2Ftable-basic-example.html,src%2Fexample%2Ftable-basic-example.ts
@@ -39,31 +43,37 @@ export class AssociationsComponent implements OnInit,AfterViewInit,OnDestroy{
   @Output() assocInfo = new EventEmitter();
 
   close:boolean = true;
-  displayedColumns: string[] = ['id', 'name', 'nodeid'];
+  displayedColumns: string[] = ['id', 'name', 'nodeid','action'];
+  dataSource: MatTableDataSource<nodeData>;
   nodeAssociations: any[];
   selectedNode: string;
   newAssociationArray:nodeData[] = [];
   showSaveCancelButtons:boolean = false;
   isSaveButtonDisabled:boolean = false;
-  folderId:string="-my-";
+  currentFolderId:string="-my-";
 
-  @ViewChild('table') table: MatTable<any>;
+  @ViewChild('table',{static:true}) table: MatTable<any>;
   @ViewChild('documentList') doclist: DocumentListComponent;
+  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  @ViewChild(MatSort, {static: true}) sort: MatSort;
 
-  constructor(private nodeapi: NodesApiService,dialog: MatDialog) {}
+  constructor(private nodeapi: NodesApiService,dialog: MatDialog) {
+    this.dataSource = new MatTableDataSource(this.newAssociationArray);
+  }
 
   ngOnInit(): void {
     this.close = true;
+    this.dataSource.paginator = this.paginator;
+    this.sort.sort(({ id: 'id', start: 'asc'}) as MatSortable);
+    this.dataSource.sort = this.sort;
+
   }
 
   ngAfterViewInit(): void {
-
   }
   ngOnChanges(changes) {
   }
-
   ngOnDestroy(): void {
-      //alert("destroy due to close")
   }
 
 
@@ -82,6 +92,7 @@ export class AssociationsComponent implements OnInit,AfterViewInit,OnDestroy{
 
   getExtendedAssociationInfo(){
 
+    let tempSorted:nodeData[] = [];
     //get name of each associated node
     for (let i = 0; i < this.nodeAssociations.length; i++){
 
@@ -96,13 +107,20 @@ export class AssociationsComponent implements OnInit,AfterViewInit,OnDestroy{
           };
 
           this.newAssociationArray.push(data);
-          //console.log("namefromnode data: ",this.newAssociationArray);
-          this.table.renderRows();
+          this.dataSource = new MatTableDataSource(this.newAssociationArray);
+          this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
 
       })
     }
 
-    console.log("associations for loop done: ",this.newAssociationArray);
+    //console.log("association table data is: ",this.dataSource);
+    this.dataSource = new MatTableDataSource(this.newAssociationArray);
+    //this.dataSource.sort = this.sort;
+    //this.dataSource.paginator = this.paginator;
+    //this.table.dataSource = this.dataSource;
+    this.table.renderRows();
+    //console.log("associations for loop done: ",this.dataSource);
   }
 
   customAssociationAction(event)
@@ -120,11 +138,14 @@ export class AssociationsComponent implements OnInit,AfterViewInit,OnDestroy{
     };
 
     this.newAssociationArray.push(data);
-    this.table.renderRows();
-    this.showSaveCancelButtons = true;
+    this.dataSource = new MatTableDataSource(this.newAssociationArray);
+    this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
+    //this.table.renderRows();
 
     //now set the tab back to zero (the initial tab)
     this.selectedAssociationTab = 0;
+    this.showSaveCancelButtons = true;
   }
 
   saveAssociations(){
@@ -134,7 +155,6 @@ export class AssociationsComponent implements OnInit,AfterViewInit,OnDestroy{
     for (let entry of this.newAssociationArray) {
       tempArray.push(`"${entry.nodeid}"`)
  }
-
 
     //take new array and push to update properties on node
     let updateStr = `{
@@ -146,8 +166,8 @@ export class AssociationsComponent implements OnInit,AfterViewInit,OnDestroy{
 
     console.log("associations update string: ",updateStr);
 
-    this.nodeapi.updateNode(this.node.id,updateStr).subscribe( val => {console.log("updating node: ",val)})
-    this.isSaveButtonDisabled = true;
+    this.nodeapi.updateNode(this.node.id,updateStr).subscribe( val => {console.log("updated node: ",val);this.isSaveButtonDisabled = true;})
+
   }
 
   closeit(){
@@ -157,12 +177,27 @@ export class AssociationsComponent implements OnInit,AfterViewInit,OnDestroy{
   onSeachItemClicked(event:NodeEntry)
   {
     //this.doclist.currentFolderId = event.entry.parentId;
-    this.folderId = event.entry.parentId;
+    this.currentFolderId = event.entry.parentId;
 
     //console.log("doc list data: ",this.doclist.data);
     //console.log("parent id of search item clicked: ",event.entry.parentId);
 
   }
+
+  RemoveElementFromObjectArray(key: number) {
+    this.newAssociationArray.forEach((value,index)=>{
+        if(value.id==key) this.newAssociationArray.splice(index,1);
+    });
+
+    //once all done, push the new array to the datasource so it can be seen
+    this.dataSource = new MatTableDataSource(this.newAssociationArray);
+    this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
+
+    this.showSaveCancelButtons = true;
+}
+
+
 }
 
 

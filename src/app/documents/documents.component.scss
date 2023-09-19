@@ -50,7 +50,6 @@ margin-top: 10px; */
   }
   .formView{
 
-
     position: fixed;
     top: 0;
     left: 0;
@@ -76,3 +75,8 @@ margin-top: 10px; */
     overflow: scroll;
 
   }
+
+  .adf-datatable-card .app-lock-button {
+    top: -10px;
+    position: absolute;
+}

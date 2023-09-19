@@ -1,26 +1,27 @@
 
-import { MinimalNode, MinimalNodeEntity, TasksApi } from '@alfresco/js-api';
-import { NodesApiService } from '@alfresco/adf-content-services';
-import { DocumentListComponent, NodeEntityEvent, NodeEntryEvent } from '@alfresco/adf-content-services';
+import { MinimalNode, MinimalNodeEntity, TasksApi,NodeEntry } from '@alfresco/js-api';
+import { DocumentListComponent, NodesApiService,NodeEntityEvent, NodeEntryEvent,ContentService,UploadService,UploadFilesEvent,ConfirmDialogComponent} from '@alfresco/adf-content-services';
 import { PreviewService } from '../services/preview.service';
 import { Component, ViewChild, Input, OnInit, ElementRef, Inject, HostListener, AfterViewInit, EventEmitter } from '@angular/core';
 import { Chart } from 'chart.js/auto';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
-import { AlfrescoApiService } from '@alfresco/adf-core';
+import { AlfrescoApiService,NotificationService } from '@alfresco/adf-core';
 import { AlfrescoApiHttpClient } from '@alfresco/adf-core/api';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProcessCloudService, ProcessInstanceCloud} from '@alfresco/adf-process-services-cloud';
 import { AuthenticationService } from '@alfresco/adf-core';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { trigger, state, style, animate, transition } from '@angular/animations';
+import { trigger, transition, query, style, animate, group } from '@angular/animations';
 import { DOCUMENT, formatDate } from '@angular/common';
-import { Observable, of, forkJoin, pipe, Subscription } from 'rxjs';
-import { interval } from 'rxjs';
+import { Observable, of, forkJoin, pipe, Subscription,merge, observable } from 'rxjs';
+import { timer,interval } from 'rxjs';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
-import {MatTableDataSource} from '@angular/material/table';
-import { AssociationsComponent } from 'app/associations/associations.component';
-
+import {MatTable, MatTableDataSource} from '@angular/material/table';
+import { startWith } from 'rxjs/operators';
+import { MatDialog } from '@angular/material/dialog';
+import { VersionManagerDialogAdapterComponent } from './version-manager-dialog-adapter.component';
+import { MatSlideToggle } from '@angular/material/slide-toggle';
 export interface folderData {
   id: string;
   name: string;
@@ -28,6 +29,29 @@ export interface folderData {
   nodeEx: Date;
 }
 
+const left = [
+  query(':enter, :leave', style({ position: 'fixed', width: '200px' }), { optional: true }),
+  group([
+    query(':enter', [style({ transform: 'translateX(-200px)' }), animate('2s ease-out', style({ transform: 'translateX(0%)' }))], {
+      optional: true,
+    }),
+    query(':leave', [style({ transform: 'translateX(0%)' }), animate('1s ease-out', style({ transform: 'translateX(200px)' }))], {
+      optional: true,
+    }),
+  ]),
+];
+
+const right = [
+  query(':enter, :leave', style({ position: 'fixed', width: '200px' }), { optional: true }),
+  group([
+    query(':enter', [style({ transform: 'translateX(200px)' }), animate('2s ease-out', style({ transform: 'translateX(0%)' }))], {
+      optional: true,
+    }),
+    query(':leave', [style({ transform: 'translateX(0%)' }), animate('1s ease-out', style({ transform: 'translateX(-200px)' }))], {
+      optional: true,
+    }),
+  ]),
+];
 @Component({
   selector: 'dashboard',
   templateUrl: './dashboard.component.html',
@@ -53,15 +77,33 @@ export interface folderData {
           ]
         )
       ]
-    )
+    ),
+    trigger('animImageSlider', [
+      transition(':increment', right),
+      transition(':decrement', left),
+    ]),
   ]
 })
 
 export class DashboardComponent implements OnInit,AfterViewInit {
 
+  @ViewChild('documentList', { static: true })
+  documentList: DocumentListComponent;
+
   @ViewChild('canvas') canvasRef: ElementRef;
+
+  @ViewChild('detailTable', { static: true }) detailTable: MatTable<any>;
+
   ctx: any;
 
+  showVersions = false;
+  allowDropFiles = true;
+  allowVersionDownload = true;
+  showVersionComments = true;
+  warnOnMultipleUploads = false;
+  acceptedFilesTypeShow = false;
+  acceptedFilesType = '.jpg,.pdf,.js';
+  disableDragArea = false;
 
   sorting = { orderBy: 'createdDate', direction: 'desc' };
   dateFormat = 'MM/dd/yyyy';
@@ -84,8 +126,7 @@ export class DashboardComponent implements OnInit,AfterViewInit {
   snackBarMessage: any;
   snackBarValue: any;
 
-  @ViewChild('documentList', { static: true })
-  documentList: DocumentListComponent;
+
 
   @ViewChild('cval', { static: true }) pval: ElementRef;
 
@@ -110,18 +151,18 @@ export class DashboardComponent implements OnInit,AfterViewInit {
   //globalSearchUrl = "http://3.90.226.222/alfresco/api/-default-/public/search/versions/1/search";
 
   isAutoRefreshChart: boolean = false;
-  chartAnimationDuration = 1000;
+  chartAnimationDuration = 2000;
   chartRefreshInterval = 6000;
   chartRunState: boolean = true;
-  newCount: number;
-  inProgressCount: number;
-  legalReviewCount: number;
-  externalPartyReviewCount: number;
-  negotiationCount: number;
-  sevenDayCount: any;
-  thirtyDayCount: any = 0;
-  sixtyDayCount: any = 0;
-  ninetyDayCount: any = 0;
+  newCount: number = 0;
+  inProgressCount: number = 0;
+  legalReviewCount: number = 0;
+  externalPartyReviewCount: number = 0;
+  negotiationCount: number = 0;
+  sevenDayCount: number = 0;
+  thirtyDayCount: number = 0;
+  sixtyDayCount: number = 0;
+  ninetyDayCount: number = 0;
   sevenDayMessage: string = "";
   sevenDayShowMessage: boolean = false;
   showSummaryPanel: boolean = false;
@@ -220,7 +261,9 @@ export class DashboardComponent implements OnInit,AfterViewInit {
   showForm:boolean = false;
   showModalDiv:boolean = false;
 
-  constructor( private _snackBar: MatSnackBar, private authService: AuthenticationService, private processService: ProcessCloudService, private router: Router,
+  constructor( private notificationService: NotificationService,private uploadService: UploadService,
+        private contentService: ContentService,
+        private dialog: MatDialog,private _snackBar: MatSnackBar, private authService: AuthenticationService, private processService: ProcessCloudService, private router: Router,
     private route: ActivatedRoute, private http: HttpClient, private alfrescoJsApi: AlfrescoApiHttpClient, private nodeApiService: NodesApiService, private preview: PreviewService, private nodeService: NodesApiService, private apiService: AlfrescoApiService)
     {
       this.currentDay=new Date();
@@ -232,39 +275,26 @@ export class DashboardComponent implements OnInit,AfterViewInit {
 
       this.currentUser = authService.getEcmUsername();
 
-    //   this.timeSubscription = interval(this.chartRefreshInterval).subscribe((x =>{
-    //     if (this.chartRunState){
-    //       this.runChartProcess();
-    //       this.chartRunState = false;
-    //       this.chartAnimationDuration=0;
-    //     }else{
-    //       this.runChartProcess()
-    //     }
-
-    // }));
   }
-
 
   ngAfterViewInit(){
-    this.getCounts();  //do this first so the chart doesn't show NaN and the outlook blocks have data ready to go
+    //this.runChartProcess();
+    //alert("inside afteviewinit");
+    timer(0, this.chartRefreshInterval).subscribe(n => {
 
+      if (this.chartRunState){
+              this.runChartProcess();
+              this.chartRunState = false;
+              this.chartAnimationDuration=0;
+            }else{
+              this.runChartProcess()
+            }
+
+          }
+    );
   }
   ngOnInit() {
-
-    //this.runChartProcess(); //run the first time
-    //this.processChart("dummy");
-
-      this.timeSubscription = interval(this.chartRefreshInterval).subscribe((x =>{
-        if (this.chartRunState){
-          this.runChartProcess();
-          this.chartRunState = false;
-          this.chartAnimationDuration=0;
-
-        }else{
-          this.runChartProcess()
-        }
-
-    }));
+    this.getCounts();
 
   }
 
@@ -286,6 +316,7 @@ export class DashboardComponent implements OnInit,AfterViewInit {
 
   runChartProcess()
   {
+    //alert("inside runchartprocess");
     this.getCounts().subscribe( val => {this.initializeChartData().subscribe(val => {this.processChart(val)})
 
 
@@ -301,7 +332,6 @@ export class DashboardComponent implements OnInit,AfterViewInit {
         //get 60 and 90 to disappear
         this.viewSixty = !this.viewSixty;
         this.viewNinety = !this.viewNinety;
-
         //console.log("detail 1 clicked ", this.mainDataArray)
         break;
       }
@@ -460,6 +490,11 @@ export class DashboardComponent implements OnInit,AfterViewInit {
   )
   )
 )
+
+//refresh the detail table now
+
+//this.detailTable.renderRows();
+
     //****** GET CHART INFO BELOW ******
     const headers = new HttpHeaders()
     .set("Content-Type", "application/json")
@@ -479,7 +514,7 @@ export class DashboardComponent implements OnInit,AfterViewInit {
         for (var ent in val['list']['entries']) {
 
           this.newChartDataArray.push({
-            id: ent,
+            id: String(Number(ent)+1),
             name: val['list']['entries'][ent]['entry']['name'],
             node: val['list']['entries'][ent]['entry']['id'],
 
@@ -507,7 +542,7 @@ export class DashboardComponent implements OnInit,AfterViewInit {
         for (var ent in val['list']['entries']) {
 
           this.inProgressChartDataArray.push({
-            id: ent,
+            id: String(Number(ent)+1),
             name: val['list']['entries'][ent]['entry']['name'],
             node: val['list']['entries'][ent]['entry']['id'],
 
@@ -536,7 +571,7 @@ export class DashboardComponent implements OnInit,AfterViewInit {
         this.LegalReviewChartDataArray = [];
         for (var ent in val['list']['entries']) {
           this.LegalReviewChartDataArray.push({
-            id: ent,
+            id: String(Number(ent)+1),
             name: val['list']['entries'][ent]['entry']['name'],
             node: val['list']['entries'][ent]['entry']['id'],
 
@@ -565,13 +600,11 @@ export class DashboardComponent implements OnInit,AfterViewInit {
         this.externalChartDataArray = [];
         for (var ent in val['list']['entries']) {
           this.externalChartDataArray.push({
-            id: ent,
+            id: String(Number(ent)+1),
             name: val['list']['entries'][ent]['entry']['name'],
             node: val['list']['entries'][ent]['entry']['id'],
-
           });
         }
-
       },
 
       response => {
@@ -595,7 +628,7 @@ export class DashboardComponent implements OnInit,AfterViewInit {
         for (var ent in val['list']['entries']) {
 
           this.negotiationChartDataArray.push({
-            id: ent,
+            id: String(Number(ent)+1),
             name: val['list']['entries'][ent]['entry']['name'],
             node: val['list']['entries'][ent]['entry']['id'],
 
@@ -642,6 +675,7 @@ export class DashboardComponent implements OnInit,AfterViewInit {
       }
     );
 
+    //alert("get counts done...negotiation:"+this.negotiationCount+ " in progress:"+this.inProgressCount + " external part:"+this.externalPartyReviewCount);
     return of('done');
   }
 
@@ -666,19 +700,22 @@ export class DashboardComponent implements OnInit,AfterViewInit {
         data: [this.newCount, this.inProgressCount, this.legalReviewCount, this.externalPartyReviewCount, this.negotiationCount],
         backgroundColor: ['yellow', 'grey', 'red', 'purple', 'orange'],
         hoverBorderColor: ['purple', 'purple', 'purple', 'purple', 'purple'],
-        hoverBorderWidth: 8,
+        hoverBorderWidth: 5,
         borderWidth: 10
       }],
       options: [{
-        responsive: false,
+        responsive: true,
         events: ['click']
       }]
     };
 
     //done, return observable
+    //alert("chart data ready " + this.externalPartyReviewCount);
     return of('done');
 
   }
+
+
   processChart(dummy) {
 
 
@@ -779,6 +816,41 @@ export class DashboardComponent implements OnInit,AfterViewInit {
 
   updatechartclickVal(c: Chart) {
     this.pval.nativeElement.value = this.chartclickval;
+  }
+
+  getChartDetail(query,which){
+    const headers = new HttpHeaders()
+    .set("Content-Type", "application/json")
+    .set("Authorization", "Basic cndpbGRzOmRlbW8=");
+
+
+    this.http.post(this.globalSearchUrl, query, { headers }).subscribe(
+      val => {
+        //console.log("PUT call successful value returned in body", val);
+        this.negotiationCount = Number(val['list']['pagination']['count']);
+
+        //console.log("in progress count: ", this.negotiationCount)
+        //Now process the rows for the mat table.  make sure array is empty first
+        this.negotiationChartDataArray = [];
+        for (var ent in val['list']['entries']) {
+
+          this.negotiationChartDataArray.push({
+            id: ent,
+            name: val['list']['entries'][ent]['entry']['name'],
+            node: val['list']['entries'][ent]['entry']['id'],
+
+          });
+        }
+      },
+
+      response => {
+        //console.log("PUT call in error", response);
+      },
+
+      () => {
+        //console.log("The PUT observable is now completed.");
+      }
+    );
   }
   onSearchSubmit($event: any) {
     //console.log("on search submit: ", event)
@@ -882,9 +954,18 @@ export class DashboardComponent implements OnInit,AfterViewInit {
     this.openSnackBar("Task Form Saved", this.snackBarValue);
   }
 
-  taskFormCompleted(){
+  taskCompleted(){
 
+    this.showTaskForm = false;
+    this.showModalDiv = false;
+    this.openSnackBar("Task Completed", this.snackBarValue);
     console.log("task completed");
+
+  }
+  executeOutcome(){}
+
+  formCompleted(){
+    console.log("form completed");
   }
   taskFormExecuted()
   {
@@ -919,6 +1000,82 @@ export class DashboardComponent implements OnInit,AfterViewInit {
     console.log("form error: ",event);
   }
 
+  onBeginUpload(event: UploadFilesEvent) {
+    if (this.warnOnMultipleUploads && event) {
+        const files = event.files || [];
+        if (files.length > 1) {
+            event.pauseUpload();
+
+            const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+                data: {
+                    title: 'Upload',
+                    message: `Are you sure you want to upload ${files.length} file(s)?`
+                },
+                minWidth: '250px'
+            });
+
+            dialogRef.afterClosed().subscribe((result) => {
+                if (result === true) {
+                    event.resumeUpload();
+                }
+            });
+        }
+    }
+}
+
+openSnackMessageError(error: any) {
+  this.notificationService.showError(error.value || error);
+}
+
+openSnackMessageInfo(message: string) {
+  this.notificationService.showInfo(message);
+}
+
+onUploadNewVersion(ev) {
+    const contentEntry = ev.detail.data.node.entry;
+    const showComments = this.showVersionComments;
+    const allowDownload = this.allowVersionDownload;
+    const newFileVersion = ev.detail.files[0].file;
+
+    if (this.contentService.hasAllowableOperations(contentEntry, 'update')) {
+        this.dialog.open(VersionManagerDialogAdapterComponent, {
+            data: {
+                contentEntry,
+                showComments,
+                allowDownload,
+                newFileVersion,
+                showComparison: true
+            },
+            panelClass: 'adf-version-manager-dialog',
+            width: '630px'
+        });
+    } else {
+        this.openSnackMessageError('OPERATION.ERROR.PERMISSION');
+    }
+}
+
+getFileFiltering(): string {
+  return this.acceptedFilesTypeShow ? this.acceptedFilesType : '*';
+}
+
+getCurrentDocumentListNode(): NodeEntry[] {
+  if (this.documentList.folderNode) {
+      return [{ entry: this.documentList.folderNode }];
+  } else {
+      return [];
+  }
+}
+
+onDeleteActionSuccess(message: string) {
+  this.uploadService.fileDeleted.next(message);
+  //this.deleteElementSuccess.emit();
+  this.documentList.reload();
+  this.openSnackMessageInfo(message);
+}
+
+public onSuccess(event: Object): void {
+  console.log('File uploaded');
+}
 
 }
 

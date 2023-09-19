@@ -7,6 +7,8 @@ import { RouterModule } from '@angular/router';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { ApolloModule } from 'apollo-angular';
 import { FlexLayoutModule } from "@angular/flex-layout";
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
 // ADF modules
 import { ContentModule } from '@alfresco/adf-content-services';
 import { ProcessServicesCloudModule } from '@alfresco/adf-process-services-cloud';
@@ -16,6 +18,7 @@ import { CoreModule, TRANSLATION_PROVIDER, TranslateLoaderService } from '@alfre
 import { StencilsModule } from './stencils.module';
 
 // App components
+import { VersionManagerDialogAdapterComponent } from './dashboard/version-manager-dialog-adapter.component';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { AppsComponent } from './apps/apps.component';
@@ -39,6 +42,8 @@ import { AssociationsComponent } from './associations/associations.component';
 @NgModule({
     imports: [
       MatButtonModule,
+      MatSortModule,
+      MatPaginatorModule,
       DragDropModule,
         BrowserModule,
         MatSlideToggleModule,
@@ -73,7 +78,8 @@ import { AssociationsComponent } from './associations/associations.component';
         DocumentsComponent,
         DashboardComponent,
         AssociationsComponent,
-        MetadataDialogAdapterComponent
+        MetadataDialogAdapterComponent,
+        VersionManagerDialogAdapterComponent
     ],
     providers: [
         PreviewService,DatePipe,

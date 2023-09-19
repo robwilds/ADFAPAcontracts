@@ -11,7 +11,7 @@ import { DocumentListComponent, NodeEntityEvent, NodeEntryEvent,ContentService,
   FileUploadEvent, } from '@alfresco/adf-content-services';
 import { PreviewService } from '../services/preview.service';
 import { ActivatedRoute,Router,PRIMARY_OUTLET } from '@angular/router';
-import { MinimalNode, MinimalNodeEntity,NodeEntry} from '@alfresco/js-api';
+import { MinimalNode, MinimalNodeEntity,NodeEntry,SiteEntry} from '@alfresco/js-api';
 import { NodesApiService } from '@alfresco/adf-content-services';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { empty } from '@apollo/client';
@@ -264,6 +264,9 @@ onManageMetadata(event: any) {
   }
 }
 
+onSiteChange(site: SiteEntry) {
+  this.currentFolderId = site.entry.guid;
+}
 
 
 
