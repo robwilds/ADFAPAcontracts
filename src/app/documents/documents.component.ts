@@ -18,6 +18,8 @@ import { empty } from '@apollo/client';
 import { AssociationsComponent } from 'app/associations/associations.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MetadataDialogAdapterComponent } from './metadata-dialog-adapter.component';
+import { interval } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-documents',
@@ -53,6 +55,7 @@ export class DocumentsComponent implements OnInit{
   documentList: DocumentListComponent;
   fxFlexForDocList: number = 0;
   fxFlexForAux: number = 0;
+  snackBarDuration = 3000;
 
   isHidden:boolean = false;
 
@@ -83,7 +86,7 @@ export class DocumentsComponent implements OnInit{
   displayMode = DisplayMode.List;
   displayEmptyMetadata:boolean = true;
 
-  constructor(private dialog: MatDialog,private dialogAspectListService: DialogAspectListService,private contentService: ContentService,private route: ActivatedRoute, public router: Router, private notificationService: NotificationService, private preview: PreviewService, private nodeService: NodesApiService) {
+  constructor(private _snackBar: MatSnackBar, private dialog: MatDialog,private dialogAspectListService: DialogAspectListService,private contentService: ContentService,private route: ActivatedRoute, public router: Router, private notificationService: NotificationService, private preview: PreviewService, private nodeService: NodesApiService) {
   this.fxFlexForDocList = 100;
   this.fxFlexForAux = 0;
   }
@@ -165,8 +168,6 @@ nodeClicked(event: NodeEntityEvent){
     //this.showMetaContent = false;
     this.nodeId = this.documentList.selection[0].entry.id;
     this.node = this.documentList.selection[0].entry;
-
-
 
   //console.log("clicked foldernode id:", this.nodeId);
   console.log("document list object for clicked foldernode is: ",this.node.properties['ContractManagement:associations']);
@@ -264,10 +265,35 @@ onManageMetadata(event: any) {
   }
 }
 
+openSnackBar(message: string, action: string) {
+  this._snackBar.open(message, action, {
+    duration: this.snackBarDuration
+  });
+}
+
 onSiteChange(site: SiteEntry) {
   this.currentFolderId = site.entry.guid;
 }
 
+backToContracts(){
+  //go back to default folder
+  this.refreshDocList("Back to Contracts!");
 
+  console.log("Going back to contracts: ",this.documentList.currentFolderId)
+}
+
+onMyFilesDragDropSuccess(event: Object): void {
+  console.log('File uploaded');
+  this.refreshDocList();
+}
+
+refreshDocList(message?:string){
+
+  this.currentFolderId = "nothing";
+              interval(10).subscribe(val => { this.currentFolderId = "5be4a4cc-f413-4f28-8329-dce29671b224"})
+
+              if (message){this.openSnackBar(message,"");}
+
+}
 
 }

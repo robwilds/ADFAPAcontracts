@@ -22,10 +22,11 @@
 }
 #chart{
 width: 700px;
-height:700px;
+height:auto;
 //max-width:700px;
 margin-left:auto;
 margin-right:auto;
+
 
 }
 
@@ -72,11 +73,19 @@ margin-right:auto;
   .adf-alfresco-viewer {
     padding:10px;
     position:absolute;
-    z-index: 100;
-    width: 500px;
-    height: 500px;
+    z-index: 1000;
+    width: 600px;
+    height: 600px;
     top: 60px;
     right: 50px;
+    background-color:var(--theme-primary-color) ;
+  }
+
+  #adfViewer{
+    margin-left:auto;
+    margin-right:auto;
+    display: flex;
+    //width:25%;
   }
 
   #processButton {
@@ -238,7 +247,7 @@ mat-card{
 
 adf-cloud-task-form
 {
-  max-width:600px;
+  min-width:600px;
   margin-left:auto;
   margin-right:auto;
 

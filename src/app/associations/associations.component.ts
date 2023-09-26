@@ -31,7 +31,6 @@ export interface nodeData {
   ]
 })
 
-
 export class AssociationsComponent implements OnInit,AfterViewInit,OnDestroy{
   //table example: https://stackblitz.com/run?file=src%2Fexample%2Ftable-basic-example.html,src%2Fexample%2Ftable-basic-example.ts
   selectedAssociationTab:number;
@@ -66,7 +65,6 @@ export class AssociationsComponent implements OnInit,AfterViewInit,OnDestroy{
     this.dataSource.paginator = this.paginator;
     this.sort.sort(({ id: 'id', start: 'asc'}) as MatSortable);
     this.dataSource.sort = this.sort;
-
   }
 
   ngAfterViewInit(): void {
@@ -75,7 +73,6 @@ export class AssociationsComponent implements OnInit,AfterViewInit,OnDestroy{
   }
   ngOnDestroy(): void {
   }
-
 
   updateNodeID(nodeVal:MinimalNode) {
 

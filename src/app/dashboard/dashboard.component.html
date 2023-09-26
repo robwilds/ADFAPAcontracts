@@ -15,11 +15,11 @@
 
   <div id="topSection" fxLayout fxLayoutAlign="center" fxLayout="row">
 
-    <div id="chart" fxFlex="50">
-      <canvas #canvas id='canvas'>{{chart}}</canvas>
+    <div id="chart" fxFlex="50%">
+      <canvas #canvas id='canvas' style="min-height: 400px;max-height: 400px;">{{chart}}</canvas>
       <!--         <div id="chartDetail" fxFlex="50">chart detail goes here</div> -->
     </div>
-    <div id="details" fxFlex="100" *ngIf="showChartPanel" style="margin:10px;" [@animImageSlider]>
+    <div id="details" fxFlex="50" *ngIf="showChartPanel" style="margin:10px;" [@inOutAnimation]>
       <div class="mat-elevation-z8" style="max-height:350px;overflow: scroll;">
         <mat-card style="text-align: center;">{{chartClickedLegend}}</mat-card>
         <table mat-table [dataSource]="chartDataArray" tabindex="0">
@@ -118,7 +118,6 @@
         </table>
         <mat-paginator #paginator [pageSize]="5"
         [pageSizeOptions]="[5, 10]"
-        [showFirstLastButtons]="true"
         ></mat-paginator>
         </div>
       </div> <!-- div for 306090 details -->
@@ -128,22 +127,23 @@
   <div id="tasks">
 <mat-card>
   <h1>My Tasks</h1>
-  <mat-tab-group animationDuration="1000ms" mat-align-tabs="center">
-      <mat-tab label="Assigned" class="mat-elevation-z8">
-        <adf-cloud-task-list #taskCloud
+  <mat-tab-group animationDuration="500ms" mat-align-tabs="center">
+      <mat-tab label="Assigned" >
+        <div *ngIf="showTaskViews">
+        <adf-cloud-task-list #assignedTaskCloud class="mat-elevation-z8"
         [appName]="appName"
         [showMainDatatableActions]="'true'"
         [showContextMenu]="true"
-        [actionsPosition]="'left'"
-        [status]="'ASSIGNED'"
+        [status]="assignedTaskFilter"
         (rowClick)="onTaskRowClick($event)"
         [sorting]="[sorting]"
+        [isResizingEnabled]="true"
         >
           <data-columns>
             <data-column key="name" title="Name" class="full-width name-column"></data-column>
             <data-column key="status" title="Status" ></data-column>
             <data-column key="priority" title="Priority" ></data-column>
-            <data-column key="createdDate" title="Created" >
+            <data-column key="createdDate" title="Created">
               <ng-template let-entry="$implicit">
                 <div>{{entry.row.obj.createdDate | date:'MMM d, yyyy h:mm:ss a' }} </div>
         </ng-template>
@@ -152,10 +152,13 @@
           </data-columns>
 
         </adf-cloud-task-list>
-        <adf-pagination [target]="taskCloud" [supportedPageSizes]="[5]" [pagination]="5">
+
+        <adf-pagination [target]="assignedTaskCloud">
         </adf-pagination>
+      </div>
       </mat-tab>
-      <mat-tab label="Completed" class="mat-elevation-z8">
+      <mat-tab label="Completed" class="mat-elevation-z20">
+        <div *ngIf="showTaskViews">
         <adf-cloud-task-list #taskCloud
         [appName]="appName"
         [showMainDatatableActions]="true"
@@ -178,8 +181,9 @@
           </data-columns>
 
         </adf-cloud-task-list>
-        <adf-pagination [target]="taskCloud" [supportedPageSizes]="[5]" [pagination]="5">
+        <adf-pagination [target]="taskCloud" [supportedPageSizes]="[5]">
         </adf-pagination>
+      </div>
       </mat-tab>
       <mat-tab label="Task Details" class="mat-elevation-z8">
         task details here
@@ -194,27 +198,62 @@
       <mat-card-content> -->
         <mat-tab-group style='min-height:600px'>
           <h1>My Items</h1>
-          <mat-tab label="My Files" style="z-index: 400;">
-
-            <adf-upload-drag-area (success)="onSuccess($event)" [rootFolderId]="'-my-'" [versioning]="'false'">
-              <adf-document-list
+          <mat-tab label="My Files">
+            <adf-upload-drag-area (success)="onMyFilesDragDropSuccess($event)" [rootFolderId]="'-my-'" [versioning]="'true'" style="width:100%;height:100%">
+<div *ngIf="showMyFiles">
+<adf-document-list
               #documentList
               [currentFolderId]="'-my-'"
-              [contextMenuActions]="true"
+              [contextMenuActions]="'false'"
               [contentActions]="true"
               (nodeClick)="showBoxPreview($event)"
               (preview)="showBoxPreview($event)"
-              [allowDropFiles]="'true'"
-              [stickyHeader]="'true'"
-              [showHeader]="'true'"
-              ></adf-document-list>
+              [allowDropFiles]="false"
+              [stickyHeader]="true"
+              [showHeader]="true"
+              [thumbnails]="true"
+              >
+              <content-actions>
+                <content-action
+        icon="info"
+        title="Info"
+        (execute)="onManageMetadata($event)">
+      </content-action>
+        <content-action
+            icon="copy"
+            title="Copy"
+            permission="update"
+            [disableWithNoPermission]="true"
+            handler="copy">
+        </content-action>
+        <content-action
+            icon="delete"
+            title="Delete"
+            permission="delete"
+            disableWithNoPermission="true"
+            handler="delete"
+            (success)="refreshMyFiles('Item Deleted')">
+        </content-action>
+        <content-action
+                              icon="beach_access"
+                              title="Update Aspects"
+                              (execute)="onAspectUpdate($event)">
+                          </content-action>
+      </content-actions>
+            </adf-document-list>
+
+            <adf-pagination
+                class="app-documentlist-pagination"
+                [target]="documentList"
+                >
+            </adf-pagination></div>
           </adf-upload-drag-area>
-          <adf-file-uploading-dialog style="z-index: 400;"></adf-file-uploading-dialog>
+
 
         </mat-tab>
 
       <mat-tab label="Favorites">
-        <adf-document-list #favoriteList
+        <adf-document-list #favoriteList class="mat-elevation-z8"
         [currentFolderId]="'-favorites-'"
         [headerFilters]="true"
         [contextMenuActions]="true"
@@ -230,6 +269,33 @@
             </data-column>
             <data-column key="createdOn" title="Created"></data-column>
           </data-columns>
+          <content-actions>
+            <content-action
+    icon="info"
+    title="Info"
+    (execute)="onManageMetadata($event)">
+  </content-action>
+    <content-action
+        icon="copy"
+        title="Copy"
+        permission="update"
+        [disableWithNoPermission]="true"
+        handler="copy">
+    </content-action>
+    <content-action
+        icon="delete"
+        title="Delete"
+        permission="delete"
+        disableWithNoPermission="true"
+        handler="delete">
+    </content-action>
+    <content-action
+                          icon="beach_access"
+                          target="folder"
+                          title="Update Aspects"
+                          (execute)="onAspectUpdate($event)">
+                      </content-action>
+  </content-actions>
         </adf-document-list>
         <adf-pagination [target]="recentList" [supportedPageSizes]="[5]" [pagination]="5">
         </adf-pagination>
@@ -238,7 +304,7 @@
       <mat-tab label="Recents">
 
         <adf-document-list #recentList
-        [currentFolderId]="'-recents-'"
+        [currentFolderId]="'-recent-'"
         [headerFilters]="true"
         [contextMenuActions]="true"
         [contentActions]="true"
@@ -254,6 +320,7 @@
             </data-column>
             <data-column key="createdOn" title="Created"></data-column>
           </data-columns>
+
         </adf-document-list>
         <adf-pagination [target]="recentList" [supportedPageSizes]="[5]" [pagination]="5">
         </adf-pagination>
@@ -265,11 +332,12 @@
 </div> <!-- div for container -->
 
 <div class="adf-alfresco-viewer" cdkDrag *ngIf="showViewer" class="mat-elevation-z8">
-  <adf-alfresco-viewer [(showViewer)]="showViewer" [overlayMode]="false" [nodeId]="nodeId">
+  <adf-alfresco-viewer  id="adfViewer" [(showViewer)]="showViewer" [overlayMode]="false" [nodeId]="nodeId" cdkDrag>
   </adf-alfresco-viewer>
 </div>
-
+<adf-file-uploading-dialog></adf-file-uploading-dialog>
 <div id="formView" *ngIf="showModalDiv">
+
   <adf-cloud-start-process   *ngIf="showNDAForm"
   [appName]="appName"
   [name]="processName"

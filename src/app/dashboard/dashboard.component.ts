@@ -1,11 +1,11 @@
 
 import { MinimalNode, MinimalNodeEntity, TasksApi,NodeEntry } from '@alfresco/js-api';
-import { DocumentListComponent, NodesApiService,NodeEntityEvent, NodeEntryEvent,ContentService,UploadService,UploadFilesEvent,ConfirmDialogComponent} from '@alfresco/adf-content-services';
+import { DocumentListComponent, DialogAspectListService, NodesApiService,NodeEntityEvent, NodeEntryEvent,ContentService,UploadService,UploadFilesEvent,ConfirmDialogComponent} from '@alfresco/adf-content-services';
 import { PreviewService } from '../services/preview.service';
 import { Component, ViewChild, Input, OnInit, ElementRef, Inject, HostListener, AfterViewInit, EventEmitter } from '@angular/core';
 import { Chart } from 'chart.js/auto';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
-import { AlfrescoApiService,NotificationService } from '@alfresco/adf-core';
+import { AlfrescoApiService,DataTableAdapter,DataTableComponent,NotificationService } from '@alfresco/adf-core';
 import { AlfrescoApiHttpClient } from '@alfresco/adf-core/api';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProcessCloudService, ProcessInstanceCloud} from '@alfresco/adf-process-services-cloud';
@@ -22,6 +22,7 @@ import { startWith } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { VersionManagerDialogAdapterComponent } from './version-manager-dialog-adapter.component';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
+import { MetadataDialogAdapterComponent } from '../documents/metadata-dialog-adapter.component';
 export interface folderData {
   id: string;
   name: string;
@@ -35,7 +36,7 @@ const left = [
     query(':enter', [style({ transform: 'translateX(-200px)' }), animate('2s ease-out', style({ transform: 'translateX(0%)' }))], {
       optional: true,
     }),
-    query(':leave', [style({ transform: 'translateX(0%)' }), animate('1s ease-out', style({ transform: 'translateX(200px)' }))], {
+    query(':leave', [style({ transform: 'translateX(0%)' }), animate('2s ease-out', style({ transform: 'translateX(200px)' }))], {
       optional: true,
     }),
   ]),
@@ -47,7 +48,7 @@ const right = [
     query(':enter', [style({ transform: 'translateX(200px)' }), animate('2s ease-out', style({ transform: 'translateX(0%)' }))], {
       optional: true,
     }),
-    query(':leave', [style({ transform: 'translateX(0%)' }), animate('1s ease-out', style({ transform: 'translateX(-200px)' }))], {
+    query(':leave', [style({ transform: 'translateX(0%)' }), animate('2s ease-out', style({ transform: 'translateX(-200px)' }))], {
       optional: true,
     }),
   ]),
@@ -79,23 +80,25 @@ const right = [
       ]
     ),
     trigger('animImageSlider', [
-      transition(':increment', right),
-      transition(':decrement', left),
+      transition(':increment', left),
+      transition(':decrement', right),
     ]),
+
   ]
 })
 
 export class DashboardComponent implements OnInit,AfterViewInit {
 
-  @ViewChild('documentList', { static: true })
-  documentList: DocumentListComponent;
+  @ViewChild('documentList', { static: true }) documentList: DocumentListComponent;
 
   @ViewChild('canvas') canvasRef: ElementRef;
 
   @ViewChild('detailTable', { static: true }) detailTable: MatTable<any>;
 
-  ctx: any;
+  @ViewChild('assignedTaskCloud',{static:true}) assignedTaskCloudTable: DataTableAdapter;
 
+  ctx: any;
+  displayEmptyMetadata:boolean = true;
   showVersions = false;
   allowDropFiles = true;
   allowVersionDownload = true;
@@ -111,7 +114,7 @@ export class DashboardComponent implements OnInit,AfterViewInit {
 
   snackBarDuration = 3000;
   windowScrolled: boolean;
-  chart: any;
+  chart: Chart;
   chartclickval: string = "CHART CLICKED";
 
   currentUser: string;
@@ -152,7 +155,7 @@ export class DashboardComponent implements OnInit,AfterViewInit {
 
   isAutoRefreshChart: boolean = false;
   chartAnimationDuration = 2000;
-  chartRefreshInterval = 6000;
+  chartRefreshInterval = 7000;
   chartRunState: boolean = true;
   newCount: number = 0;
   inProgressCount: number = 0;
@@ -245,7 +248,7 @@ export class DashboardComponent implements OnInit,AfterViewInit {
 
   displayedColumns: string[] = ['id', 'name', 'nodeEx','node'];
   mainDataArray: MatTableDataSource<folderData>;
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  @ViewChild('paginator', {static: true}) paginator: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
   expirationDateTemp: any;
   countTemp:any;
@@ -261,11 +264,17 @@ export class DashboardComponent implements OnInit,AfterViewInit {
   showForm:boolean = false;
   showModalDiv:boolean = false;
 
-  constructor( private notificationService: NotificationService,private uploadService: UploadService,
-        private contentService: ContentService,
-        private dialog: MatDialog,private _snackBar: MatSnackBar, private authService: AuthenticationService, private processService: ProcessCloudService, private router: Router,
+  assignedTaskFilter = "ASSIGNED"
+  showTaskViews: boolean = true;
+  showMyFiles:boolean = true;
+
+  constructor( private notificationService: NotificationService,private dialogAspectListService: DialogAspectListService,
+    private uploadService: UploadService,
+    private contentService: ContentService,
+    private dialog: MatDialog,private _snackBar: MatSnackBar, private authService: AuthenticationService, private processService: ProcessCloudService, private router: Router,
     private route: ActivatedRoute, private http: HttpClient, private alfrescoJsApi: AlfrescoApiHttpClient, private nodeApiService: NodesApiService, private preview: PreviewService, private nodeService: NodesApiService, private apiService: AlfrescoApiService)
     {
+
       this.currentDay=new Date();
       this.currentDayPlus7 = new Date();
       this.currentDayPlus7.setDate(this.currentDayPlus7.getDate()+7)
@@ -274,28 +283,29 @@ export class DashboardComponent implements OnInit,AfterViewInit {
       //console.log("days plus 7",this.currentDayPlus7);
 
       this.currentUser = authService.getEcmUsername();
-
   }
 
   ngAfterViewInit(){
-    //this.runChartProcess();
-    //alert("inside afteviewinit");
-    timer(0, this.chartRefreshInterval).subscribe(n => {
 
+    timer(500, this.chartRefreshInterval).subscribe(n => {
+
+      //console.log("timer status",n);
       if (this.chartRunState){
+
               this.runChartProcess();
               this.chartRunState = false;
               this.chartAnimationDuration=0;
             }else{
               this.runChartProcess()
-            }
 
+            }
           }
     );
   }
-  ngOnInit() {
-    this.getCounts();
 
+  ngOnInit() {
+    this.getCounts();  //get all counts when initialized
+    this.mainDataArray.paginator = this.paginator;
   }
 
   checkScroll() {
@@ -329,6 +339,7 @@ export class DashboardComponent implements OnInit,AfterViewInit {
       case 1: {
         //this.mainDataArray = this.thirtyDayArray;
         this.mainDataArray = new MatTableDataSource(this.thirtyDayArray);
+
         //get 60 and 90 to disappear
         this.viewSixty = !this.viewSixty;
         this.viewNinety = !this.viewNinety;
@@ -359,16 +370,6 @@ export class DashboardComponent implements OnInit,AfterViewInit {
     }
 
     this.showSummaryPanel = !this.showSummaryPanel;
-
-    // if (this.showSummaryPanel) {
-    //   //if panel is showing, turn off then back on (this refreshes content)
-    //   this.showSummaryPanel = !this.showSummaryPanel;
-    //   this.showSummaryPanel = !this.showSummaryPanel;
-    // }
-    // else {
-    //   this.showSummaryPanel = !this.showSummaryPanel; //just turn it on
-    // }
-
   }
 
   openSnackBar(message: string, action: string) {
@@ -478,7 +479,7 @@ export class DashboardComponent implements OnInit,AfterViewInit {
   }
 
   getCounts(): Observable<any> {
-    console.log("inside getcounts");
+    //console.log("inside getcounts");
 
   //get the 306090 details and sum info
   this.getDetailValues(this.thirtyDayQuery,30).subscribe(()=>
@@ -728,10 +729,8 @@ export class DashboardComponent implements OnInit,AfterViewInit {
       //this.chart.clear();
       this.chart.destroy();
       //this.chart.update();
-    }
+    }else{console.log("chart doesn't exist")}
       Chart.defaults.font.size = 18;
-
-
 
     this.chart = new Chart(this.ctx, {
       type: 'doughnut',
@@ -927,6 +926,7 @@ export class DashboardComponent implements OnInit,AfterViewInit {
     this.showNDAForm = false;
     this.showModalDiv = false;
     this.openSnackBar("NDA request submitted!", "");
+    this.refreshCloudTasks();
     console.log("process instance cloud",event);
   }
 
@@ -958,6 +958,7 @@ export class DashboardComponent implements OnInit,AfterViewInit {
 
     this.showTaskForm = false;
     this.showModalDiv = false;
+    this.refreshCloudTasks();
     this.openSnackBar("Task Completed", this.snackBarValue);
     console.log("task completed");
 
@@ -1073,10 +1074,49 @@ onDeleteActionSuccess(message: string) {
   this.openSnackMessageInfo(message);
 }
 
-public onSuccess(event: Object): void {
+onMyFilesDragDropSuccess(event: Object): void {
   console.log('File uploaded');
+  this.refreshMyFiles();
 }
 
+onManageMetadata(event: any) {
+  const contentEntry = event.value.entry;
+  const displayEmptyMetadata = this.displayEmptyMetadata;
+
+  if (this.contentService.hasAllowableOperations(contentEntry, 'update')) {
+      this.dialog.open(MetadataDialogAdapterComponent, {
+          data: {
+              contentEntry,
+              displayEmptyMetadata
+          },
+          panelClass: 'adf-metadata-manager-dialog',
+          width: '630px'
+      });
+  } else {
+      this.openSnackMessageError('OPERATION.ERROR.PERMISSION');
+  }
 }
 
+onAspectUpdate(event: any) {
+  this.dialogAspectListService.openAspectListDialog(event.value.entry.id).subscribe((aspectList) => {
+      this.nodeService.updateNode(event.value.entry.id, { aspectNames: [...aspectList] }).subscribe(() => {
+          this.openSnackMessageInfo('Node Aspects Updated');
+      });
+  });
+}
 
+refreshCloudTasks(){
+
+  this.showTaskViews = false
+              interval(10).subscribe(val => { this.showTaskViews = true})
+}
+
+refreshMyFiles(message?:string){
+
+  this.showMyFiles = false
+              interval(10).subscribe(val => { this.showMyFiles = true})
+
+              if (message){this.openSnackBar(message,"");}
+
+}
+}
