@@ -5,7 +5,7 @@ import { PreviewService } from '../services/preview.service';
 import { Component, ViewChild, Input, OnInit, ElementRef, Inject, HostListener, AfterViewInit, EventEmitter } from '@angular/core';
 import { Chart } from 'chart.js/auto';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
-import { AlfrescoApiService,DataTableAdapter,DataTableComponent,NotificationService } from '@alfresco/adf-core';
+import { AlfrescoApiService,DataTableAdapter,DataTableComponent,NotificationHistoryModule,NotificationModel,NotificationService } from '@alfresco/adf-core';
 import { AlfrescoApiHttpClient } from '@alfresco/adf-core/api';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProcessCloudService, ProcessInstanceCloud} from '@alfresco/adf-process-services-cloud';
@@ -23,6 +23,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { VersionManagerDialogAdapterComponent } from './version-manager-dialog-adapter.component';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { MetadataDialogAdapterComponent } from '../documents/metadata-dialog-adapter.component';
+
 export interface folderData {
   id: string;
   name: string;
@@ -97,6 +98,8 @@ export class DashboardComponent implements OnInit,AfterViewInit {
 
   @ViewChild('assignedTaskCloud',{static:true}) assignedTaskCloudTable: DataTableAdapter;
 
+  notification:NotificationModel;
+
   ctx: any;
   displayEmptyMetadata:boolean = true;
   showVersions = false;
@@ -128,8 +131,6 @@ export class DashboardComponent implements OnInit,AfterViewInit {
 
   snackBarMessage: any;
   snackBarValue: any;
-
-
 
   @ViewChild('cval', { static: true }) pval: ElementRef;
 
