@@ -34,10 +34,10 @@ export interface folderData {
 const left = [
   query(':enter, :leave', style({ position: 'fixed', width: '200px' }), { optional: true }),
   group([
-    query(':enter', [style({ transform: 'translateX(-200px)' }), animate('2s ease-out', style({ transform: 'translateX(0%)' }))], {
+    query(':enter', [style({ transform: 'translateX(-200px)' }), animate('3s ease-out', style({ transform: 'translateX(0%)' }))], {
       optional: true,
     }),
-    query(':leave', [style({ transform: 'translateX(0%)' }), animate('2s ease-out', style({ transform: 'translateX(200px)' }))], {
+    query(':leave', [style({ transform: 'translateX(0%)' }), animate('3s ease-out', style({ transform: 'translateX(200px)' }))], {
       optional: true,
     }),
   ]),
@@ -46,10 +46,10 @@ const left = [
 const right = [
   query(':enter, :leave', style({ position: 'fixed', width: '200px' }), { optional: true }),
   group([
-    query(':enter', [style({ transform: 'translateX(200px)' }), animate('2s ease-out', style({ transform: 'translateX(0%)' }))], {
+    query(':enter', [style({ transform: 'translateX(200px)' }), animate('3s ease-out', style({ transform: 'translateX(0%)' }))], {
       optional: true,
     }),
-    query(':leave', [style({ transform: 'translateX(0%)' }), animate('2s ease-out', style({ transform: 'translateX(-200px)' }))], {
+    query(':leave', [style({ transform: 'translateX(0%)' }), animate('3s ease-out', style({ transform: 'translateX(-200px)' }))], {
       optional: true,
     }),
   ]),
@@ -700,10 +700,10 @@ export class DashboardComponent implements OnInit,AfterViewInit {
       datasets: [{
         label: 'Contract Status',
         data: [this.newCount, this.inProgressCount, this.legalReviewCount, this.externalPartyReviewCount, this.negotiationCount],
-        backgroundColor: ['yellow', 'grey', 'red', 'purple', 'orange'],
-        hoverBorderColor: ['purple', 'purple', 'purple', 'purple', 'purple'],
-        hoverBorderWidth: 5,
-        borderWidth: 10
+        backgroundColor: ['green', 'grey', 'red', 'purple', 'orange'],
+        hoverBorderColor: ['black', 'black', 'black', 'black', 'black'],
+        hoverBorderWidth: 2,
+        borderWidth: 15
       }],
       options: [{
         responsive: true,
@@ -1108,8 +1108,8 @@ onAspectUpdate(event: any) {
 
 refreshCloudTasks(){
 
-  this.showTaskViews = false
-              interval(10).subscribe(val => { this.showTaskViews = true})
+  this.showTaskViews = false;
+              interval(100).subscribe(val => { this.showTaskViews = true})
 }
 
 refreshMyFiles(message?:string){

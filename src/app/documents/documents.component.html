@@ -26,10 +26,46 @@
       [target]="documentList"
       [folderNode]="documentList.folderNode">
     </adf-breadcrumb>
+    <div class="app-document-action-buttons">
+      <button
+          mat-icon-button
+          data-automation-id="document-list-grid-view"
+          title="Toggle display mode"
+          (click)="toggleGalleryView()">
+          <mat-icon>list</mat-icon>
+      </button>
+      <button
+          data-automation-id="create-new-folder"
+          mat-icon-button
+          [disabled]="!canCreateContent(documentList.folderNode)"
+          title="New folder"
+          (error)="openSnackMessageError($event)"
+          (success)="documentList.reload()"
+          [adf-create-folder]="currentFolderId">
+          <mat-icon>create_new_folder</mat-icon>
+      </button>
+      <button mat-icon-button
+              [disabled]="!hasSelection(documentList.selection)"
+              title="Download"
+              [adfNodeDownload]="documentList.selection">
+          <mat-icon>get_app</mat-icon>
+      </button>
+      <button mat-icon-button
+              data-automation-id="delete-toolbar-button"
+              adf-check-allowable-operation="delete"
+              [permanent]="true"
+              [adf-nodes]="documentList.selection"
+              title="Delete"
+              (delete)="onDeleteActionSuccess($event)"
+              [adf-delete]="documentList.selection">
+          <mat-icon>delete</mat-icon>
+      </button>
+  </div>
   </adf-toolbar-title>
+  <adf-toolbar-divider></adf-toolbar-divider>
 <adf-sites-dropdown (change)="onSiteChange($event)" [hideMyFiles]="false" [relations]="'members'">
 </adf-sites-dropdown>
-  <adf-toolbar-divider></adf-toolbar-divider>
+
   <adf-upload-button
     [rootFolderId]="documentList.currentFolderId || '-root-'"
     [adf-check-allowable-operation]="'create'"

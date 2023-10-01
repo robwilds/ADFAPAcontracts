@@ -11,7 +11,7 @@ import { DocumentListComponent, NodeEntityEvent, NodeEntryEvent,ContentService,
   FileUploadEvent, } from '@alfresco/adf-content-services';
 import { PreviewService } from '../services/preview.service';
 import { ActivatedRoute,Router,PRIMARY_OUTLET } from '@angular/router';
-import { MinimalNode, MinimalNodeEntity,NodeEntry,SiteEntry} from '@alfresco/js-api';
+import { MinimalNode, MinimalNodeEntity,NodeEntry,SiteEntry,Node} from '@alfresco/js-api';
 import { NodesApiService } from '@alfresco/adf-content-services';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { empty } from '@apollo/client';
@@ -294,6 +294,17 @@ refreshDocList(message?:string){
 
               if (message){this.openSnackBar(message,"");}
 
+}
+
+canCreateContent(parentNode: Node): boolean {
+  if (parentNode) {
+      return this.contentService.hasAllowableOperations(parentNode, 'create');
+  }
+  return false;
+}
+
+hasSelection(selection: Array<any>): boolean {
+  return selection && selection.length > 0;
 }
 
 }
