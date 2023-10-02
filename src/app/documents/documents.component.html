@@ -41,7 +41,7 @@
           title="New folder"
           (error)="openSnackMessageError($event)"
           (success)="documentList.reload()"
-          [adf-create-folder]="currentFolderId">
+          [adf-create-folder]="documentList.currentFolderId">
           <mat-icon>create_new_folder</mat-icon>
       </button>
       <button mat-icon-button
@@ -50,6 +50,29 @@
               [adfNodeDownload]="documentList.selection">
           <mat-icon>get_app</mat-icon>
       </button>
+      <button
+                        data-automation-id="favorite"
+                        mat-icon-button
+                            [disabled]="!documentList.selection.length"
+                            #favorite="adfFavorite"
+                            [adf-node-favorite]="documentList.selection"
+                            matTooltip="select Favorite">
+                        <mat-icon>
+                            {{ favorite.hasFavorites() ? 'star' :'star_border' }}
+                        </mat-icon>
+                    </button>
+                    <button mat-icon-button
+                            [disabled]="documentList.selection.length && !shareRef.isFile"
+                            [baseShareUrl]="baseShareUrl"
+                            #shareRef="adfShare"
+                            [adf-share]="documentList.selection[0]"
+                            [matTooltip]="(shareRef.isShared
+                                ? 'DOCUMENT_LIST.TOOLBAR.SHARE_EDIT'
+                                : 'DOCUMENT_LIST.TOOLBAR.SHARE') | translate">
+                        <mat-icon>
+                            share
+                        </mat-icon>
+                    </button>
       <button mat-icon-button
               data-automation-id="delete-toolbar-button"
               adf-check-allowable-operation="delete"
@@ -82,7 +105,7 @@
 <div class="adf-document-list-div-wrapper" fxLayoutAlign="start" fxLayout="row" style="min-height: 600px;">
 
 <div fxLayoutAlign="none" fxLayout="column" fxFlex="{{fxFlexForDocList}}" [class.is-hidden]="isHidden">
-  <adf-upload-drag-area (success)="onMyFilesDragDropSuccess($event)" [rootFolderId]="'-my-'" [versioning]="'true'" style="width:100%;height:100%">
+  <adf-upload-drag-area (success)="documentList.reload()" [rootFolderId]="documentList.currentFolderId" [versioning]="'true'" style="width:100%;height:100%">
 
   <adf-document-list
   #documentList
@@ -111,9 +134,10 @@
                         key="lock"
                         [focus]="false"
                         [sortable]="false"
+                        target="document"
                         class="app-desktop-only adf-ellipsis-cell">
                         <ng-template let-entry="$implicit">
-                            <button mat-icon-button [adf-node-lock]="entry.row.node.entry" class="app-lock-button">
+                            <button *ngIf="entry.row.getValue('isFile')"  mat-icon-button [adf-node-lock]="entry.row.node.entry" class="app-lock-button">
                                 <mat-icon *ngIf="entry.row.getValue('isLocked')">lock</mat-icon>
                                 <mat-icon *ngIf="!entry.row.getValue('isLocked')">lock_open</mat-icon>
                             </button>
@@ -137,7 +161,7 @@
             type="date"
             format="medium"
             sortable="true"
-            class="desktop-only">
+            >
         </data-column>
 </data-columns>
 
@@ -173,7 +197,8 @@
       title="Delete"
       permission="delete"
       disableWithNoPermission="true"
-      handler="delete">
+      handler="delete"
+      (success)="documentList.reload()">
   </content-action>
   <content-action
                         icon="beach_access"

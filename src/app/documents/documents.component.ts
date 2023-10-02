@@ -1,5 +1,5 @@
 import { Component, ViewChild, Input, OnInit } from '@angular/core';
-import { NotificationService,DisplayMode } from '@alfresco/adf-core';
+import { NotificationService,DisplayMode,AppConfigService,AppConfigValues } from '@alfresco/adf-core';
 import { DocumentListComponent, NodeEntityEvent, NodeEntryEvent,ContentService,
   FolderCreatedEvent,
   UploadService,PermissionStyleModel,
@@ -86,7 +86,11 @@ export class DocumentsComponent implements OnInit{
   displayMode = DisplayMode.List;
   displayEmptyMetadata:boolean = true;
 
-  constructor(private _snackBar: MatSnackBar, private dialog: MatDialog,private dialogAspectListService: DialogAspectListService,private contentService: ContentService,private route: ActivatedRoute, public router: Router, private notificationService: NotificationService, private preview: PreviewService, private nodeService: NodesApiService) {
+  baseShareUrl = (
+    this.appConfig.get<string>(AppConfigValues.BASESHAREURL) ||
+    this.appConfig.get<string>(AppConfigValues.ECMHOST)) + '/preview/s/';
+
+  constructor(private appConfig: AppConfigService,private _snackBar: MatSnackBar, private dialog: MatDialog,private dialogAspectListService: DialogAspectListService,private contentService: ContentService,private route: ActivatedRoute, public router: Router, private notificationService: NotificationService, private preview: PreviewService, private nodeService: NodesApiService) {
   this.fxFlexForDocList = 100;
   this.fxFlexForAux = 0;
   }

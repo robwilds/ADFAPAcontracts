@@ -90,6 +90,60 @@ const right = [
 
 export class DashboardComponent implements OnInit,AfterViewInit {
 
+  newQuery = `{
+    "query": { \
+      "query": "(ContractManagement:Status:new) AND TYPE:'cm:folder'" \
+    } \
+  }`;
+
+  inProgressQuery = `{
+    "query": { \
+      "query": "(ContractManagement:Status:'In Progress') AND TYPE:'cm:folder'" \
+    } \
+  }`;
+
+  legalReviewQuery = `{
+    "query": { \
+      "query": "(ContractManagement:Status:'Legal Review') AND TYPE:'cm:folder'" \
+    } \
+  }`;
+
+  externalPartyQuery = `{
+    "query": { \
+      "query": "(ContractManagement:Status:'External Party Review') AND TYPE:'cm:folder'" \
+    } \
+  }`;
+
+  negotiationQuery = `{
+    "query": { \
+      "query": "(ContractManagement:Status:Negotiation) AND TYPE:'cm:folder'" \
+    } \
+  }`;
+
+  sevenDayQuery = `{
+    "query": { \
+      "query": "ContractManagement:Expiration:[NOW/DAY TO NOW/DAY+7DAY] AND TYPE:'cm:folder'" \
+    } \
+  }`;
+
+  thirtyDayQuery = `{
+    "query": { \
+      "query": "ContractManagement:Expiration:[NOW/DAY TO NOW/DAY+30DAY] AND TYPE:'cm:folder'" \
+    } \
+  }`;
+
+  sixtyDayQuery = `{
+    "query": { \
+      "query": "ContractManagement:Expiration:[NOW/DAY+31DAY TO NOW/DAY+90DAY] AND TYPE:'cm:folder'" \
+    } \
+  }`;
+
+  ninetyDayQuery = `{
+    "query": { \
+      "query": "ContractManagement:Expiration:[NOW/DAY+91DAY TO NOW/DAY+120DAY] AND TYPE:'cm:folder'" \
+    } \
+  }`;
+
   @ViewChild('documentList', { static: true }) documentList: DocumentListComponent;
 
   @ViewChild('canvas') canvasRef: ElementRef;
@@ -175,60 +229,6 @@ export class DashboardComponent implements OnInit,AfterViewInit {
 
   data: any;
 
-  newQuery = `{
-    "query": { \
-      "query": "(ContractManagement:Status:new) AND TYPE:'cm:folder'" \
-    } \
-  }`;
-
-  inProgressQuery = `{
-    "query": { \
-      "query": "(ContractManagement:Status:'In Progress') AND TYPE:'cm:folder'" \
-    } \
-  }`;
-
-  legalReviewQuery = `{
-    "query": { \
-      "query": "(ContractManagement:Status:'Legal Review') AND TYPE:'cm:folder'" \
-    } \
-  }`;
-
-  externalPartyQuery = `{
-    "query": { \
-      "query": "(ContractManagement:Status:'External Party Review') AND TYPE:'cm:folder'" \
-    } \
-  }`;
-
-  negotiationQuery = `{
-    "query": { \
-      "query": "(ContractManagement:Status:Negotiation) AND TYPE:'cm:folder'" \
-    } \
-  }`;
-
-  sevenDayQuery = `{
-    "query": { \
-      "query": "ContractManagement:Expiration:[NOW/DAY TO NOW/DAY+7DAY] AND TYPE:'cm:folder'" \
-    } \
-  }`;
-
-  thirtyDayQuery = `{
-    "query": { \
-      "query": "ContractManagement:Expiration:[NOW/DAY TO NOW/DAY+30DAY] AND TYPE:'cm:folder'" \
-    } \
-  }`;
-
-  sixtyDayQuery = `{
-    "query": { \
-      "query": "ContractManagement:Expiration:[NOW/DAY+31DAY TO NOW/DAY+90DAY] AND TYPE:'cm:folder'" \
-    } \
-  }`;
-
-  ninetyDayQuery = `{
-    "query": { \
-      "query": "ContractManagement:Expiration:[NOW/DAY+91DAY TO NOW/DAY+120DAY] AND TYPE:'cm:folder'" \
-    } \
-  }`;
-
   thirtyDayArray = [];
   sixtyDayArray = [];
   ninetyDayArray = [];
@@ -288,7 +288,7 @@ export class DashboardComponent implements OnInit,AfterViewInit {
 
   ngAfterViewInit(){
 
-    timer(500, this.chartRefreshInterval).subscribe(n => {
+    timer(700, this.chartRefreshInterval).subscribe(n => {
 
       //console.log("timer status",n);
       if (this.chartRunState){
@@ -297,7 +297,8 @@ export class DashboardComponent implements OnInit,AfterViewInit {
               this.chartRunState = false;
               this.chartAnimationDuration=0;
             }else{
-              this.runChartProcess()
+              this.runChartProcess();
+              //this.refreshCloudTasks(); //refresh the task list every so often too
 
             }
           }
