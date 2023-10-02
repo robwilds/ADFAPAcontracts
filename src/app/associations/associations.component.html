@@ -1,11 +1,10 @@
 
-  <mat-card @fade background-color="primary">
+  <mat-card @fade background-color="primary" style="margin-left:auto;margin-right:auto;">
     <mat-slide-toggle (toggleChange)="isTroubleshooting = !isTroubleshooting;">troubleshoot?
     </mat-slide-toggle>
 <div id="associationWrapper" >
 <p *ngIf="isTroubleshooting">input node is {{node.name}} -- {{node.id}} - association info is {{node.properties['ContractManagement:associations']}} - selected node is {{selectedNode}} - newnodearray is {{newAss</p>
 <!-- <button (click)="updateNodeID(node)">Update</button> -->
-
 
 <div fxLayout="row" id="container" style="width:auto;height:auto;">
   <div id="associnfo" fxFlex="100%">
@@ -39,7 +38,6 @@
           No Associations!!
         </td>
       </tr>
-
     </table>
     <mat-paginator #paginator [length]="dataSource.filteredData.length" [pageIndex]="1" [pageSize]="5" [pageSizeOptions]="[5, 10]"></mat-paginator>
   </mat-tab>
@@ -49,14 +47,12 @@
     [highlight]="true"
     [liveSearchEnabled]="true"
     [expandable]="true"
-    (optionClicked)="onSeachItemClicked($event)"
-    >
+    (optionClicked)="onSeachItemClicked($event)">
 
 </adf-search-control>
-    <adf-breadcrumb
-    [target]="documentList"
 
-    >
+    <adf-breadcrumb
+    [target]="documentList">
 </adf-breadcrumb>
 
     <adf-document-list
@@ -93,7 +89,6 @@
       </data-column>
   </data-columns>
 
-
     <content-actions>
       <content-action
           title="Associate with {{node.name}}"
@@ -109,7 +104,7 @@
 </mat-tab>
   </mat-tab-group>
   </div>
-  <ng-container *ngIf="selectedNode" style="width:100px !important;height:100px !important;">
+  <ng-container *ngIf="selectedNode" style="width:200px !important;height:200px !important;">
     <adf-alfresco-viewer fxFlex="20%"
       [(showViewer)]="selectedNode"
       [overlayMode]="false"
