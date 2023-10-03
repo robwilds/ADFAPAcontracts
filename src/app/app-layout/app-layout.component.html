@@ -7,7 +7,6 @@
         <div id="rightHeader" fxLayout="row">
             <img src="{{userImage}}" alt="{{userName}}">
             <adf-notification-history [menuPositionX]="'before'" [menuPositionY]="'above'" fxFlex-Basis:10>
-
             </adf-notification-history>
         </div>
     </adf-layout-header>
@@ -37,7 +36,7 @@
                     <mat-icon matListIcon class="sidenav-menu-icon">cloud</mat-icon>
                     <div class="sidenav-menu-label" *ngIf="!isMenuMinimized()">Cloud Apps</div>
                 </a>
-                
+
                 <a mat-list-item adf-logout class="adf-sidenav-link">
                     <mat-icon matListIcon class="sidenav-menu-icon">exit_to_app</mat-icon>
                     <div class="sidenav-menu-label" *ngIf="!isMenuMinimized()">Logout</div>

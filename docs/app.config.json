@@ -16,7 +16,7 @@
     "implicitFlow": true,
     "silentLogin": true,
     "redirectSilentIframeUri": "{protocol}//{hostname}{:port}/assets/silent-refresh.html",
-    "redirectUri": "/ADFAPAcontracts/",
+    "redirectUri": "/",
     "redirectUriLogout": "/logout"
   },
   "languages": [
