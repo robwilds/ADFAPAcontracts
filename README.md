@@ -1,6 +1,11 @@
 # ADF/APS Application with Angular CLI
 
-this is created specifically for contract lifecycle management
+this is created specifically for contract lifecycle management.
+
+if you'd like to create a docker image of compiled app, use:
+
+docker build -t <imagename:tag>  .
+docker run --name adfapacontracts -d -p 4200:80 <imagename:tag>
 
 ## PreReqs
 

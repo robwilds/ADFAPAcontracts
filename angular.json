@@ -33,7 +33,7 @@
               "editorjs-html",
               "editorjs-text-color-plugin"
             ],
-            "outputPath": "docs",
+            "outputPath": "dist",
             "index": "src/index.html",
             "main": "src/main.ts",
             "tsConfig": "src/tsconfig.app.json",
