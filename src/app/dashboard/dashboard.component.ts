@@ -1,28 +1,78 @@
-
-import { MinimalNode, MinimalNodeEntity, TasksApi,NodeEntry } from '@alfresco/js-api';
-import { DocumentListComponent, DialogAspectListService, NodesApiService,NodeEntityEvent, NodeEntryEvent,ContentService,UploadService,UploadFilesEvent,ConfirmDialogComponent} from '@alfresco/adf-content-services';
-import { PreviewService } from '../services/preview.service';
-import { Component, ViewChild, Input, OnInit, ElementRef, Inject, HostListener, AfterViewInit, EventEmitter } from '@angular/core';
-import { Chart } from 'chart.js/auto';
-import { HttpClient, HttpHeaders } from '@angular/common/http'
-import { AlfrescoApiService,DataTableAdapter,DataTableComponent,NotificationHistoryModule,NotificationModel,NotificationService } from '@alfresco/adf-core';
-import { AlfrescoApiHttpClient } from '@alfresco/adf-core/api';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ProcessCloudService, ProcessInstanceCloud} from '@alfresco/adf-process-services-cloud';
-import { AuthenticationService } from '@alfresco/adf-core';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { trigger, transition, query, style, animate, group } from '@angular/animations';
-import { DOCUMENT, formatDate } from '@angular/common';
-import { Observable, of, forkJoin, pipe, Subscription,merge, observable } from 'rxjs';
-import { timer,interval } from 'rxjs';
-import {MatPaginator} from '@angular/material/paginator';
-import {MatSort} from '@angular/material/sort';
-import {MatTable, MatTableDataSource} from '@angular/material/table';
-import { startWith } from 'rxjs/operators';
-import { MatDialog } from '@angular/material/dialog';
-import { VersionManagerDialogAdapterComponent } from './version-manager-dialog-adapter.component';
-import { MatSlideToggle } from '@angular/material/slide-toggle';
-import { MetadataDialogAdapterComponent } from '../documents/metadata-dialog-adapter.component';
+import {
+  MinimalNode,
+  MinimalNodeEntity,
+  TasksApi,
+  NodeEntry,
+} from "@alfresco/js-api";
+import {
+  DocumentListComponent,
+  DialogAspectListService,
+  NodesApiService,
+  NodeEntityEvent,
+  NodeEntryEvent,
+  ContentService,
+  UploadService,
+  UploadFilesEvent,
+  ConfirmDialogComponent,
+} from "@alfresco/adf-content-services";
+import { PreviewService } from "../services/preview.service";
+import {
+  Component,
+  ViewChild,
+  Input,
+  OnInit,
+  ElementRef,
+  Inject,
+  HostListener,
+  AfterViewInit,
+  EventEmitter,
+} from "@angular/core";
+import { Chart } from "chart.js/auto";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import {
+  AlfrescoApiService,
+  DataTableAdapter,
+  DataTableComponent,
+  NotificationHistoryModule,
+  NotificationModel,
+  NotificationService,
+} from "@alfresco/adf-core";
+import { AlfrescoApiHttpClient } from "@alfresco/adf-core/api";
+import { ActivatedRoute, Router } from "@angular/router";
+import {
+  ProcessCloudService,
+  ProcessInstanceCloud,
+} from "@alfresco/adf-process-services-cloud";
+import { AuthenticationService } from "@alfresco/adf-core";
+import { MatSnackBar, MatSnackBarModule } from "@angular/material/snack-bar";
+import {
+  trigger,
+  transition,
+  query,
+  style,
+  animate,
+  group,
+} from "@angular/animations";
+import { DOCUMENT, formatDate } from "@angular/common";
+import {
+  Observable,
+  of,
+  forkJoin,
+  pipe,
+  Subscription,
+  merge,
+  observable,
+} from "rxjs";
+import { timer, interval } from "rxjs";
+import { MatPaginator } from "@angular/material/paginator";
+import { MatSort } from "@angular/material/sort";
+import { MatTable, MatTableDataSource } from "@angular/material/table";
+import { startWith } from "rxjs/operators";
+import { MatDialog } from "@angular/material/dialog";
+import { VersionManagerDialogAdapterComponent } from "./version-manager-dialog-adapter.component";
+import { MatSlideToggle } from "@angular/material/slide-toggle";
+import { MetadataDialogAdapterComponent } from "../documents/metadata-dialog-adapter.component";
+import { AppConfigService } from "@alfresco/adf-core";
 
 export interface folderData {
   id: string;
@@ -32,64 +82,82 @@ export interface folderData {
 }
 
 const left = [
-  query(':enter, :leave', style({ position: 'fixed', width: '200px' }), { optional: true }),
+  query(":enter, :leave", style({ position: "fixed", width: "200px" }), {
+    optional: true,
+  }),
   group([
-    query(':enter', [style({ transform: 'translateX(-200px)' }), animate('3s ease-out', style({ transform: 'translateX(0%)' }))], {
-      optional: true,
-    }),
-    query(':leave', [style({ transform: 'translateX(0%)' }), animate('3s ease-out', style({ transform: 'translateX(200px)' }))], {
-      optional: true,
-    }),
+    query(
+      ":enter",
+      [
+        style({ transform: "translateX(-200px)" }),
+        animate("3s ease-out", style({ transform: "translateX(0%)" })),
+      ],
+      {
+        optional: true,
+      }
+    ),
+    query(
+      ":leave",
+      [
+        style({ transform: "translateX(0%)" }),
+        animate("3s ease-out", style({ transform: "translateX(200px)" })),
+      ],
+      {
+        optional: true,
+      }
+    ),
   ]),
 ];
 
 const right = [
-  query(':enter, :leave', style({ position: 'fixed', width: '200px' }), { optional: true }),
+  query(":enter, :leave", style({ position: "fixed", width: "200px" }), {
+    optional: true,
+  }),
   group([
-    query(':enter', [style({ transform: 'translateX(200px)' }), animate('3s ease-out', style({ transform: 'translateX(0%)' }))], {
-      optional: true,
-    }),
-    query(':leave', [style({ transform: 'translateX(0%)' }), animate('3s ease-out', style({ transform: 'translateX(-200px)' }))], {
-      optional: true,
-    }),
+    query(
+      ":enter",
+      [
+        style({ transform: "translateX(200px)" }),
+        animate("3s ease-out", style({ transform: "translateX(0%)" })),
+      ],
+      {
+        optional: true,
+      }
+    ),
+    query(
+      ":leave",
+      [
+        style({ transform: "translateX(0%)" }),
+        animate("3s ease-out", style({ transform: "translateX(-200px)" })),
+      ],
+      {
+        optional: true,
+      }
+    ),
   ]),
 ];
 @Component({
-  selector: 'dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss'],
+  selector: "dashboard",
+  templateUrl: "./dashboard.component.html",
+  styleUrls: ["./dashboard.component.scss"],
   animations: [
-    trigger(
-      'inOutAnimation',
-      [
-        transition(
-          ':enter',
-          [
-            style({ height: 0, opacity: 0 }),
-            animate('1s ease-out',
-                    style({ height: 600, opacity: 1 }))
-          ]
-        ),
-        transition(
-          ':leave',
-          [
-            style({ height: 600, opacity: 1 }),
-            animate('1s ease-in',
-                    style({ height: 0, opacity: 0 }))
-          ]
-        )
-      ]
-    ),
-    trigger('animImageSlider', [
-      transition(':increment', left),
-      transition(':decrement', right),
+    trigger("inOutAnimation", [
+      transition(":enter", [
+        style({ height: 0, opacity: 0 }),
+        animate("1s ease-out", style({ height: 600, opacity: 1 })),
+      ]),
+      transition(":leave", [
+        style({ height: 600, opacity: 1 }),
+        animate("1s ease-in", style({ height: 0, opacity: 0 })),
+      ]),
     ]),
-
-  ]
+    trigger("animImageSlider", [
+      transition(":increment", left),
+      transition(":decrement", right),
+    ]),
+  ],
 })
-
-export class DashboardComponent implements OnInit,AfterViewInit {
-
+export class DashboardComponent implements OnInit, AfterViewInit {
   newQuery = `{
     "query": { \
       "query": "(ContractManagement:Status:new) AND TYPE:'cm:folder'" \
@@ -144,30 +212,32 @@ export class DashboardComponent implements OnInit,AfterViewInit {
     } \
   }`;
 
-  @ViewChild('documentList', { static: true }) documentList: DocumentListComponent;
+  @ViewChild("documentList", { static: true })
+  documentList: DocumentListComponent;
 
-  @ViewChild('canvas') canvasRef: ElementRef;
+  @ViewChild("canvas") canvasRef: ElementRef;
 
-  @ViewChild('detailTable', { static: true }) detailTable: MatTable<any>;
+  @ViewChild("detailTable", { static: true }) detailTable: MatTable<any>;
 
-  @ViewChild('assignedTaskCloud',{static:true}) assignedTaskCloudTable: DataTableAdapter;
+  @ViewChild("assignedTaskCloud", { static: true })
+  assignedTaskCloudTable: DataTableAdapter;
 
-  notification:NotificationModel;
+  notification: NotificationModel;
 
   ctx: any;
-  displayEmptyMetadata:boolean = true;
+  displayEmptyMetadata: boolean = true;
   showVersions = false;
   allowDropFiles = true;
   allowVersionDownload = true;
   showVersionComments = true;
   warnOnMultipleUploads = false;
   acceptedFilesTypeShow = false;
-  acceptedFilesType = '.jpg,.pdf,.js';
+  acceptedFilesType = ".jpg,.pdf,.js";
   disableDragArea = false;
 
-  sorting = { orderBy: 'createdDate', direction: 'desc' };
-  dateFormat = 'MM/dd/yyyy';
-  locale = 'en-US';
+  sorting = { orderBy: "createdDate", direction: "desc" };
+  dateFormat = "MM/dd/yyyy";
+  locale = "en-US";
 
   snackBarDuration = 3000;
   windowScrolled: boolean;
@@ -178,7 +248,7 @@ export class DashboardComponent implements OnInit,AfterViewInit {
   currentDateTime: any = new Date();
   processName: string;
 
-  appName: any = "clm-mvp-v1-alpha-1";
+  appName: any = "clm-mvp-v1-alpha-1"; //** move this to app config */
   taskId: any = "";
 
   showFiller = false;
@@ -186,7 +256,7 @@ export class DashboardComponent implements OnInit,AfterViewInit {
   snackBarMessage: any;
   snackBarValue: any;
 
-  @ViewChild('cval', { static: true }) pval: ElementRef;
+  @ViewChild("cval", { static: true }) pval: ElementRef;
 
   @Input()
   showViewer: boolean = false;
@@ -205,7 +275,8 @@ export class DashboardComponent implements OnInit,AfterViewInit {
   nodeEntry: any;
   searchTerm: string = null;
 
-  globalSearchUrl = "https://sse.dev.alfrescocloud.com/alfresco/api/-default-/public/search/versions/1/search";
+  globalSearchUrl = "";
+
   //globalSearchUrl = "http://3.90.226.222/alfresco/api/-default-/public/search/versions/1/search";
 
   isAutoRefreshChart: boolean = false;
@@ -232,9 +303,9 @@ export class DashboardComponent implements OnInit,AfterViewInit {
   thirtyDayArray = [];
   sixtyDayArray = [];
   ninetyDayArray = [];
-  viewThirty:boolean = true;
-  viewSixty:boolean = true;
-  viewNinety:boolean = true;
+  viewThirty: boolean = true;
+  viewSixty: boolean = true;
+  viewNinety: boolean = true;
 
   newChartDataArray = [];
   LegalReviewChartDataArray = [];
@@ -243,81 +314,98 @@ export class DashboardComponent implements OnInit,AfterViewInit {
   negotiationChartDataArray = [];
 
   chartDataArray = [];
-  currentDay:Date;
-  currentDayPlus7:Date;
-  sevenDaycheck:any;
+  currentDay: Date;
+  currentDayPlus7: Date;
+  sevenDaycheck: any;
 
-  displayedColumns: string[] = ['id', 'name', 'nodeEx','node'];
+  displayedColumns: string[] = ["id", "name", "nodeEx", "node"];
   mainDataArray: MatTableDataSource<folderData>;
-  @ViewChild('paginator', {static: true}) paginator: MatPaginator;
-  @ViewChild(MatSort, {static: true}) sort: MatSort;
+  @ViewChild("paginator", { static: true }) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
   expirationDateTemp: any;
-  countTemp:any;
-  doughnutLabel:any;
-  chartClickedLegend = ""
+  countTemp: any;
+  doughnutLabel: any;
+  chartClickedLegend = "";
 
   timeSubscription: Subscription;
 
   isShow: boolean;
   topPosToStartShowing = 2;
-  tcc:any;
+  tcc: any;
 
-  showForm:boolean = false;
-  showModalDiv:boolean = false;
+  showForm: boolean = false;
+  showModalDiv: boolean = false;
 
-  assignedTaskFilter = "ASSIGNED"
+  assignedTaskFilter = "ASSIGNED";
   showTaskViews: boolean = true;
-  showMyFiles:boolean = true;
+  showMyFiles: boolean = true;
 
-  constructor( private notificationService: NotificationService,private dialogAspectListService: DialogAspectListService,
+  constructor(
+    appConfig: AppConfigService,
+    private notificationService: NotificationService,
+    private dialogAspectListService: DialogAspectListService,
     private uploadService: UploadService,
     private contentService: ContentService,
-    private dialog: MatDialog,private _snackBar: MatSnackBar, private authService: AuthenticationService, private processService: ProcessCloudService, private router: Router,
-    private route: ActivatedRoute, private http: HttpClient, private alfrescoJsApi: AlfrescoApiHttpClient, private nodeApiService: NodesApiService, private preview: PreviewService, private nodeService: NodesApiService, private apiService: AlfrescoApiService)
-    {
+    private dialog: MatDialog,
+    private _snackBar: MatSnackBar,
+    private authService: AuthenticationService,
+    private processService: ProcessCloudService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private http: HttpClient,
+    private alfrescoJsApi: AlfrescoApiHttpClient,
+    private nodeApiService: NodesApiService,
+    private preview: PreviewService,
+    private nodeService: NodesApiService,
+    private apiService: AlfrescoApiService
+  ) {
+    this.currentDay = new Date();
+    this.currentDayPlus7 = new Date();
+    this.currentDayPlus7.setDate(this.currentDayPlus7.getDate() + 7);
+    this.currentDayPlus7 = new Date(
+      formatDate(this.currentDayPlus7, this.dateFormat, this.locale)
+    );
 
-      this.currentDay=new Date();
-      this.currentDayPlus7 = new Date();
-      this.currentDayPlus7.setDate(this.currentDayPlus7.getDate()+7)
-      this.currentDayPlus7 = new Date(formatDate(this.currentDayPlus7, this.dateFormat,this.locale))
+    //console.log("days plus 7",this.currentDayPlus7);
 
-      //console.log("days plus 7",this.currentDayPlus7);
-
-      this.currentUser = authService.getEcmUsername();
+    this.currentUser = authService.getEcmUsername();
+    console.log("ecm host is: " + appConfig.get("ecmHost"));
+    console.log("bpm host is: " + appConfig.get("bpmHost"));
+    this.globalSearchUrl =
+      appConfig.get("ecmHost") +
+      "/alfresco/api/-default-/public/search/versions/1/search";
   }
 
-  ngAfterViewInit(){
-
-    timer(700, this.chartRefreshInterval).subscribe(n => {
-
+  ngAfterViewInit() {
+    timer(700, this.chartRefreshInterval).subscribe((n) => {
       //console.log("timer status",n);
-      if (this.chartRunState){
-
-              this.runChartProcess();
-              this.chartRunState = false;
-              this.chartAnimationDuration=0;
-            }else{
-              this.runChartProcess();
-              //this.refreshCloudTasks(); //refresh the task list every so often too
-
-            }
-          }
-    );
+      if (this.chartRunState) {
+        this.runChartProcess();
+        this.chartRunState = false;
+        this.chartAnimationDuration = 0;
+      } else {
+        this.runChartProcess();
+        //this.refreshCloudTasks(); //refresh the task list every so often too
+      }
+    });
   }
 
   ngOnInit() {
-    this.getCounts();  //get all counts when initialized
+    this.getCounts(); //get all counts when initialized
     this.mainDataArray.paginator = this.paginator;
   }
 
   checkScroll() {
-
     // window의 scroll top
     // Both window.pageYOffset and document.documentElement.scrollTop returns the same result in all the cases. window.pageYOffset is not supported below IE 9.
 
-    const scrollPosition = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    const scrollPosition =
+      window.pageYOffset ||
+      document.documentElement.scrollTop ||
+      document.body.scrollTop ||
+      0;
 
-    console.log('[scroll]', scrollPosition);
+    console.log("[scroll]", scrollPosition);
 
     if (scrollPosition >= this.topPosToStartShowing) {
       this.isShow = true;
@@ -326,17 +414,16 @@ export class DashboardComponent implements OnInit,AfterViewInit {
     }
   }
 
-  runChartProcess()
-  {
+  runChartProcess() {
     //alert("inside runchartprocess");
-    this.getCounts().subscribe( val => {this.initializeChartData().subscribe(val => {this.processChart(val)})
-
-
+    this.getCounts().subscribe((val) => {
+      this.initializeChartData().subscribe((val) => {
+        this.processChart(val);
       });
+    });
   }
 
   thirty6090Clicked(id) {
-
     switch (id) {
       case 1: {
         //this.mainDataArray = this.thirtyDayArray;
@@ -376,156 +463,162 @@ export class DashboardComponent implements OnInit,AfterViewInit {
 
   openSnackBar(message: string, action: string) {
     this._snackBar.open(message, action, {
-      duration: this.snackBarDuration
+      duration: this.snackBarDuration,
     });
   }
 
-  getDetailValues(query:any,which): Observable<any[]>{
-
+  getDetailValues(query: any, which): Observable<any[]> {
     const headers = new HttpHeaders()
-    .set("Content-Type", "application/json")
-    .set("Authorization", "Basic cndpbGRzOmRlbW8=");
+      .set("Content-Type", "application/json")
+      .set("Authorization", "Basic cndpbGRzOmRlbW8=");
     let iter = 1;
     let array = [];
 
-    this.http.post(this.globalSearchUrl, query,{headers}).subscribe(
-      val => {
+    this.http
+      .post(this.globalSearchUrl, query, { headers })
+      .subscribe((val) => {
         //console.log("getDetails call successful value returned in body ", val);
         //first for loop to get data into the array
-        for (var ent in val['list']['entries']) {
-
-          this.nodeApiService.getNode(val['list']['entries'][ent]['entry']['id']).subscribe(
+        for (var ent in val["list"]["entries"]) {
+          this.nodeApiService
+            .getNode(val["list"]["entries"][ent]["entry"]["id"])
+            .subscribe(
               (node) => {
-                  //let tempSevenDayDiff =  this.currentDayPlus7 - Date(formatDate(node.properties['ContractManagement:Expiration'],this.dateFormat,this.locale))
-                  array.push({
-                    id: iter,
-                    name: node.name,
-                    node: node.id,
-                    nodeEx: new Date(formatDate(node.properties['ContractManagement:Expiration'],this.dateFormat,this.locale))//node.properties.ContractManagement.Expiration//"placeholder"//this.getDateFromNodeID(val['list']['entries'][ent]['entry']['id'])
-                  })
+                //let tempSevenDayDiff =  this.currentDayPlus7 - Date(formatDate(node.properties['ContractManagement:Expiration'],this.dateFormat,this.locale))
+                array.push({
+                  id: iter,
+                  name: node.name,
+                  node: node.id,
+                  nodeEx: new Date(
+                    formatDate(
+                      node.properties["ContractManagement:Expiration"],
+                      this.dateFormat,
+                      this.locale
+                    )
+                  ), //node.properties.ContractManagement.Expiration//"placeholder"//this.getDateFromNodeID(val['list']['entries'][ent]['entry']['id'])
+                });
 
-                  iter = iter+1;
+                iter = iter + 1;
               },
-              error => { console.log("Ouch, an error happened!"); }
-          );
-            }
+              (error) => {
+                console.log("Ouch, an error happened!");
+              }
+            );
+        }
 
-            switch(which) {
-              case 30: {
-                 //statements;
-                 this.thirtyDayArray = array;
-                 break;
-              }
-              case 60: {
-                 this.sixtyDayArray = array;
-                 break;
-              }
-              case 90: {
-                this.ninetyDayArray = array;
-                break;
-              }
-              default: {
-                 //statements;
-                 break;
-              }
-           }
-  });
+        switch (which) {
+          case 30: {
+            //statements;
+            this.thirtyDayArray = array;
+            break;
+          }
+          case 60: {
+            this.sixtyDayArray = array;
+            break;
+          }
+          case 90: {
+            this.ninetyDayArray = array;
+            break;
+          }
+          default: {
+            //statements;
+            break;
+          }
+        }
+      });
 
-  return of(array);
+    return of(array);
   }
 
-  getSum(query,which):Observable<Number>{
-
+  getSum(query, which): Observable<Number> {
     const headers = new HttpHeaders()
       .set("Content-Type", "application/json")
       .set("Authorization", "Basic cndpbGRzOmRlbW8=");
 
-  this.http.post(this.globalSearchUrl, query, { headers }).subscribe(
-    val => {
-      //console.log("getSum PUT call successful value returned in body", val);
-      //this.countTemp = Number(val['list']['pagination']['count']);
-      //console.log("getSum count is: ",this.countTemp)
+    this.http.post(this.globalSearchUrl, query, { headers }).subscribe(
+      (val) => {
+        //console.log("getSum PUT call successful value returned in body", val);
+        //this.countTemp = Number(val['list']['pagination']['count']);
+        //console.log("getSum count is: ",this.countTemp)
 
-      switch(which) {
-        case 30: {
-           //statements;
-           this.thirtyDayCount = Number(val['list']['pagination']['count']);
-           break;
+        switch (which) {
+          case 30: {
+            //statements;
+            this.thirtyDayCount = Number(val["list"]["pagination"]["count"]);
+            break;
+          }
+          case 60: {
+            this.sixtyDayCount = Number(val["list"]["pagination"]["count"]);
+            break;
+          }
+          case 90: {
+            this.ninetyDayCount = Number(val["list"]["pagination"]["count"]);
+            break;
+          }
+          default: {
+            //statements;
+            break;
+          }
         }
-        case 60: {
-           this.sixtyDayCount = Number(val['list']['pagination']['count']);
-           break;
-        }
-        case 90: {
-          this.ninetyDayCount = Number(val['list']['pagination']['count']);
-          break;
-        }
-        default: {
-           //statements;
-           break;
-        }
-     }
-    }
-    // ,
+      }
+      // ,
 
-    // response => {
-    //   //console.log("PUT call in error", response);
-    // },
+      // response => {
+      //   //console.log("PUT call in error", response);
+      // },
 
-    // () => {
-    //   //console.log("The PUT observable is now completed.");
-    // }
-  );
+      // () => {
+      //   //console.log("The PUT observable is now completed.");
+      // }
+    );
 
-  return of(this.countTemp);
+    return of(this.countTemp);
   }
 
   getCounts(): Observable<any> {
     //console.log("inside getcounts");
 
-  //get the 306090 details and sum info
-  this.getDetailValues(this.thirtyDayQuery,30).subscribe(()=>
-  this.getSum(this.thirtyDayQuery,30).subscribe(()=>
-  this.getDetailValues(this.sixtyDayQuery,60).subscribe(()=>
-  this.getSum(this.sixtyDayQuery,60).subscribe(()=>
-  this.getDetailValues(this.ninetyDayQuery,90).subscribe(()=>
-  this.getSum(this.ninetyDayQuery,90)))
-  )
-  )
-)
+    //get the 306090 details and sum info
+    this.getDetailValues(this.thirtyDayQuery, 30).subscribe(() =>
+      this.getSum(this.thirtyDayQuery, 30).subscribe(() =>
+        this.getDetailValues(this.sixtyDayQuery, 60).subscribe(() =>
+          this.getSum(this.sixtyDayQuery, 60).subscribe(() =>
+            this.getDetailValues(this.ninetyDayQuery, 90).subscribe(() =>
+              this.getSum(this.ninetyDayQuery, 90)
+            )
+          )
+        )
+      )
+    );
 
-//refresh the detail table now
+    //refresh the detail table now
 
-//this.detailTable.renderRows();
+    //this.detailTable.renderRows();
 
     //****** GET CHART INFO BELOW ******
     const headers = new HttpHeaders()
-    .set("Content-Type", "application/json")
-    .set("Authorization", "Basic cndpbGRzOmRlbW8=");
-
+      .set("Content-Type", "application/json")
+      .set("Authorization", "Basic cndpbGRzOmRlbW8=");
 
     //Run New
     this.http.post(this.globalSearchUrl, this.newQuery, { headers }).subscribe(
-      val => {
+      (val) => {
         //console.log("PUT call successful value returned in body", val);
-        this.newCount = Number(val['list']['pagination']['count']);
+        this.newCount = Number(val["list"]["pagination"]["count"]);
         //console.log("new count: ", this.newCount)
 
         //Now process the rows for the mat table.  make sure array is empty first
         this.newChartDataArray = [];
 
-        for (var ent in val['list']['entries']) {
-
+        for (var ent in val["list"]["entries"]) {
           this.newChartDataArray.push({
-            id: String(Number(ent)+1),
-            name: val['list']['entries'][ent]['entry']['name'],
-            node: val['list']['entries'][ent]['entry']['id'],
-
+            id: String(Number(ent) + 1),
+            name: val["list"]["entries"][ent]["entry"]["name"],
+            node: val["list"]["entries"][ent]["entry"]["id"],
           });
         }
-
       },
-      response => {
+      (response) => {
         //console.log("PUT call in error", response);
       },
       () => {
@@ -534,216 +627,227 @@ export class DashboardComponent implements OnInit,AfterViewInit {
     );
 
     //Run In Progress
-    this.http.post(this.globalSearchUrl, this.inProgressQuery, { headers }).subscribe(
-      val => {
-        //console.log("PUT call successful value returned in body", val);
-        this.inProgressCount = Number(val['list']['pagination']['count']);
+    this.http
+      .post(this.globalSearchUrl, this.inProgressQuery, { headers })
+      .subscribe(
+        (val) => {
+          //console.log("PUT call successful value returned in body", val);
+          this.inProgressCount = Number(val["list"]["pagination"]["count"]);
 
-        //console.log("in progress count: ", this.inProgressCount)
-        //Now process the rows for the mat table.  make sure array is empty first
-        this.inProgressChartDataArray = [];
-        for (var ent in val['list']['entries']) {
+          //console.log("in progress count: ", this.inProgressCount)
+          //Now process the rows for the mat table.  make sure array is empty first
+          this.inProgressChartDataArray = [];
+          for (var ent in val["list"]["entries"]) {
+            this.inProgressChartDataArray.push({
+              id: String(Number(ent) + 1),
+              name: val["list"]["entries"][ent]["entry"]["name"],
+              node: val["list"]["entries"][ent]["entry"]["id"],
+            });
+          }
+        },
 
-          this.inProgressChartDataArray.push({
-            id: String(Number(ent)+1),
-            name: val['list']['entries'][ent]['entry']['name'],
-            node: val['list']['entries'][ent]['entry']['id'],
+        (response) => {
+          //console.log("PUT call in error", response);
+        },
 
-          });
+        () => {
+          //console.log("The PUT observable is now completed.");
         }
-
-      },
-
-      response => {
-        //console.log("PUT call in error", response);
-      },
-
-      () => {
-        //console.log("The PUT observable is now completed.");
-      }
-    );
+      );
 
     //Run legal review
-    this.http.post(this.globalSearchUrl, this.legalReviewQuery, { headers }).subscribe(
-      val => {
-        //console.log("PUT call successful value returned in body", val);
-        this.legalReviewCount = Number(val['list']['pagination']['count']);
+    this.http
+      .post(this.globalSearchUrl, this.legalReviewQuery, { headers })
+      .subscribe(
+        (val) => {
+          //console.log("PUT call successful value returned in body", val);
+          this.legalReviewCount = Number(val["list"]["pagination"]["count"]);
 
-        //console.log("in progress count: ", this.legalReviewCount)
-        //Now process the rows for the mat table.  make sure array is empty first
-        this.LegalReviewChartDataArray = [];
-        for (var ent in val['list']['entries']) {
-          this.LegalReviewChartDataArray.push({
-            id: String(Number(ent)+1),
-            name: val['list']['entries'][ent]['entry']['name'],
-            node: val['list']['entries'][ent]['entry']['id'],
+          //console.log("in progress count: ", this.legalReviewCount)
+          //Now process the rows for the mat table.  make sure array is empty first
+          this.LegalReviewChartDataArray = [];
+          for (var ent in val["list"]["entries"]) {
+            this.LegalReviewChartDataArray.push({
+              id: String(Number(ent) + 1),
+              name: val["list"]["entries"][ent]["entry"]["name"],
+              node: val["list"]["entries"][ent]["entry"]["id"],
+            });
+          }
+        },
 
-          });
+        (response) => {
+          //console.log("PUT call in error", response);
+        },
+
+        () => {
+          //console.log("The PUT observable is now completed.");
         }
-
-      },
-
-      response => {
-        //console.log("PUT call in error", response);
-      },
-
-      () => {
-        //console.log("The PUT observable is now completed.");
-      }
-    );
+      );
 
     //Run external party review
-    this.http.post(this.globalSearchUrl, this.externalPartyQuery, { headers }).subscribe(
-      val => {
-       // console.log("PUT call successful value returned in body", val);
-        this.externalPartyReviewCount = Number(val['list']['pagination']['count']);
+    this.http
+      .post(this.globalSearchUrl, this.externalPartyQuery, { headers })
+      .subscribe(
+        (val) => {
+          // console.log("PUT call successful value returned in body", val);
+          this.externalPartyReviewCount = Number(
+            val["list"]["pagination"]["count"]
+          );
 
-        //console.log("in progress count: ", this.externalPartyReviewCount)
-        //Now process the rows for the mat table.  make sure array is empty first
-        this.externalChartDataArray = [];
-        for (var ent in val['list']['entries']) {
-          this.externalChartDataArray.push({
-            id: String(Number(ent)+1),
-            name: val['list']['entries'][ent]['entry']['name'],
-            node: val['list']['entries'][ent]['entry']['id'],
-          });
+          //console.log("in progress count: ", this.externalPartyReviewCount)
+          //Now process the rows for the mat table.  make sure array is empty first
+          this.externalChartDataArray = [];
+          for (var ent in val["list"]["entries"]) {
+            this.externalChartDataArray.push({
+              id: String(Number(ent) + 1),
+              name: val["list"]["entries"][ent]["entry"]["name"],
+              node: val["list"]["entries"][ent]["entry"]["id"],
+            });
+          }
+        },
+
+        (response) => {
+          //console.log("PUT call in error", response);
+        },
+
+        () => {
+          //console.log("The PUT observable is now completed.");
         }
-      },
-
-      response => {
-        //console.log("PUT call in error", response);
-      },
-
-      () => {
-        //console.log("The PUT observable is now completed.");
-      }
-    );
+      );
 
     //Run negotiation
-    this.http.post(this.globalSearchUrl, this.negotiationQuery, { headers }).subscribe(
-      val => {
-        //console.log("PUT call successful value returned in body", val);
-        this.negotiationCount = Number(val['list']['pagination']['count']);
+    this.http
+      .post(this.globalSearchUrl, this.negotiationQuery, { headers })
+      .subscribe(
+        (val) => {
+          //console.log("PUT call successful value returned in body", val);
+          this.negotiationCount = Number(val["list"]["pagination"]["count"]);
 
-        //console.log("in progress count: ", this.negotiationCount)
-        //Now process the rows for the mat table.  make sure array is empty first
-        this.negotiationChartDataArray = [];
-        for (var ent in val['list']['entries']) {
+          //console.log("in progress count: ", this.negotiationCount)
+          //Now process the rows for the mat table.  make sure array is empty first
+          this.negotiationChartDataArray = [];
+          for (var ent in val["list"]["entries"]) {
+            this.negotiationChartDataArray.push({
+              id: String(Number(ent) + 1),
+              name: val["list"]["entries"][ent]["entry"]["name"],
+              node: val["list"]["entries"][ent]["entry"]["id"],
+            });
+          }
+        },
 
-          this.negotiationChartDataArray.push({
-            id: String(Number(ent)+1),
-            name: val['list']['entries'][ent]['entry']['name'],
-            node: val['list']['entries'][ent]['entry']['id'],
+        (response) => {
+          //console.log("PUT call in error", response);
+        },
 
-          });
+        () => {
+          //console.log("The PUT observable is now completed.");
         }
-
-      },
-
-      response => {
-        //console.log("PUT call in error", response);
-      },
-
-      () => {
-        //console.log("The PUT observable is now completed.");
-      }
-    );
+      );
 
     //Run 7 day count
-    this.http.post(this.globalSearchUrl, this.sevenDayQuery, { headers }).subscribe(
-      val => {
-        //console.log("PUT call successful value returned in body", val);
-        this.sevenDayCount = Number(val['list']['pagination']['count']);
+    this.http
+      .post(this.globalSearchUrl, this.sevenDayQuery, { headers })
+      .subscribe(
+        (val) => {
+          //console.log("PUT call successful value returned in body", val);
+          this.sevenDayCount = Number(val["list"]["pagination"]["count"]);
 
-        //console.log("7 day count: ", this.sevenDayCount)
-        if (this.sevenDayCount > 1) {
-          this.sevenDayMessage = "There are " + this.sevenDayCount + " Contracts expiring this week!!"
-          this.sevenDayShowMessage = true;
+          //console.log("7 day count: ", this.sevenDayCount)
+          if (this.sevenDayCount > 1) {
+            this.sevenDayMessage =
+              "There are " +
+              this.sevenDayCount +
+              " Contracts expiring this week!!";
+            this.sevenDayShowMessage = true;
+          } else if (this.sevenDayCount == 1) {
+            this.sevenDayMessage =
+              "There's " +
+              this.sevenDayCount +
+              " Contract expiring this week!!";
+            this.sevenDayShowMessage = true;
+          } else if (this.sevenDayCount == 0) {
+            this.sevenDayShowMessage = false;
+          }
+        },
+
+        (response) => {
+          //console.log("PUT call in error", response);
+        },
+
+        () => {
+          //console.log("The PUT observable is now completed.");
         }
-        else if (this.sevenDayCount == 1) {
-          this.sevenDayMessage = "There's " + this.sevenDayCount + " Contract expiring this week!!"
-          this.sevenDayShowMessage = true;
-        } else if (this.sevenDayCount == 0) {
-          this.sevenDayShowMessage = false;
-        }
-
-      },
-
-      response => {
-        //console.log("PUT call in error", response);
-      },
-
-      () => {
-        //console.log("The PUT observable is now completed.");
-      }
-    );
+      );
 
     //alert("get counts done...negotiation:"+this.negotiationCount+ " in progress:"+this.inProgressCount + " external part:"+this.externalPartyReviewCount);
-    return of('done');
+    return of("done");
   }
 
-  initializeChartData():Observable<any>{
-
-    this.ctx = this.canvasRef.nativeElement.getContext('2d');
+  initializeChartData(): Observable<any> {
+    this.ctx = this.canvasRef.nativeElement.getContext("2d");
 
     console.log("now setting data array for chart");
 
-
-
     this.data = {
       labels: [
-        'New',
-        'In Progress',
-        'Legal Review',
-        'External Party Review',
-        'Negotiation'
+        "New",
+        "In Progress",
+        "Legal Review",
+        "External Party Review",
+        "Negotiation",
       ],
-      datasets: [{
-        label: 'Contract Status',
-        data: [this.newCount, this.inProgressCount, this.legalReviewCount, this.externalPartyReviewCount, this.negotiationCount],
-        backgroundColor: ['green', 'grey', 'red', 'purple', 'orange'],
-        hoverBorderColor: ['black', 'black', 'black', 'black', 'black'],
-        hoverBorderWidth: 2,
-        borderWidth: 15
-      }],
-      options: [{
-        responsive: true,
-        events: ['click']
-      }]
+      datasets: [
+        {
+          label: "Contract Status",
+          data: [
+            this.newCount,
+            this.inProgressCount,
+            this.legalReviewCount,
+            this.externalPartyReviewCount,
+            this.negotiationCount,
+          ],
+          backgroundColor: ["green", "grey", "red", "purple", "orange"],
+          hoverBorderColor: ["black", "black", "black", "black", "black"],
+          hoverBorderWidth: 2,
+          borderWidth: 15,
+        },
+      ],
+      options: [
+        {
+          responsive: true,
+          events: ["click"],
+        },
+      ],
     };
 
     //done, return observable
     //alert("chart data ready " + this.externalPartyReviewCount);
-    return of('done');
-
+    return of("done");
   }
 
-
   processChart(dummy) {
-
-
-
     //console.log("data set is: ", this.data)
     console.log("now instantiating chart object");
 
-    if(this.chart){
+    if (this.chart) {
       console.log("chart exists");
       //this.chart.clear();
       this.chart.destroy();
       //this.chart.update();
-    }else{console.log("chart doesn't exist")}
-      Chart.defaults.font.size = 18;
+    } else {
+      console.log("chart doesn't exist");
+    }
+    Chart.defaults.font.size = 18;
 
     this.chart = new Chart(this.ctx, {
-      type: 'doughnut',
+      type: "doughnut",
       data: this.data,
       options: {
         animation: {
-          duration: this.chartAnimationDuration
-      },
-      maintainAspectRatio: true,
+          duration: this.chartAnimationDuration,
+        },
+        maintainAspectRatio: true,
         onClick: (event, elements, chart) => {
-
           this.chartDataArray = [];
           const i = elements[0].index;
           //const name = elements[0].element.getProps(["labels"])
@@ -783,68 +887,67 @@ export class DashboardComponent implements OnInit,AfterViewInit {
           if (this.showChartPanel) {
             this.showChartPanel = !this.showChartPanel;
             this.showChartPanel = !this.showChartPanel;
-          }
-          else {
+          } else {
             this.showChartPanel = !this.showChartPanel;
           }
-        }
-
+        },
       },
-      plugins:[{
-        id:'doughnutLabel',
-        beforeDatasetsDraw(chart,args,pluginOptions){
-          const { ctx,data} = chart;
+      plugins: [
+        {
+          id: "doughnutLabel",
+          beforeDatasetsDraw(chart, args, pluginOptions) {
+            const { ctx, data } = chart;
 
-          ctx.save;
-          const xCoor = chart.getDatasetMeta(0).data[0].x;
-          const yCoor = chart.getDatasetMeta(0).data[0].y;
+            ctx.save;
+            const xCoor = chart.getDatasetMeta(0).data[0].x;
+            const yCoor = chart.getDatasetMeta(0).data[0].y;
 
-          ctx.font = 'bold 60px sans-serif';
-          ctx.fillStyle = 'rgba(135,135,135,1)';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          //console.log('array sum',data.datasets[0].data.reduce((acc:number,curr:number)=>acc+curr,0));
+            ctx.font = "bold 60px sans-serif";
+            ctx.fillStyle = "rgba(135,135,135,1)";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            //console.log('array sum',data.datasets[0].data.reduce((acc:number,curr:number)=>acc+curr,0));
 
-          let numString:string = String(data.datasets[0].data.reduce((acc:number,curr:number)=>acc+curr,0));
-          ctx.fillText(numString,xCoor,yCoor);
-        }
-
-
-      }]
+            let numString: string = String(
+              data.datasets[0].data.reduce(
+                (acc: number, curr: number) => acc + curr,
+                0
+              )
+            );
+            ctx.fillText(numString, xCoor, yCoor);
+          },
+        },
+      ],
     });
-
   }
 
   updatechartclickVal(c: Chart) {
     this.pval.nativeElement.value = this.chartclickval;
   }
 
-  getChartDetail(query,which){
+  getChartDetail(query, which) {
     const headers = new HttpHeaders()
-    .set("Content-Type", "application/json")
-    .set("Authorization", "Basic cndpbGRzOmRlbW8=");
-
+      .set("Content-Type", "application/json")
+      .set("Authorization", "Basic cndpbGRzOmRlbW8=");
 
     this.http.post(this.globalSearchUrl, query, { headers }).subscribe(
-      val => {
+      (val) => {
         //console.log("PUT call successful value returned in body", val);
-        this.negotiationCount = Number(val['list']['pagination']['count']);
+        this.negotiationCount = Number(val["list"]["pagination"]["count"]);
 
         //console.log("in progress count: ", this.negotiationCount)
         //Now process the rows for the mat table.  make sure array is empty first
         this.negotiationChartDataArray = [];
-        for (var ent in val['list']['entries']) {
-
+        for (var ent in val["list"]["entries"]) {
           this.negotiationChartDataArray.push({
             id: ent,
-            name: val['list']['entries'][ent]['entry']['name'],
-            node: val['list']['entries'][ent]['entry']['id'],
-
+            name: val["list"]["entries"][ent]["entry"]["name"],
+            node: val["list"]["entries"][ent]["entry"]["id"],
           });
         }
       },
 
-      response => {
+      (response) => {
         //console.log("PUT call in error", response);
       },
 
@@ -858,12 +961,13 @@ export class DashboardComponent implements OnInit,AfterViewInit {
   }
 
   onSearchItemClicked(event: MinimalNodeEntity) {
-
-    console.log("option clicked object: ", this.documentList.selection[0])
+    console.log("option clicked object: ", this.documentList.selection[0]);
     if (this.documentList.selection[0].entry.isFile === true) {
       //this.contentEntry = event;
-      console.log("clicked searched node id:", this.documentList.selection[0].entry);
-
+      console.log(
+        "clicked searched node id:",
+        this.documentList.selection[0].entry
+      );
 
       this.preview.showResource(event.entry.id);
     } else {
@@ -873,9 +977,7 @@ export class DashboardComponent implements OnInit,AfterViewInit {
   }
 
   nodeClicked(event: NodeEntityEvent) {
-
     if (this.documentList.selection[0].entry.isFile === true) {
-
       this.nodeId = this.documentList.selection[0].entry.id;
       this.node = this.documentList.selection[0].entry;
 
@@ -884,42 +986,39 @@ export class DashboardComponent implements OnInit,AfterViewInit {
 
       this.showViewer = false;
       this.showViewer = true;
-    }
-    else {
-
+    } else {
       this.nodeId = this.documentList.selection[0].entry.id;
       this.node = this.documentList.selection[0].entry;
 
       console.log("clicked foldernode id:", this.nodeId);
-      console.log("document list object for clicked foldernode is: ", this.node);
+      console.log(
+        "document list object for clicked foldernode is: ",
+        this.node
+      );
       this.showViewer = false;
-
     }
   }
 
   showBoxPreview(node) {
-
     console.log("recent object is :", node.value.entry.id);
     if (node.value.entry.isFile === true) {
       //this.contentEntry = event;
-      this.nodeId = node.value.entry.id
+      this.nodeId = node.value.entry.id;
       console.log("double clicked recents item:", this.nodeId);
       //this.preview.showResource(event.entry.id);
       this.showViewer = true;
-
     } else {
-
     }
   }
 
   createProcessClick() {
     //this.gotoTop();
-    this.processName = "New NDA request - " + this.currentUser + " - " + this.currentDateTime;
+    this.processName =
+      "New NDA request - " + this.currentUser + " - " + this.currentDateTime;
     this.showNDAForm = !this.showNDAForm;
     this.showModalDiv = !this.showModalDiv;
-
   }
-  processCancel(){
+  processCancel() {
     this.showNDAForm = false;
     this.showModalDiv = false;
     this.openSnackBar("NDA request canceled!", "");
@@ -929,12 +1028,12 @@ export class DashboardComponent implements OnInit,AfterViewInit {
     this.showModalDiv = false;
     this.openSnackBar("NDA request submitted!", "");
     this.refreshCloudTasks();
-    console.log("process instance cloud",event);
+    console.log("process instance cloud", event);
   }
 
   clickedDetailRow(row) {
     //console.log("row object clicked: ", row['node']);
-    this.router.navigate(['/documents', { fid: row['node'] }]);
+    this.router.navigate(["/documents", { fid: row["node"] }]);
   }
 
   onTaskRowClick(taskId) {
@@ -945,180 +1044,181 @@ export class DashboardComponent implements OnInit,AfterViewInit {
       //this.router.navigate(['/apps', this.appName || 0, 'tasks', taskId]);
       this.showTaskForm = !this.showTaskForm;
       this.showModalDiv = !this.showModalDiv;
-
     }
   }
 
   clickedTaskSave(event) {
-    console.log("task saved",event)
+    console.log("task saved", event);
     this.showTaskForm = false;
     this.showModalDiv = false;
     this.openSnackBar("Task Form Saved", this.snackBarValue);
   }
 
-  taskCompleted(){
-
+  taskCompleted() {
     this.showTaskForm = false;
     this.showModalDiv = false;
     this.refreshCloudTasks();
     this.openSnackBar("Task Completed", this.snackBarValue);
     console.log("task completed");
-
   }
-  executeOutcome(){}
+  executeOutcome() {}
 
-  formCompleted(){
+  formCompleted() {
     console.log("form completed");
   }
-  taskFormExecuted()
-  {
+  taskFormExecuted() {
     console.log("task form event: ");
     //event.preventDefault();
-
   }
 
-  onTaskLoaded(event){
-    console.log("task loaded ",event);
+  onTaskLoaded(event) {
+    console.log("task loaded ", event);
   }
-  taskFormExecutedOutcome()
-  {
+  taskFormExecutedOutcome() {
     console.log("outcome executed");
     this.showModalDiv = !this.showModalDiv; //close the div
     this.showTaskForm = !this.showTaskForm; //close the form
-    this.openSnackBar("Action executed","");
+    this.openSnackBar("Action executed", "");
   }
 
-  closeTaskForm(){
+  closeTaskForm() {
     this.showModalDiv = !this.showModalDiv; //close the div
     this.showTaskForm = !this.showTaskForm; //close the form
-    this.openSnackBar("Form closed","");
+    this.openSnackBar("Form closed", "");
   }
-  taskFormCanceled(){
-  this.showModalDiv = !this.showModalDiv; //close the div
-  this.showTaskForm = !this.showTaskForm; //close the form
-  this.openSnackBar("Form cancelled","");
+  taskFormCanceled() {
+    this.showModalDiv = !this.showModalDiv; //close the div
+    this.showTaskForm = !this.showTaskForm; //close the form
+    this.openSnackBar("Form cancelled", "");
   }
 
-  taskFormError(event){
-    console.log("form error: ",event);
+  taskFormError(event) {
+    console.log("form error: ", event);
   }
 
   onBeginUpload(event: UploadFilesEvent) {
     if (this.warnOnMultipleUploads && event) {
-        const files = event.files || [];
-        if (files.length > 1) {
-            event.pauseUpload();
+      const files = event.files || [];
+      if (files.length > 1) {
+        event.pauseUpload();
 
-            const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-                data: {
-                    title: 'Upload',
-                    message: `Are you sure you want to upload ${files.length} file(s)?`
-                },
-                minWidth: '250px'
-            });
+        const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+          data: {
+            title: "Upload",
+            message: `Are you sure you want to upload ${files.length} file(s)?`,
+          },
+          minWidth: "250px",
+        });
 
-            dialogRef.afterClosed().subscribe((result) => {
-                if (result === true) {
-                    event.resumeUpload();
-                }
-            });
-        }
+        dialogRef.afterClosed().subscribe((result) => {
+          if (result === true) {
+            event.resumeUpload();
+          }
+        });
+      }
     }
-}
+  }
 
-openSnackMessageError(error: any) {
-  this.notificationService.showError(error.value || error);
-}
+  openSnackMessageError(error: any) {
+    this.notificationService.showError(error.value || error);
+  }
 
-openSnackMessageInfo(message: string) {
-  this.notificationService.showInfo(message);
-}
+  openSnackMessageInfo(message: string) {
+    this.notificationService.showInfo(message);
+  }
 
-onUploadNewVersion(ev) {
+  onUploadNewVersion(ev) {
     const contentEntry = ev.detail.data.node.entry;
     const showComments = this.showVersionComments;
     const allowDownload = this.allowVersionDownload;
     const newFileVersion = ev.detail.files[0].file;
 
-    if (this.contentService.hasAllowableOperations(contentEntry, 'update')) {
-        this.dialog.open(VersionManagerDialogAdapterComponent, {
-            data: {
-                contentEntry,
-                showComments,
-                allowDownload,
-                newFileVersion,
-                showComparison: true
-            },
-            panelClass: 'adf-version-manager-dialog',
-            width: '630px'
-        });
+    if (this.contentService.hasAllowableOperations(contentEntry, "update")) {
+      this.dialog.open(VersionManagerDialogAdapterComponent, {
+        data: {
+          contentEntry,
+          showComments,
+          allowDownload,
+          newFileVersion,
+          showComparison: true,
+        },
+        panelClass: "adf-version-manager-dialog",
+        width: "630px",
+      });
     } else {
-        this.openSnackMessageError('OPERATION.ERROR.PERMISSION');
+      this.openSnackMessageError("OPERATION.ERROR.PERMISSION");
     }
-}
+  }
 
-getFileFiltering(): string {
-  return this.acceptedFilesTypeShow ? this.acceptedFilesType : '*';
-}
+  getFileFiltering(): string {
+    return this.acceptedFilesTypeShow ? this.acceptedFilesType : "*";
+  }
 
-getCurrentDocumentListNode(): NodeEntry[] {
-  if (this.documentList.folderNode) {
+  getCurrentDocumentListNode(): NodeEntry[] {
+    if (this.documentList.folderNode) {
       return [{ entry: this.documentList.folderNode }];
-  } else {
+    } else {
       return [];
+    }
   }
-}
 
-onDeleteActionSuccess(message: string) {
-  this.uploadService.fileDeleted.next(message);
-  //this.deleteElementSuccess.emit();
-  this.documentList.reload();
-  this.openSnackMessageInfo(message);
-}
+  onDeleteActionSuccess(message: string) {
+    this.uploadService.fileDeleted.next(message);
+    //this.deleteElementSuccess.emit();
+    this.documentList.reload();
+    this.openSnackMessageInfo(message);
+  }
 
-onMyFilesDragDropSuccess(event: Object): void {
-  console.log('File uploaded');
-  this.refreshMyFiles();
-}
+  onMyFilesDragDropSuccess(event: Object): void {
+    console.log("File uploaded");
+    this.refreshMyFiles();
+  }
 
-onManageMetadata(event: any) {
-  const contentEntry = event.value.entry;
-  const displayEmptyMetadata = this.displayEmptyMetadata;
+  onManageMetadata(event: any) {
+    const contentEntry = event.value.entry;
+    const displayEmptyMetadata = this.displayEmptyMetadata;
 
-  if (this.contentService.hasAllowableOperations(contentEntry, 'update')) {
+    if (this.contentService.hasAllowableOperations(contentEntry, "update")) {
       this.dialog.open(MetadataDialogAdapterComponent, {
-          data: {
-              contentEntry,
-              displayEmptyMetadata
-          },
-          panelClass: 'adf-metadata-manager-dialog',
-          width: '630px'
+        data: {
+          contentEntry,
+          displayEmptyMetadata,
+        },
+        panelClass: "adf-metadata-manager-dialog",
+        width: "630px",
       });
-  } else {
-      this.openSnackMessageError('OPERATION.ERROR.PERMISSION');
+    } else {
+      this.openSnackMessageError("OPERATION.ERROR.PERMISSION");
+    }
   }
-}
 
-onAspectUpdate(event: any) {
-  this.dialogAspectListService.openAspectListDialog(event.value.entry.id).subscribe((aspectList) => {
-      this.nodeService.updateNode(event.value.entry.id, { aspectNames: [...aspectList] }).subscribe(() => {
-          this.openSnackMessageInfo('Node Aspects Updated');
+  onAspectUpdate(event: any) {
+    this.dialogAspectListService
+      .openAspectListDialog(event.value.entry.id)
+      .subscribe((aspectList) => {
+        this.nodeService
+          .updateNode(event.value.entry.id, { aspectNames: [...aspectList] })
+          .subscribe(() => {
+            this.openSnackMessageInfo("Node Aspects Updated");
+          });
       });
-  });
-}
+  }
 
-refreshCloudTasks(){
+  refreshCloudTasks() {
+    this.showTaskViews = false;
+    interval(100).subscribe((val) => {
+      this.showTaskViews = true;
+    });
+  }
 
-  this.showTaskViews = false;
-              interval(100).subscribe(val => { this.showTaskViews = true})
-}
+  refreshMyFiles(message?: string) {
+    this.showMyFiles = false;
+    interval(10).subscribe((val) => {
+      this.showMyFiles = true;
+    });
 
-refreshMyFiles(message?:string){
-
-  this.showMyFiles = false
-              interval(10).subscribe(val => { this.showMyFiles = true})
-
-              if (message){this.openSnackBar(message,"");}
-
-}
+    if (message) {
+      this.openSnackBar(message, "");
+    }
+  }
 }
