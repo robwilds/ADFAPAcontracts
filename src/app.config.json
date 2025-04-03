@@ -7,6 +7,7 @@
   "application": {
     "name": "Alfresco ADF Application"
   },
+  "workflowAppName":"clm-mvp-v1-alpha-1",
   "authType": "OAUTH",
   "oauth2": {
     "host": "https://sse.dev.alfrescocloud.com/auth/realms/alfresco",

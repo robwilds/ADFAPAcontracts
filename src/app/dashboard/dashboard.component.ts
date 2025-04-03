@@ -248,7 +248,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   currentDateTime: any = new Date();
   processName: string;
 
-  appName: any = "clm-mvp-v1-alpha-1"; //** move this to app config */
+  appName: any = ""; //** move this to app config */
   taskId: any = "";
 
   showFiller = false;
@@ -270,14 +270,12 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   displayDefaultProperties: boolean = true;
 
-  currentFolderId: string = "5be4a4cc-f413-4f28-8329-dce29671b224";
+  //currentFolderId: string = "5be4a4cc-f413-4f28-8329-dce29671b224";
 
   nodeEntry: any;
   searchTerm: string = null;
 
-  globalSearchUrl = "";
-
-  //globalSearchUrl = "http://3.90.226.222/alfresco/api/-default-/public/search/versions/1/search";
+  globalSearchUrl = ""; //this will get set in the constructor from the app.config.json file
 
   isAutoRefreshChart: boolean = false;
   chartAnimationDuration = 2000;
@@ -374,6 +372,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.globalSearchUrl =
       appConfig.get("ecmHost") +
       "/alfresco/api/-default-/public/search/versions/1/search";
+    this.appName = appConfig.get("workflowAppName");
   }
 
   ngAfterViewInit() {
