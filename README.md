@@ -1,11 +1,21 @@
 # ADF/APS Application with Angular CLI
 
-this is created specifically for contract lifecycle management.
+This is created specifically for contract lifecycle management using cloud workflow (APA or HA) as the workflow engine to launch the NDA form.  Alfresco is the repository.  The entire app is contained within the dashboard component and there is an entry in the router for it.
 
-if you'd like to create a docker image of compiled app, use:
+The application is hard coded to look for specific aspect with values to make the dashboard work (refer to dashboard.ts code for specifics)
 
-docker build -t <imagename:tag>  .
-docker run --name adfapacontracts -d -p 4200:80 <imagename:tag>
+if you'd like to create a docker image of compiled app, there is a dockercommands.txt file located in the root of the project which you can follow
+
+There's already a docker image built:  wildsdocker/adfapacontracts:v1
+
+## Configuration
+
+If running locally (proxy) be sure to update the proxy.conf.js with the required URLs for the workflow host and the alfresco host as well identity host
+
+If running as a container (with compiled angular code), modify the app.config.json in the usr/share/nginx/html folder within the container
+
+Note:  there is an entry in the app.config.json file for specifying the APA or HA process that has the configured form.  Example: 
+"workflowAppName":"clm-mvp-v1-alpha-1"
 
 ## PreReqs
 

@@ -5,9 +5,10 @@
   "identityHost": "https://sse.dev.alfrescocloud.com",
   "providers": "ALL",
   "application": {
-    "name": "Alfresco ADF Application"
+    "name": "Alfresco Contract Management Demo"
   },
   "workflowAppName":"clm-mvp-v1-alpha-1",
+  "processDefinitionName":"NDA Request Form",
   "authType": "OAUTH",
   "oauth2": {
     "host": "https://sse.dev.alfrescocloud.com/auth/realms/alfresco",

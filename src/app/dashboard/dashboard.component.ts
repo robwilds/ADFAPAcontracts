@@ -249,6 +249,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   processName: string;
 
   appName: any = ""; //** move this to app config */
+  processDefinitionName: any = ""; //** move this to app config */
   taskId: any = "";
 
   showFiller = false;
@@ -373,6 +374,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       appConfig.get("ecmHost") +
       "/alfresco/api/-default-/public/search/versions/1/search";
     this.appName = appConfig.get("workflowAppName");
+    this.processDefinitionName = appConfig.get("processDefinitionName");
   }
 
   ngAfterViewInit() {
@@ -1013,7 +1015,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   createProcessClick() {
     //this.gotoTop();
     this.processName =
-      "New NDA request - " + this.currentUser + " - " + this.currentDateTime;
+      this.processDefinitionName +
+      " - " +
+      this.currentUser +
+      " - " +
+      this.currentDateTime;
     this.showNDAForm = !this.showNDAForm;
     this.showModalDiv = !this.showModalDiv;
   }

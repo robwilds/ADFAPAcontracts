@@ -1,344 +1,511 @@
 <div id="container">
-  <mat-card fxLayoutAlign="space-around center" fxfill fxLayoutAlign="center" fxLayout="row"
-    style="width:100%;margin:10px;position:sticky;position:-webkit-sticky;top: 0;z-index: 20;">
+  <mat-card
+    fxLayoutAlign="space-around center"
+    fxfill
+    fxLayoutAlign="center"
+    fxLayout="row"
+    style="
+      width: 100%;
+      margin: 10px;
+      position: sticky;
+      position: -webkit-sticky;
+      top: 0;
+      z-index: 20;
+    "
+  >
     <mat-card-content fxFlex="auto">
-      <div id="sevendayalertdiv" *ngIf="sevenDayShowMessage">{{sevenDayMessage}}</div>
+      <div id="sevendayalertdiv" *ngIf="sevenDayShowMessage">
+        {{ sevenDayMessage }}
+      </div>
       <div id="processButton">
-        <button (click)="runChartProcess()" mat-raised-button color="primary" id="refreshButton"><mat-icon>refresh</mat-icon></button>
-        <button (click)="createProcessClick()" mat-raised-button color="primary">Create NDA</button>
+        <button
+          (click)="runChartProcess()"
+          mat-raised-button
+          color="primary"
+          id="refreshButton"
+        >
+          <mat-icon>refresh</mat-icon>
+        </button>
+        <button
+          (click)="createProcessClick()"
+          mat-raised-button
+          color="primary"
+        >
+          Create NDA
+        </button>
       </div>
     </mat-card-content>
   </mat-card>
 
-<mat-card style="width:100%;margin:10px;">
-  <h1>Contract Status</h1>
+  <mat-card style="width: 100%; margin: 10px">
+    <h1>Contract Status</h1>
 
-  <div id="topSection" fxLayout fxLayoutAlign="center" fxLayout="row">
+    <div id="topSection" fxLayout fxLayoutAlign="center" fxLayout="row">
+      <div id="chart" fxFlex="50%">
+        <canvas
+          #canvas
+          id="canvas"
+          style="min-height: 400px; max-height: 400px"
+          >{{ chart }}</canvas
+        >
+        <!--         <div id="chartDetail" fxFlex="50">chart detail goes here</div> -->
+      </div>
+      <div
+        id="details"
+        fxFlex="50"
+        *ngIf="showChartPanel"
+        style="margin: 10px"
+        [@animImageSlider]
+      >
+        <div
+          class="mat-elevation-z8"
+          style="max-height: 350px; overflow: scroll"
+        >
+          <mat-card style="text-align: center">{{
+            chartClickedLegend
+          }}</mat-card>
+          <table mat-table [dataSource]="chartDataArray" tabindex="0">
+            <!-- id Column -->
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef>No.</th>
+              <td mat-cell *matCellDef="let element">{{ element.id }}</td>
+            </ng-container>
 
-    <div id="chart" fxFlex="50%">
-      <canvas #canvas id='canvas' style="min-height: 400px;max-height: 400px;">{{chart}}</canvas>
-      <!--         <div id="chartDetail" fxFlex="50">chart detail goes here</div> -->
-    </div>
-    <div id="details" fxFlex="50" *ngIf="showChartPanel" style="margin:10px;" [@animImageSlider]>
-      <div class="mat-elevation-z8" style="max-height:350px;overflow: scroll;">
-        <mat-card style="text-align: center;">{{chartClickedLegend}}</mat-card>
-        <table mat-table [dataSource]="chartDataArray" tabindex="0">
+            <!-- Name Column -->
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>name</th>
+              <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+            </ng-container>
 
-          <!-- id Column -->
-          <ng-container matColumnDef="id">
-            <th mat-header-cell *matHeaderCellDef> No. </th>
-            <td mat-cell *matCellDef="let element"> {{element.id}} </td>
-          </ng-container>
+            <!-- node Column -->
+            <ng-container matColumnDef="node">
+              <th mat-header-cell *matHeaderCellDef>Node</th>
+              <td mat-cell *matCellDef="let element">{{ element.node }}</td>
+            </ng-container>
 
-          <!-- Name Column -->
-          <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef> name </th>
-            <td mat-cell *matCellDef="let element"> {{element.name}} </td>
-          </ng-container>
+            <!-- node Column -->
+            <ng-container matColumnDef="nodeEx">
+              <th mat-header-cell *matHeaderCellDef>Expiration</th>
+              <td mat-cell *matCellDef="let element">{{ element.nodeEx }}</td>
+            </ng-container>
 
-          <!-- node Column -->
-          <ng-container matColumnDef="node">
-            <th mat-header-cell *matHeaderCellDef> Node </th>
-            <td mat-cell *matCellDef="let element"> {{element.node}} </td>
-          </ng-container>
-
-      <!-- node Column -->
-      <ng-container matColumnDef="nodeEx">
-        <th mat-header-cell *matHeaderCellDef> Expiration </th>
-        <td mat-cell *matCellDef="let element"> {{element.nodeEx}} </td>
-      </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="['id', 'name','node']; sticky: true"></tr>
-          <tr mat-row *matRowDef="let row; columns: ['id', 'name','node'];" (click)="clickedDetailRow(row)"></tr>
-
-        </table>
-        <mat-paginator [pageSizeOptions]="[10]"></mat-paginator>
+            <tr
+              mat-header-row
+              *matHeaderRowDef="['id', 'name', 'node']; sticky: true"
+            ></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: ['id', 'name', 'node']"
+              (click)="clickedDetailRow(row)"
+            ></tr>
+          </table>
+          <mat-paginator [pageSizeOptions]="[10]"></mat-paginator>
         </div>
+      </div>
+      <!-- div for 306090 details -->
+    </div>
+  </mat-card>
 
-    </div> <!-- div for 306090 details -->
-  </div>
-</mat-card>
+  <mat-card style="width: 100%; margin: 10px">
+    <div
+      id="lowerSection"
+      fxLayout="column"
+      fxLayoutAlign="space-evenly stretch"
+      fxfill
+      style="width: 100%"
+    >
+      <div fxFlex="100" style="margin-right: auto">
+        <h1>Existing Contract Expiration</h1>
+      </div>
 
-    <mat-card style="width:100%;margin:10px;">
-  <div id="lowerSection" fxLayout="column" fxLayoutAlign="space-evenly stretch" fxfill style="width:100%" >
-    <div fxFlex="100" style="margin-right:auto"><h1>Existing Contract Expiration</h1></div>
-
-      <div id="thirty6090" fxFlex="100"> <!--Add logic to turn off other cards if one is clicked-->
-        <mat-card id="thirtyCard" class="dayalert" (click)="this.thirty6090Clicked(1)" color="primary" *ngIf="viewThirty">
+      <div id="thirty6090" fxFlex="100">
+        <!--Add logic to turn off other cards if one is clicked-->
+        <mat-card
+          id="thirtyCard"
+          class="dayalert"
+          (click)="this.thirty6090Clicked(1)"
+          color="primary"
+          *ngIf="viewThirty"
+        >
           <mat-card-header>
             <mat-card-title>30 DAY</mat-card-title>
           </mat-card-header>
-          {{thirtyDayCount}}
+          {{ thirtyDayCount }}
         </mat-card>
-        <mat-card id="sixtyCard" class="dayalert" (click)="this.thirty6090Clicked(2)" color="primary" *ngIf="viewSixty">
+        <mat-card
+          id="sixtyCard"
+          class="dayalert"
+          (click)="this.thirty6090Clicked(2)"
+          color="primary"
+          *ngIf="viewSixty"
+        >
           <mat-card-header>
             <mat-card-title>60 DAY</mat-card-title>
           </mat-card-header>
-          {{sixtyDayCount}}
+          {{ sixtyDayCount }}
         </mat-card>
-        <mat-card id="ninetyCard" class="dayalert" (click)="this.thirty6090Clicked(3)" color="primary" *ngIf="viewNinety">
+        <mat-card
+          id="ninetyCard"
+          class="dayalert"
+          (click)="this.thirty6090Clicked(3)"
+          color="primary"
+          *ngIf="viewNinety"
+        >
           <mat-card-header>
             <mat-card-title>90 DAY</mat-card-title>
           </mat-card-header>
-          {{ninetyDayCount}}
+          {{ ninetyDayCount }}
         </mat-card>
-    </div>
+      </div>
 
-      <div id="details" fxFlex="100" *ngIf="showSummaryPanel" style="margin: 10px;" [@inOutAnimation]>
-        <div class="mat-elevation-z8" style="max-height:400px;overflow: scroll;">
-        <table #detailTable mat-table [dataSource]="mainDataArray" tabindex="0" matSort>
+      <div
+        id="details"
+        fxFlex="100"
+        *ngIf="showSummaryPanel"
+        style="margin: 10px"
+        [@inOutAnimation]
+      >
+        <div
+          class="mat-elevation-z8"
+          style="max-height: 400px; overflow: scroll"
+        >
+          <table
+            #detailTable
+            mat-table
+            [dataSource]="mainDataArray"
+            tabindex="0"
+            matSort
+          >
+            <!-- id Column -->
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef>No.</th>
+              <td mat-cell *matCellDef="let element">{{ element.id }}</td>
+            </ng-container>
 
-          <!-- id Column -->
-          <ng-container matColumnDef="id">
-            <th mat-header-cell *matHeaderCellDef> No. </th>
-            <td mat-cell *matCellDef="let element"> {{element.id}} </td>
-          </ng-container>
+            <!-- Name Column -->
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>name</th>
+              <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+            </ng-container>
 
-          <!-- Name Column -->
-          <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef> name </th>
-            <td mat-cell *matCellDef="let element"> {{element.name}} </td>
-          </ng-container>
+            <!-- node Column -->
+            <ng-container matColumnDef="node">
+              <th mat-header-cell *matHeaderCellDef>Node</th>
+              <td mat-cell *matCellDef="let element">{{ element.node }}</td>
+            </ng-container>
 
-          <!-- node Column -->
-          <ng-container matColumnDef="node">
-            <th mat-header-cell *matHeaderCellDef> Node </th>
-            <td mat-cell *matCellDef="let element"> {{element.node}} </td>
-          </ng-container>
+            <!-- node expiration Column -->
+            <ng-container matColumnDef="nodeEx">
+              <th mat-header-cell *matHeaderCellDef>Expiration</th>
+              <td mat-cell *matCellDef="let element">
+                {{ element.nodeEx | date : "longDate" }}
+              </td>
+            </ng-container>
 
-          <!-- node expiration Column -->
-          <ng-container matColumnDef="nodeEx">
-            <th mat-header-cell *matHeaderCellDef> Expiration </th>
-            <td mat-cell *matCellDef="let element"> {{element.nodeEx | date:'longDate'}}</td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="clickedDetailRow(row)" [ngClass]="{'make-red': (row.nodeEx < currentDayPlus7)&&(row.nodeEx >= currentDay)}"></tr>
-
-        </table>
-        <mat-paginator #paginator [pageSize]="5"
-        [pageSizeOptions]="[5, 10]"
-        ></mat-paginator>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: displayedColumns"
+              (click)="clickedDetailRow(row)"
+              [ngClass]="{
+                'make-red':
+                  row.nodeEx < currentDayPlus7 && row.nodeEx >= currentDay
+              }"
+            ></tr>
+          </table>
+          <mat-paginator
+            #paginator
+            [pageSize]="5"
+            [pageSizeOptions]="[5, 10]"
+          ></mat-paginator>
         </div>
-      </div> <!-- div for 306090 details -->
-
-  </div> <!-- div for lower section-->
-    </mat-card>
-  <div id="tasks">
-<mat-card>
-  <h1>My Tasks</h1>
-  <mat-tab-group animationDuration="700ms" mat-align-tabs="center">
-      <mat-tab label="Assigned" >
-        <div *ngIf="showTaskViews">
-        <adf-cloud-task-list #assignedTaskCloud class="mat-elevation-z8"
-        [appName]="appName"
-        [showMainDatatableActions]="'true'"
-        [showContextMenu]="true"
-        [status]="assignedTaskFilter"
-        (rowClick)="onTaskRowClick($event)"
-        [sorting]="[sorting]"
-        [isResizingEnabled]="true"
-        >
-          <data-columns>
-            <data-column key="name" title="Name" class="full-width name-column"></data-column>
-            <data-column key="status" title="Status" ></data-column>
-            <data-column key="priority" title="Priority" ></data-column>
-            <data-column key="createdDate" title="Created">
-              <ng-template let-entry="$implicit">
-                <div>{{entry.row.obj.createdDate | date:'MMM d, yyyy h:mm:ss a' }} </div>
-        </ng-template>
-            </data-column>
-            <data-column key="description" title="Description"></data-column>
-          </data-columns>
-
-        </adf-cloud-task-list>
-
-        <adf-pagination [target]="assignedTaskCloud">
-        </adf-pagination>
       </div>
-      </mat-tab>
-      <mat-tab label="Completed" class="mat-elevation-z8">
-        <div *ngIf="showTaskViews">
-        <adf-cloud-task-list #taskCloud
-        [appName]="appName"
-        [showMainDatatableActions]="true"
-        [showContextMenu]="true"
-        [actionsPosition]="'left'"
-        [status]="'COMPLETED'"
-        (rowClick)="onTaskRowClick($event)"
-        [sorting]="[sorting]"
-        >
-          <data-columns>
-            <data-column key="name" title="Name" class="full-width name-column"></data-column>
-            <!--data-column key="status" title="Status" ></data-column-->
-            <!--data-column key="priority" title="Priority" ></data-column-->
-            <data-column key="createdDate" title="Created" >
-              <ng-template let-entry="$implicit">
-                <div>{{entry.row.obj.createdDate | date:'MMM d, yyyy h:mm:ss a' }} </div>
-        </ng-template>
-            </data-column>
-            <data-column key="description" title="Description"></data-column>
-          </data-columns>
-
-        </adf-cloud-task-list>
-        <adf-pagination [target]="taskCloud" [supportedPageSizes]="[5]">
-        </adf-pagination>
-      </div>
-      </mat-tab>
-      <mat-tab label="Task Details" class="mat-elevation-z8">
-        task details here
-
-      </mat-tab>
-    </mat-tab-group>
+      <!-- div for 306090 details -->
+    </div>
+    <!-- div for lower section-->
   </mat-card>
-  </div> <!-- div for tasks -->
+  <div id="tasks">
+    <mat-card>
+      <h1>My Tasks</h1>
+      <mat-tab-group animationDuration="700ms" mat-align-tabs="center">
+        <mat-tab label="Assigned">
+          <div *ngIf="showTaskViews">
+            <adf-cloud-task-list
+              #assignedTaskCloud
+              class="mat-elevation-z8"
+              [appName]="appName"
+              [showMainDatatableActions]="'true'"
+              [showContextMenu]="true"
+              [status]="assignedTaskFilter"
+              (rowClick)="onTaskRowClick($event)"
+              [sorting]="[sorting]"
+              [isResizingEnabled]="true"
+            >
+              <data-columns>
+                <data-column
+                  key="name"
+                  title="Name"
+                  class="full-width name-column"
+                ></data-column>
+                <data-column key="status" title="Status"></data-column>
+                <data-column key="priority" title="Priority"></data-column>
+                <data-column key="createdDate" title="Created">
+                  <ng-template let-entry="$implicit">
+                    <div>
+                      {{
+                        entry.row.obj.createdDate
+                          | date : "MMM d, yyyy h:mm:ss a"
+                      }}
+                    </div>
+                  </ng-template>
+                </data-column>
+                <data-column
+                  key="description"
+                  title="Description"
+                ></data-column>
+              </data-columns>
+            </adf-cloud-task-list>
+
+            <adf-pagination [target]="assignedTaskCloud"> </adf-pagination>
+          </div>
+        </mat-tab>
+        <mat-tab label="Completed" class="mat-elevation-z8">
+          <div *ngIf="showTaskViews">
+            <adf-cloud-task-list
+              #taskCloud
+              [appName]="appName"
+              [showMainDatatableActions]="true"
+              [showContextMenu]="true"
+              [actionsPosition]="'left'"
+              [status]="'COMPLETED'"
+              (rowClick)="onTaskRowClick($event)"
+              [sorting]="[sorting]"
+            >
+              <data-columns>
+                <data-column
+                  key="name"
+                  title="Name"
+                  class="full-width name-column"
+                ></data-column>
+                <!--data-column key="status" title="Status" ></data-column-->
+                <!--data-column key="priority" title="Priority" ></data-column-->
+                <data-column key="createdDate" title="Created">
+                  <ng-template let-entry="$implicit">
+                    <div>
+                      {{
+                        entry.row.obj.createdDate
+                          | date : "MMM d, yyyy h:mm:ss a"
+                      }}
+                    </div>
+                  </ng-template>
+                </data-column>
+                <data-column
+                  key="description"
+                  title="Description"
+                ></data-column>
+              </data-columns>
+            </adf-cloud-task-list>
+            <adf-pagination [target]="taskCloud" [supportedPageSizes]="[5]">
+            </adf-pagination>
+          </div>
+        </mat-tab>
+        <mat-tab label="Task Details" class="mat-elevation-z8">
+          task details here
+        </mat-tab>
+      </mat-tab-group>
+    </mat-card>
+  </div>
+  <!-- div for tasks -->
 
   <div id="recents">
     <mat-card>
       <mat-card-content>
         <h1>My Items</h1>
-        <mat-tab-group style='min-height:900px'>
-
+        <mat-tab-group style="min-height: 900px">
           <mat-tab label="My Files">
-            <adf-upload-drag-area (success)="onMyFilesDragDropSuccess($event)" [rootFolderId]="'-my-'" [versioning]="'true'" style="width:100%;height:100%">
-<div *ngIf="showMyFiles" style='min-height:900px'>
-  <adf-breadcrumb
-    [target]="documentList">
-</adf-breadcrumb>
-<adf-document-list #documentList
-              [currentFolderId]="'-my-'"
+            <adf-upload-drag-area
+              (success)="onMyFilesDragDropSuccess($event)"
+              [rootFolderId]="'-my-'"
+              [versioning]="'true'"
+              style="width: 100%; height: 100%"
+            >
+              <div *ngIf="showMyFiles" style="min-height: 900px">
+                <adf-breadcrumb [target]="documentList"> </adf-breadcrumb>
+                <adf-document-list
+                  #documentList
+                  [currentFolderId]="'-my-'"
+                  [headerFilters]="true"
+                  [contextMenuActions]="true"
+                  [contentActions]="true"
+                  (nodeClick)="showBoxPreview($event)"
+                  (preview)="showBoxPreview($event)"
+                  [thumbnails]="true"
+                >
+                  <content-actions>
+                    <content-action
+                      icon="info"
+                      title="Info"
+                      (execute)="onManageMetadata($event)"
+                    >
+                    </content-action>
+                    <content-action
+                      icon="copy"
+                      title="Copy"
+                      permission="update"
+                      [disableWithNoPermission]="true"
+                      handler="copy"
+                    >
+                    </content-action>
+                    <content-action
+                      icon="delete"
+                      title="Delete"
+                      permission="delete"
+                      disableWithNoPermission="true"
+                      handler="delete"
+                      (success)="refreshMyFiles('Item Deleted')"
+                    >
+                    </content-action>
+                    <content-action
+                      icon="beach_access"
+                      title="Update Aspects"
+                      (execute)="onAspectUpdate($event)"
+                    >
+                    </content-action>
+                  </content-actions>
+                </adf-document-list>
+                <adf-pagination
+                  [target]="documentList"
+                  [supportedPageSizes]="[5]"
+                  [pagination]="5"
+                >
+                </adf-pagination>
+              </div>
+            </adf-upload-drag-area>
+          </mat-tab>
+
+          <mat-tab label="Favorites">
+            <adf-document-list
+              #favoriteList
+              class="mat-elevation-z8"
+              [currentFolderId]="'-favorites-'"
               [headerFilters]="true"
-        [contextMenuActions]="true"
-        [contentActions]="true"
+              [contextMenuActions]="true"
+              [contentActions]="true"
               (nodeClick)="showBoxPreview($event)"
               (preview)="showBoxPreview($event)"
-              [thumbnails]="true">
+            >
+              <data-columns>
+                <data-column key="$thumbnail" type="image"></data-column>
+                <data-column
+                  title="Name"
+                  key="name"
+                  class="full-width ellipsis-cell"
+                ></data-column>
+                <data-column title="Created By" key="createdByUser.displayName">
+                </data-column>
+                <data-column key="createdOn" title="Created"></data-column>
+              </data-columns>
               <content-actions>
                 <content-action
-        icon="info"
-        title="Info"
-        (execute)="onManageMetadata($event)">
-      </content-action>
-        <content-action
-            icon="copy"
-            title="Copy"
-            permission="update"
-            [disableWithNoPermission]="true"
-            handler="copy">
-        </content-action>
-        <content-action
-            icon="delete"
-            title="Delete"
-            permission="delete"
-            disableWithNoPermission="true"
-            handler="delete"
-            (success)="refreshMyFiles('Item Deleted')">
-        </content-action>
-        <content-action
-                              icon="beach_access"
-                              title="Update Aspects"
-                              (execute)="onAspectUpdate($event)">
-                          </content-action>
-      </content-actions>
+                  icon="info"
+                  title="Info"
+                  (execute)="onManageMetadata($event)"
+                >
+                </content-action>
+                <content-action
+                  icon="copy"
+                  title="Copy"
+                  permission="update"
+                  [disableWithNoPermission]="true"
+                  handler="copy"
+                >
+                </content-action>
+                <content-action
+                  icon="delete"
+                  title="Delete"
+                  permission="delete"
+                  disableWithNoPermission="true"
+                  handler="delete"
+                >
+                </content-action>
+                <content-action
+                  icon="beach_access"
+                  target="folder"
+                  title="Update Aspects"
+                  (execute)="onAspectUpdate($event)"
+                >
+                </content-action>
+              </content-actions>
             </adf-document-list>
-            <adf-pagination [target]="documentList" [supportedPageSizes]="[5]" [pagination]="5">
+            <adf-pagination
+              [target]="favoriteList"
+              [supportedPageSizes]="[5]"
+              [pagination]="5"
+            >
             </adf-pagination>
-</div>
-
-          </adf-upload-drag-area>
-        </mat-tab>
-
-      <mat-tab label="Favorites">
-        <adf-document-list #favoriteList class="mat-elevation-z8"
-        [currentFolderId]="'-favorites-'"
-        [headerFilters]="true"
-        [contextMenuActions]="true"
-        [contentActions]="true"
-        (nodeClick)="showBoxPreview($event)"
-        (preview)="showBoxPreview($event)" >
-          <data-columns>
-            <data-column key="$thumbnail" type="image"></data-column>
-            <data-column title="Name" key="name" class="full-width ellipsis-cell"></data-column>
-            <data-column title="Created By" key="createdByUser.displayName">
-            </data-column>
-            <data-column key="createdOn" title="Created"></data-column>
-          </data-columns>
-          <content-actions>
-            <content-action
-    icon="info"
-    title="Info"
-    (execute)="onManageMetadata($event)">
-  </content-action>
-    <content-action
-        icon="copy"
-        title="Copy"
-        permission="update"
-        [disableWithNoPermission]="true"
-        handler="copy">
-    </content-action>
-    <content-action
-        icon="delete"
-        title="Delete"
-        permission="delete"
-        disableWithNoPermission="true"
-        handler="delete">
-    </content-action>
-    <content-action
-                          icon="beach_access"
-                          target="folder"
-                          title="Update Aspects"
-                          (execute)="onAspectUpdate($event)">
-                      </content-action>
-  </content-actions>
-        </adf-document-list>
-        <adf-pagination [target]="favoriteList" [supportedPageSizes]="[5]" [pagination]="5">
-        </adf-pagination>
-
-      </mat-tab>
-      <mat-tab label="Recents">
-        <adf-document-list #recentList
-        [currentFolderId]="'-recent-'"
-        [headerFilters]="true"
-        [contextMenuActions]="true"
-        [contentActions]="true"
-        (nodeClick)="showBoxPreview($event)"
-        (preview)="showBoxPreview($event)"
-          >
-
-          <data-columns>
-            <data-column key="$thumbnail" type="image"></data-column>
-            <data-column title="Name" key="name" class="full-width ellipsis-cell"></data-column>
-            <data-column title="Created By" key="createdByUser.displayName">
-            </data-column>
-            <data-column key="createdOn" title="Created"></data-column>
-          </data-columns>
-
-        </adf-document-list>
-        <adf-pagination [target]="recentList" [supportedPageSizes]="[5]" [pagination]="5">
-        </adf-pagination>
-      </mat-tab>
-      </mat-tab-group>
+          </mat-tab>
+          <mat-tab label="Recents">
+            <adf-document-list
+              #recentList
+              [currentFolderId]="'-recent-'"
+              [headerFilters]="true"
+              [contextMenuActions]="true"
+              [contentActions]="true"
+              (nodeClick)="showBoxPreview($event)"
+              (preview)="showBoxPreview($event)"
+            >
+              <data-columns>
+                <data-column key="$thumbnail" type="image"></data-column>
+                <data-column
+                  title="Name"
+                  key="name"
+                  class="full-width ellipsis-cell"
+                ></data-column>
+                <data-column title="Created By" key="createdByUser.displayName">
+                </data-column>
+                <data-column key="createdOn" title="Created"></data-column>
+              </data-columns>
+            </adf-document-list>
+            <adf-pagination
+              [target]="recentList"
+              [supportedPageSizes]="[5]"
+              [pagination]="5"
+            >
+            </adf-pagination>
+          </mat-tab>
+        </mat-tab-group>
       </mat-card-content>
     </mat-card>
-  </div> <!--div for recents-->
-</div> <!-- div for container -->
+  </div>
+  <!--div for recents-->
+</div>
+<!-- div for container -->
 
 <div class="adf-alfresco-viewer" cdkDrag *ngIf="showViewer" class="">
-  <adf-alfresco-viewer  id="adfViewer" [(showViewer)]="showViewer" [overlayMode]="false" [nodeId]="nodeId" cdkDrag>
+  <adf-alfresco-viewer
+    id="adfViewer"
+    [(showViewer)]="showViewer"
+    [overlayMode]="false"
+    [nodeId]="nodeId"
+    cdkDrag
+  >
   </adf-alfresco-viewer>
 </div>
 <adf-file-uploading-dialog></adf-file-uploading-dialog>
 <div id="formView" *ngIf="showModalDiv">
-
-  <adf-cloud-start-process   *ngIf="showNDAForm"
-  [appName]="appName"
-  [name]="processName"
-  [processDefinitionName]="'NDA Request Form'"
-  (success)="processSuccess($event)"
-  (cancel)="processCancel()">
+  <adf-cloud-start-process
+    *ngIf="showNDAForm"
+    [appName]="appName"
+    [name]="processName"
+    [processDefinitionName]="processDefinitionName"
+    (success)="processSuccess($event)"
+    (cancel)="processCancel()"
+  >
   </adf-cloud-start-process>
 
-<adf-cloud-task-form *ngIf="showTaskForm" style="min-width: 900px;"
+  <adf-cloud-task-form
+    *ngIf="showTaskForm"
+    style="min-width: 900px"
     [appName]="appName"
     [taskId]="taskId"
     [showRefreshButton]="'true'"
@@ -348,7 +515,7 @@
     (taskCompleted)="taskCompleted()"
     (formCompleted)="FormCompleted()"
     (error)="taskFormError($event)"
-    (onTaskLoaded)="onTaskLoaded($event)">
-</adf-cloud-task-form>
-
+    (onTaskLoaded)="onTaskLoaded($event)"
+  >
+  </adf-cloud-task-form>
 </div>

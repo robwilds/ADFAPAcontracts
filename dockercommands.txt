@@ -3,10 +3,11 @@ docker rm adfapacontracts
 docker rmi wildsdocker/adfapacontracts:v1 --force
 
 docker buildx build --load --platform=linux/amd64,linux/arm64 -t wildsdocker/adfapacontracts:v1 .
+docker push wildsdocker/adfapacontracts:v1
 
 docker run -d -it -p 4200:80 \
 --name adfapacontracts \
 wildsdocker/adfapacontracts:v1
 
 
-docker push wildsdocker/adfapacontracts:v1
+
