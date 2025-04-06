@@ -18,7 +18,11 @@ Note:  there is an entry in the app.config.json file for specifying the APA or H
 "workflowAppName":"clm-mvp-v1-alpha-1" and  "processDefinitionName":"NDA Request Form"
 
 ## Alfreco Configuration
-Within the root of the project there's a demo files folder that contains the model for contracts.  Load the model within alfresco and activate. 
+Within the root of the project there's a demo files folder that contains the model for contracts.  Load the model within alfresco in the model management area and activate. 
+
+The workflow will create a contract sub folder ; however, you can manually create a parent and sub folders with the afore aspect you loaded in the model management area.  Observe the hierarchy below.  The parent is generic; however sub folders represent the company.  The aspect you already is applied to the folder.  once applied (with a rule perhaps), you can set the expiration date and the status fields to various values which will automatically update the dashboard.
+
+<img width="235" alt="image" src="https://github.com/user-attachments/assets/d44d04e5-282a-46f2-b4dc-f4035b56980f" />
 
 
 
