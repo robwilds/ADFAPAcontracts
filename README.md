@@ -8,7 +8,7 @@ if you'd like to create a docker image of compiled app, there is a dockercommand
 
 There's already a docker image built:  wildsdocker/adfapacontracts:v1
 
-## Configuration
+## App Configuration
 
 If running locally (proxy) be sure to update the proxy.conf.js with the required URLs for the workflow host and the alfresco host as well identity host
 
@@ -16,6 +16,11 @@ If running as a container (with compiled angular code), modify the app.config.js
 
 Note:  there is an entry in the app.config.json file for specifying the APA or HA process that has the configured form.  Example: 
 "workflowAppName":"clm-mvp-v1-alpha-1" and  "processDefinitionName":"NDA Request Form"
+
+## Alfreco Configuration
+Within the root of the project there's a demo files folder that contains the model for contracts.  Load the model within alfresco and activate. 
+
+
 
 ## PreReqs
 
