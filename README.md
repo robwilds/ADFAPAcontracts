@@ -15,7 +15,7 @@ If running locally (proxy) be sure to update the proxy.conf.js with the required
 If running as a container (with compiled angular code), modify the app.config.json in the usr/share/nginx/html folder within the container
 
 Note:  there is an entry in the app.config.json file for specifying the APA or HA process that has the configured form.  Example: 
-"workflowAppName":"clm-mvp-v1-alpha-1"
+"workflowAppName":"clm-mvp-v1-alpha-1" and  "processDefinitionName":"NDA Request Form"
 
 ## PreReqs
 
