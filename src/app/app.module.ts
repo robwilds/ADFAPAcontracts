@@ -38,6 +38,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { CommonModule } from '@angular/common';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { AssociationsComponent } from './associations/associations.component';
+import { AiSearchComponent } from './ai-search/ai-search.component';
 
 @NgModule({
     imports: [
@@ -79,7 +80,8 @@ import { AssociationsComponent } from './associations/associations.component';
         DashboardComponent,
         AssociationsComponent,
         MetadataDialogAdapterComponent,
-        VersionManagerDialogAdapterComponent
+        VersionManagerDialogAdapterComponent,
+        AiSearchComponent
     ],
     providers: [
         PreviewService,DatePipe,
