@@ -8,6 +8,3 @@ docker push wildsdocker/adfapacontracts:v1
 docker run -d -it -p 4200:80 \
 --name adfapacontracts \
 wildsdocker/adfapacontracts:v1
-
-
-
