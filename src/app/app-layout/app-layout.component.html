@@ -1,53 +1,87 @@
-<adf-sidenav-layout [sidenavMin]="70" [sidenavMax]="100" [stepOver]="780" [hideSidenav]="false" [expandedSidenav]="false">
-
+<adf-sidenav-layout
+  [sidenavMin]="70"
+  [sidenavMax]="100"
+  [stepOver]="780"
+  [hideSidenav]="false"
+  [expandedSidenav]="false"
+>
   <adf-sidenav-layout-header>
     <ng-template let-toggleMenu="toggleMenu">
-
-      <adf-layout-header id="adf-header" [title]="'Contract Management ADF Application'" color="primary" logo="/assets/hylandlogo.png" [redirectUrl]="'/dashboard'">
+      <adf-layout-header
+        id="adf-header"
+        [title]="'Contract Management ADF Application'"
+        color="primary"
+        logo="/assets/hylandlogo.png"
+        [redirectUrl]="'/dashboard'"
+      >
         <div id="rightHeader" fxLayout="row">
-            <img src="{{userImage}}" alt="{{userName}}">
-            <adf-notification-history [menuPositionX]="'before'" [menuPositionY]="'above'" fxFlex-Basis:10>
-            </adf-notification-history>
+          <img src="{{ userImage }}" alt="{{ userName }}" />
+          <adf-notification-history
+            [menuPositionX]="'before'"
+            [menuPositionY]="'above'"
+            fxFlex-Basis:10
+          >
+          </adf-notification-history>
         </div>
-    </adf-layout-header>
+      </adf-layout-header>
     </ng-template>
-
   </adf-sidenav-layout-header>
-    <adf-sidenav-layout-navigation>
-        <ng-template let-isMenuMinimized="isMenuMinimized">
-            <mat-nav-list class="adf-sidenav-linklist">
-                <a mat-list-item class="adf-sidenav-link" routerLink="/login">
-                    <mat-icon matListIcon class="sidenav-menu-icon">vpn_key</mat-icon>
-                    <div class="sidenav-menu-label" *ngIf="!isMenuMinimized()">Login</div>
-                </a>
-<!--                 <a mat-list-item class="adf-sidenav-link">
+  <adf-sidenav-layout-navigation>
+    <ng-template let-isMenuMinimized="isMenuMinimized">
+      <mat-nav-list class="adf-sidenav-linklist">
+        <a mat-list-item class="adf-sidenav-link" routerLink="/login">
+          <mat-icon matListIcon class="sidenav-menu-icon">vpn_key</mat-icon>
+          <div class="sidenav-menu-label" *ngIf="!isMenuMinimized()">Login</div>
+        </a>
+        <!--                 <a mat-list-item class="adf-sidenav-link">
                     <div class="sidenav-menu-label" *ngIf="!isMenuMinimized()">Notificatinos</div>
                     <adf-notification-history [menuPositionX]="'before'" [menuPositionY]="'above'"></adf-notification-history>
                 </a> -->
-                <a mat-list-item class="adf-sidenav-link">
-                    <mat-icon matListIcon class="sidenav-menu-icon" routerLink="/dashboard">view_day</mat-icon>
-                    <div class="sidenav-menu-label" *ngIf="!isMenuMinimized()">dashboard</div>
-                </a>
-                <a mat-list-item class="adf-sidenav-link" routerLink="/documents">
-                    <mat-icon matListIcon class="sidenav-menu-icon">folder_open</mat-icon>
-                    <div class="sidenav-menu-label" *ngIf="!isMenuMinimized()">Contracts</div>
-                </a>
-                <a mat-list-item class="adf-sidenav-link" routerLink="/apps">
-                    <mat-icon matListIcon class="sidenav-menu-icon">cloud</mat-icon>
-                    <div class="sidenav-menu-label" *ngIf="!isMenuMinimized()">Cloud Apps</div>
-                </a>
+        <a mat-list-item class="adf-sidenav-link">
+          <mat-icon
+            matListIcon
+            class="sidenav-menu-icon"
+            routerLink="/dashboard"
+            >dashboard</mat-icon
+          >
+          <div class="sidenav-menu-label" *ngIf="!isMenuMinimized()">
+            dashboard
+          </div>
+        </a>
+        <a mat-list-item class="adf-sidenav-link">
+          <mat-icon matListIcon class="sidenav-menu-icon" routerLink="/aiSearch"
+            >mode_comment</mat-icon
+          >
+          <div class="sidenav-menu-label" *ngIf="!isMenuMinimized()">
+            AISearch
+          </div>
+        </a>
+        <a mat-list-item class="adf-sidenav-link" routerLink="/documents">
+          <mat-icon matListIcon class="sidenav-menu-icon">folder_open</mat-icon>
+          <div class="sidenav-menu-label" *ngIf="!isMenuMinimized()">
+            Contracts
+          </div>
+        </a>
+        <a mat-list-item class="adf-sidenav-link" routerLink="/apps">
+          <mat-icon matListIcon class="sidenav-menu-icon">cloud</mat-icon>
+          <div class="sidenav-menu-label" *ngIf="!isMenuMinimized()">
+            Cloud Apps
+          </div>
+        </a>
 
-                <a mat-list-item adf-logout class="adf-sidenav-link">
-                    <mat-icon matListIcon class="sidenav-menu-icon">exit_to_app</mat-icon>
-                    <div class="sidenav-menu-label" *ngIf="!isMenuMinimized()">Logout</div>
-                </a>
-            </mat-nav-list>
-        </ng-template>
-    </adf-sidenav-layout-navigation>
+        <a mat-list-item adf-logout class="adf-sidenav-link">
+          <mat-icon matListIcon class="sidenav-menu-icon">exit_to_app</mat-icon>
+          <div class="sidenav-menu-label" *ngIf="!isMenuMinimized()">
+            Logout
+          </div>
+        </a>
+      </mat-nav-list>
+    </ng-template>
+  </adf-sidenav-layout-navigation>
 
-    <adf-sidenav-layout-content>
-        <ng-template>
-            <router-outlet></router-outlet>
-        </ng-template>
-    </adf-sidenav-layout-content>
+  <adf-sidenav-layout-content>
+    <ng-template>
+      <router-outlet></router-outlet>
+    </ng-template>
+  </adf-sidenav-layout-content>
 </adf-sidenav-layout>

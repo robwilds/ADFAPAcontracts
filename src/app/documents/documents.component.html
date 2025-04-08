@@ -1,257 +1,316 @@
-<mat-card style="margin:10px;">
-    <mat-card-content>
-<adf-search-control style="width:500px"
-    [expandable]="true"
-    [highlight]="true"
-    (optionClicked)="onSearchItemClicked($event)"
-    (submit)="onSearchSubmit($event)">
-    <adf-empty-search-result>
-      <span>No Results</span>
-  </adf-empty-search-result>
-</adf-search-control>
-<adf-search-filter-chips [showContextFacets]=false></adf-search-filter-chips>
-</mat-card-content>
+<mat-card style="margin: 10px">
+  <mat-card-content>
+    <adf-search-control
+      style="width: 500px"
+      [expandable]="true"
+      [highlight]="true"
+      (optionClicked)="onSearchItemClicked($event)"
+      (submit)="onSearchSubmit($event)"
+    >
+      <adf-empty-search-result>
+        <span>No Results</span>
+      </adf-empty-search-result>
+    </adf-search-control>
+
+    <button mat-fab extended color="primary" routerLink="/aiSearch">
+      <mat-icon>favorite</mat-icon>
+    </button>
+    <adf-search-filter-chips
+      [showContextFacets]="false"
+    ></adf-search-filter-chips>
+  </mat-card-content>
 </mat-card>
 
 <div class="doclist-div-wrapper" fxLayoutAlign="start" fxLayout="column">
-<mat-card style="margin:10px">
-<adf-toolbar>
-  <adf-toolbar-title>
-    <button mat-fab extended color="primary" (click)="backToContracts()">
-      <mat-icon>favorite</mat-icon>
-    </button>
-    <adf-breadcrumb
-      class="files-breadcrumb"
-      root="Personal Files"
-      [target]="documentList"
-      [folderNode]="documentList.folderNode">
-    </adf-breadcrumb>
-    <div class="app-document-action-buttons">
-      <button
-          mat-icon-button
-          data-automation-id="document-list-grid-view"
-          title="Toggle display mode"
-          (click)="toggleGalleryView()">
-          <mat-icon>list</mat-icon>
-      </button>
-      <button
-          data-automation-id="create-new-folder"
-          mat-icon-button
-          [disabled]="!canCreateContent(documentList.folderNode)"
-          title="New folder"
-          (error)="openSnackMessageError($event)"
-          (success)="documentList.reload()"
-          [adf-create-folder]="documentList.currentFolderId">
-          <mat-icon>create_new_folder</mat-icon>
-      </button>
-      <button mat-icon-button
-              [disabled]="!hasSelection(documentList.selection)"
-              title="Download"
-              [adfNodeDownload]="documentList.selection">
-          <mat-icon>get_app</mat-icon>
-      </button>
-      <button
-                        data-automation-id="favorite"
-                        mat-icon-button
-                            [disabled]="!documentList.selection.length"
-                            #favorite="adfFavorite"
-                            [adf-node-favorite]="documentList.selection"
-                            matTooltip="select Favorite">
-                        <mat-icon>
-                            {{ favorite.hasFavorites() ? 'star' :'star_border' }}
-                        </mat-icon>
-                    </button>
-                    <button mat-icon-button
-                            [disabled]="documentList.selection.length && !shareRef.isFile"
-                            [baseShareUrl]="baseShareUrl"
-                            #shareRef="adfShare"
-                            [adf-share]="documentList.selection[0]"
-                            [matTooltip]="(shareRef.isShared
-                                ? 'DOCUMENT_LIST.TOOLBAR.SHARE_EDIT'
-                                : 'DOCUMENT_LIST.TOOLBAR.SHARE') | translate">
-                        <mat-icon>
-                            share
-                        </mat-icon>
-                    </button>
-      <button mat-icon-button
-              data-automation-id="delete-toolbar-button"
-              adf-check-allowable-operation="delete"
-              [permanent]="true"
-              [adf-nodes]="documentList.selection"
-              title="Delete"
-              (delete)="onDeleteActionSuccess($event)"
-              [adf-delete]="documentList.selection">
-          <mat-icon>delete</mat-icon>
-      </button>
-  </div>
-  </adf-toolbar-title>
-  <adf-toolbar-divider></adf-toolbar-divider>
-<adf-sites-dropdown (change)="onSiteChange($event)" [hideMyFiles]="false" [relations]="'members'">
-</adf-sites-dropdown>
+  <mat-card style="margin: 10px">
+    <adf-toolbar>
+      <adf-toolbar-title>
+        <button mat-fab extended color="primary" (click)="backToContracts()">
+          <mat-icon>favorite</mat-icon>
+        </button>
+        <adf-breadcrumb
+          class="files-breadcrumb"
+          root="Personal Files"
+          [target]="documentList"
+          [folderNode]="documentList.folderNode"
+        >
+        </adf-breadcrumb>
+        <div class="app-document-action-buttons">
+          <button
+            mat-icon-button
+            data-automation-id="document-list-grid-view"
+            title="Toggle display mode"
+            (click)="toggleGalleryView()"
+          >
+            <mat-icon>list</mat-icon>
+          </button>
+          <button
+            data-automation-id="create-new-folder"
+            mat-icon-button
+            [disabled]="!canCreateContent(documentList.folderNode)"
+            title="New folder"
+            (error)="openSnackMessageError($event)"
+            (success)="documentList.reload()"
+            [adf-create-folder]="documentList.currentFolderId"
+          >
+            <mat-icon>create_new_folder</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            [disabled]="!hasSelection(documentList.selection)"
+            title="Download"
+            [adfNodeDownload]="documentList.selection"
+          >
+            <mat-icon>get_app</mat-icon>
+          </button>
+          <button
+            data-automation-id="favorite"
+            mat-icon-button
+            [disabled]="!documentList.selection.length"
+            #favorite="adfFavorite"
+            [adf-node-favorite]="documentList.selection"
+            matTooltip="select Favorite"
+          >
+            <mat-icon>
+              {{ favorite.hasFavorites() ? "star" : "star_border" }}
+            </mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            [disabled]="documentList.selection.length && !shareRef.isFile"
+            [baseShareUrl]="baseShareUrl"
+            #shareRef="adfShare"
+            [adf-share]="documentList.selection[0]"
+            [matTooltip]="
+              (shareRef.isShared
+                ? 'DOCUMENT_LIST.TOOLBAR.SHARE_EDIT'
+                : 'DOCUMENT_LIST.TOOLBAR.SHARE'
+              ) | translate
+            "
+          >
+            <mat-icon> share </mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            data-automation-id="delete-toolbar-button"
+            adf-check-allowable-operation="delete"
+            [permanent]="true"
+            [adf-nodes]="documentList.selection"
+            title="Delete"
+            (delete)="onDeleteActionSuccess($event)"
+            [adf-delete]="documentList.selection"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </adf-toolbar-title>
+      <adf-toolbar-divider></adf-toolbar-divider>
+      <adf-sites-dropdown
+        (change)="onSiteChange($event)"
+        [hideMyFiles]="false"
+        [relations]="'members'"
+      >
+      </adf-sites-dropdown>
 
-  <adf-upload-button
-    [rootFolderId]="documentList.currentFolderId || '-root-'"
-    [adf-check-allowable-operation]="'create'"
-    (success)="uploadSuccess($event)"
-  >
-  </adf-upload-button>
+      <adf-upload-button
+        [rootFolderId]="documentList.currentFolderId || '-root-'"
+        [adf-check-allowable-operation]="'create'"
+        (success)="uploadSuccess($event)"
+      >
+      </adf-upload-button>
+    </adf-toolbar>
+  </mat-card>
+  <!--end of mat card for breadcrumb and upload button-->
 
-</adf-toolbar>
-</mat-card>
-<!--end of mat card for breadcrumb and upload button-->
-
-<!-- Doc List Wrapper STart -->
-<mat-card style="margin:10px;" >
-<div class="adf-document-list-div-wrapper" fxLayoutAlign="start" fxLayout="row" style="min-height: 600px;">
-
-<div fxLayoutAlign="none" fxLayout="column" fxFlex="{{fxFlexForDocList}}" [class.is-hidden]="isHidden">
-  <adf-upload-drag-area (success)="documentList.reload()" [rootFolderId]="documentList.currentFolderId" [versioning]="'true'" style="width:100%;height:100%">
-
-  <adf-document-list
-  #documentList
-  [contextMenuActions]="true"
-  [currentFolderId]="currentFolderId"
-  (preview)="showPreview($event)"
-  (nodeClick)="nodeClicked($event)"
-  [headerFilters]="true"
-  [thumbnails]="'thumbnails'"
-  [allowDropFiles]="false"
-  >
-<data-columns>
-  <data-column key="$thumbnail" type="image"></data-column>
-  <data-column title="Name" key="name" class="full-width ellipsis-cell"></data-column>
-  <data-column
-    title="Tag"
-    key="id"
-    sortable="true"
-    class="full-width ellipsis-cell">
-    <ng-template let-entry="$implicit">
-        <adf-tag-node-list  [nodeId]="entry.data.getValue(entry.row, entry.col)"></adf-tag-node-list>
-    </ng-template>
-</data-column>
-<data-column
-                        title="Lock"
-                        key="lock"
-                        [focus]="false"
-                        [sortable]="false"
-                        target="document"
-                        class="app-desktop-only adf-ellipsis-cell">
-                        <ng-template let-entry="$implicit">
-                            <button *ngIf="entry.row.getValue('isFile')"  mat-icon-button [adf-node-lock]="entry.row.node.entry" class="app-lock-button">
-                                <mat-icon *ngIf="entry.row.getValue('isLocked')">lock</mat-icon>
-                                <mat-icon *ngIf="!entry.row.getValue('isLocked')">lock_open</mat-icon>
-                            </button>
-                        </ng-template>
-                    </data-column>
-  <data-column
-      title="Created By"
-      key="createdByUser.displayName">
-  </data-column>
-  <data-column
-            title="Created On"
-            key="createdAt"
-            type="date"
-            format="medium"
-            sortable="true"
-            class="desktop-only">
-        </data-column>
-        <data-column
-            title="Expires"
-            key="ContractManagement:Expiration"
-            type="date"
-            format="medium"
-            sortable="true"
-            >
-        </data-column>
-</data-columns>
-
-<content-actions>
-  <content-action
-  icon="redo"
-    title="associations"
-      permission="update"
-      target="folder"
-      [disableWithNoPermission]="true"
-
-      (execute)="folderAssociationsCustomAction($event)">
-      <content-action
-                        icon="get_app"
-                        title="Download"
-                        handler="download">
-                    </content-action>
-  </content-action>
-  <content-action
-  icon="info"
-  title="Info"
-  (execute)="onManageMetadata($event)">
-</content-action>
-  <content-action
-      icon="copy"
-      title="Copy"
-      permission="update"
-      [disableWithNoPermission]="true"
-      handler="copy">
-  </content-action>
-  <content-action
-      icon="delete"
-      title="Delete"
-      permission="delete"
-      disableWithNoPermission="true"
-      handler="delete"
-      (success)="documentList.reload()">
-  </content-action>
-  <content-action
-                        icon="beach_access"
-                        target="folder"
-                        title="Update Aspects"
-                        (execute)="onAspectUpdate($event)">
-                    </content-action>
-</content-actions>
-</adf-document-list>
-</adf-upload-drag-area>
-<adf-pagination
-    [target]="documentList"
-    [pagination]="5"
-    [supportedPageSizes]="[5,10,25]"
+  <!-- Doc List Wrapper STart -->
+  <mat-card style="margin: 10px">
+    <div
+      class="adf-document-list-div-wrapper"
+      fxLayoutAlign="start"
+      fxLayout="row"
+      style="min-height: 600px"
     >
-</adf-pagination>
+      <div
+        fxLayoutAlign="none"
+        fxLayout="column"
+        fxFlex="{{ fxFlexForDocList }}"
+        [class.is-hidden]="isHidden"
+      >
+        <adf-upload-drag-area
+          (success)="documentList.reload()"
+          [rootFolderId]="documentList.currentFolderId"
+          [versioning]="'true'"
+          style="width: 100%; height: 100%"
+        >
+          <adf-document-list
+            #documentList
+            [contextMenuActions]="true"
+            [currentFolderId]="currentFolderId"
+            (preview)="showPreview($event)"
+            (nodeClick)="nodeClicked($event)"
+            [headerFilters]="true"
+            [thumbnails]="'thumbnails'"
+            [allowDropFiles]="false"
+          >
+            <data-columns>
+              <data-column key="$thumbnail" type="image"></data-column>
+              <data-column
+                title="Name"
+                key="name"
+                class="full-width ellipsis-cell"
+              ></data-column>
+              <data-column
+                title="Tag"
+                key="id"
+                sortable="true"
+                class="full-width ellipsis-cell"
+              >
+                <ng-template let-entry="$implicit">
+                  <adf-tag-node-list
+                    [nodeId]="entry.data.getValue(entry.row, entry.col)"
+                  ></adf-tag-node-list>
+                </ng-template>
+              </data-column>
+              <data-column
+                title="Lock"
+                key="lock"
+                [focus]="false"
+                [sortable]="false"
+                target="document"
+                class="app-desktop-only adf-ellipsis-cell"
+              >
+                <ng-template let-entry="$implicit">
+                  <button
+                    *ngIf="entry.row.getValue('isFile')"
+                    mat-icon-button
+                    [adf-node-lock]="entry.row.node.entry"
+                    class="app-lock-button"
+                  >
+                    <mat-icon *ngIf="entry.row.getValue('isLocked')"
+                      >lock</mat-icon
+                    >
+                    <mat-icon *ngIf="!entry.row.getValue('isLocked')"
+                      >lock_open</mat-icon
+                    >
+                  </button>
+                </ng-template>
+              </data-column>
+              <data-column title="Created By" key="createdByUser.displayName">
+              </data-column>
+              <data-column
+                title="Created On"
+                key="createdAt"
+                type="date"
+                format="medium"
+                sortable="true"
+                class="desktop-only"
+              >
+              </data-column>
+              <data-column
+                title="Expires"
+                key="ContractManagement:Expiration"
+                type="date"
+                format="medium"
+                sortable="true"
+              >
+              </data-column>
+            </data-columns>
+
+            <content-actions>
+              <content-action
+                icon="redo"
+                title="associations"
+                permission="update"
+                target="folder"
+                [disableWithNoPermission]="true"
+                (execute)="folderAssociationsCustomAction($event)"
+              >
+                <content-action
+                  icon="get_app"
+                  title="Download"
+                  handler="download"
+                >
+                </content-action>
+              </content-action>
+              <content-action
+                icon="info"
+                title="Info"
+                (execute)="onManageMetadata($event)"
+              >
+              </content-action>
+              <content-action
+                icon="copy"
+                title="Copy"
+                permission="update"
+                [disableWithNoPermission]="true"
+                handler="copy"
+              >
+              </content-action>
+              <content-action
+                icon="delete"
+                title="Delete"
+                permission="delete"
+                disableWithNoPermission="true"
+                handler="delete"
+                (success)="documentList.reload()"
+              >
+              </content-action>
+              <content-action
+                icon="beach_access"
+                target="folder"
+                title="Update Aspects"
+                (execute)="onAspectUpdate($event)"
+              >
+              </content-action>
+            </content-actions>
+          </adf-document-list>
+        </adf-upload-drag-area>
+        <adf-pagination
+          [target]="documentList"
+          [pagination]="5"
+          [supportedPageSizes]="[5, 10, 25]"
+        >
+        </adf-pagination>
+      </div>
+
+      <!-- need to control viewer width!!! and put before meta-data card-->
+      <!-- <div  class="adf-alfresco-viewer" [class.is-hidden]="!isHidden"  fxFlex={{fxFlexForAux}}> -->
+
+      <adf-alfresco-viewer
+        [class.is-hidden]="!isHidden"
+        fxFlex="{{ fxFlexForAux }}"
+        [(showViewer)]="showViewer"
+        [overlayMode]="false"
+        [nodeId]="nodeId"
+        (showViewerChange)="viewerClosed()"
+      >
+      </adf-alfresco-viewer>
+
+      <!-- </div> -->
+
+      <!-- metadata card here with fxFlex-->
+      <adf-content-metadata-card
+        [@inOutAnimation]
+        [displayEmpty]="true"
+        [preset]="'*'"
+        [node]="node"
+        [displayEmpty]="true"
+        [displayAspect]="'ContractManagement'"
+        fxFlex="{{ fxFlexForAux }}"
+      >
+      </adf-content-metadata-card>
+      <!--end meta data card-->
+    </div>
+    <!-- div for doc list and pagination -->
+  </mat-card>
 </div>
-
-<!-- need to control viewer width!!! and put before meta-data card-->
-<!-- <div  class="adf-alfresco-viewer" [class.is-hidden]="!isHidden"  fxFlex={{fxFlexForAux}}> -->
-
-  <adf-alfresco-viewer [class.is-hidden]="!isHidden" fxFlex={{fxFlexForAux}}
-  [(showViewer)]="showViewer"
-  [overlayMode]="false"
-  [nodeId]="nodeId"
-  (showViewerChange)="viewerClosed()"
-  >
-  </adf-alfresco-viewer>
-
-  <!-- </div> -->
-
-<!-- metadata card here with fxFlex-->
-<adf-content-metadata-card [@inOutAnimation]
-    [displayEmpty]="true"
-    [preset]="'*'"
-    [node]="node"
-    [displayEmpty]="true"
-    [displayAspect]="'ContractManagement'"
-    fxFlex={{fxFlexForAux}}>
-</adf-content-metadata-card>
-<!--end meta data card-->
-
-</div> <!-- div for doc list and pagination -->
-</mat-card>
-</div> <!-- div for wrapper -->
+<!-- div for wrapper -->
 <div class="formView" *ngIf="showAssocations">
-<div id="associations" cdkDrag>
-  <button mat-mini-fab (click)="closeAssociation()">
-    <mat-icon>close</mat-icon>
-  </button>
-<associations
-  [_node]="folderNodeAssociation"
-  ></associations>
-</div>
+  <div id="associations" cdkDrag>
+    <button mat-mini-fab (click)="closeAssociation()">
+      <mat-icon>close</mat-icon>
+    </button>
+    <associations [_node]="folderNodeAssociation"></associations>
+  </div>
 </div>
 <adf-file-uploading-dialog></adf-file-uploading-dialog>
